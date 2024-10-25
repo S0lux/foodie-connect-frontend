@@ -38,15 +38,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider>
+          {/* <SidebarProvider>
             <AppSidebar />
             <div className="w-full">
               <Header>
                 <SidebarTrigger />
               </Header>
-              <div className="mt-16">{children}</div>
+              <div className="mx-10 mt-16">{children}</div>
             </div>
-          </SidebarProvider>
+          </SidebarProvider> */}
+          <Header></Header>
+          <div className="mx-10 mt-[--header-height] lg:mx-40">{children}</div>
         </ThemeProvider>
       </body>
     </html>
