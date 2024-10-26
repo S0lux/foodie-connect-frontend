@@ -33,15 +33,15 @@ const chartData = [
 const chartConfig = {
   profit: {
     label: "Profit",
-    color: "var(--chart-1)",
+    color: "rgb(var(--chart-1))",
   },
   orders: {
     label: "Orders",
-    color: "var(--chart-2)",
+    color: "rgb(var(--chart-2))",
   },
   users: {
     label: "Users",
-    color: "var(--chart-3)",
+    color: "rgb(var(--chart-3))",
   },
 } satisfies ChartConfig;
 
