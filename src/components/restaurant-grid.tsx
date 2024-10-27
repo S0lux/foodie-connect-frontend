@@ -100,7 +100,7 @@ const RestaurantGrid = ({
 
   return (
     <Card className={twMerge("h-fit border-none", className)}>
-      <CardHeader className="border-muted-foreground/30 flex flex-row space-x-5 space-y-0 border-b xl:space-x-10">
+      <CardHeader className="flex flex-row space-x-5 space-y-0 border-b border-muted-foreground/30 xl:space-x-10">
         <CardTitle className="flex items-center">Explore</CardTitle>
         {/* small screen drop down */}
         {windowWidth < 500 ? (
