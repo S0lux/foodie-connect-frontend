@@ -1,8 +1,9 @@
-"use client";
 import { ChangTheme } from "@/components/change-theme";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Bell, MessageSquareMore } from "lucide-react";
+import { Bell, MessageSquareMore, Search } from "lucide-react";
+import User from "./user-drop-down";
+import UserDropDown from "./user-drop-down";
 
 export default function Header({ children }: { children?: React.ReactNode }) {
   return (
@@ -11,34 +12,18 @@ export default function Header({ children }: { children?: React.ReactNode }) {
         {children}
         <div className="text-[24px] font-bold text-primary">Foodie</div>
       </div>
-      <div className="flex items-center justify-center gap-16">
-        <div className="flex items-center justify-center gap-4">
-          <Button
-            className="hover:bg-foreground/10 dark:hover:bg-foreground/30 hover:text-current"
-            variant={"ghost"}
-            size={"icon"}
-          >
-            <MessageSquareMore />
-          </Button>
-          <Button
-            className="hover:bg-foreground/10 dark:hover:bg-foreground/30 hover:text-current"
-            variant={"ghost"}
-            size={"icon"}
-          >
-            <Bell />
-          </Button>
-          <ChangTheme />
-        </div>
-        <div className="flex items-center justify-center gap-3">
-          <div className="text-right">
-            <div className="text-[14px]">Khang Buoi</div>
-            <div className="text-xs opacity-50">Admin</div>
-          </div>
-          <Avatar>
-            <AvatarImage src="https://placehold.co/400" alt="KhangBuoi" />
-            <AvatarFallback>KB</AvatarFallback>
-          </Avatar>
-        </div>
+
+      <div className="relative flex flex-row items-center space-x-1 rounded-full bg-input py-2 pl-3 pr-5 focus:outline">
+        <Search className="opacity-40" size={20} />
+        <input
+          className="w-full bg-transparent outline-none"
+          placeholder="Search something"
+        ></input>
+      </div>
+
+      <div className="flex items-center justify-end gap-4">
+        <ChangTheme />
+        <UserDropDown />
       </div>
     </div>
   );
