@@ -1,27 +1,35 @@
+import Logo from "@/components/logo";
+import Image from "next/image";
+
 export default function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="container mx-auto p-4">
-        <div className="flex flex-col items-center gap-8 lg:flex-row">
-          <div className="w-full rounded-lg bg-white p-6 shadow-md lg:w-1/2">
-            {children}
-          </div>
-
-          <div className="sticky top-4 w-full lg:w-1/2">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-md">
-              <img
-                src="https://placehold.co/600x400"
-                alt="Right side image"
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </div>
+    <div className="grid min-h-screen w-full grid-cols-1 items-center gap-2 lg:grid-cols-2">
+      <div className="w-full grid-cols-1 md:grid-cols-1">
+        <div className="flex justify-center">
+          <Logo
+            width={200}
+            height={200}
+            className="h-32 w-32 lg:h-44 lg:w-44"
+          />
         </div>
-      </main>
+        <div className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+          <div className="w-full max-w-md space-y-8">{children}</div>
+        </div>
+      </div>
+      <div className="hidden items-center justify-center p-8 lg:flex">
+        <Image
+          src="/images/auth-image.png"
+          alt="image"
+          width={700}
+          height={500}
+          quality={100}
+          className="h-auto max-w-full object-contain"
+        />
+      </div>
     </div>
   );
 }

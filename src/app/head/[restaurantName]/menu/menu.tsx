@@ -9,10 +9,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, Delete } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import DeleteDish from "@/app/head/[restaurantName]/menu/_components/delete-menu-item";
+import { useParams } from "next/navigation";
 
 const initialCategories = [
   { id: 1, name: "Appetizer" },
@@ -71,6 +72,7 @@ const initialMenuItems = [
 ];
 
 const MenuManagement = () => {
+  const { restaurantName } = useParams<{ restaurantName: string }>();
   const [menuItems, setMenuItems] = useState<Dish[]>(initialMenuItems);
   const [selectedCategory, setSelectedCategory] = useState<number | "all">(
     "all",
@@ -104,7 +106,7 @@ const MenuManagement = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Menu Management</h1>
+        <h1 className="text-xl font-bold md:text-3xl">Menu Management</h1>
         <Button>
           <Link className="flex items-center gap-2" href="/head/Loc/menu/add">
             <Plus size={16} />
@@ -165,7 +167,7 @@ const MenuManagement = () => {
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
               <Button variant="outline" size="icon">
-                <Link href={`/head/Loc/menu/update/${item.id}`}>
+                <Link href={`/head/${restaurantName}/menu/update/${item.id}`}>
                   <Edit size={16} />
                 </Link>
               </Button>
