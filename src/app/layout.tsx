@@ -47,9 +47,10 @@ export default function RootLayout({
               <div className="mx-10 mt-16">{children}</div>
             </div>
           </SidebarProvider> */}
-          <Header></Header>
+          {/* <Header></Header> */}
           {/* <div className="mx-10 mt-[--header-height] lg:mx-40">{children}</div> */}
-          <div className="mt-[--header-height] w-full">{children}</div>
+          {/* <div className="mt-[--header-height] w-full">{children}</div> */}
+          {children}
         </ThemeProvider>
       </body>
     </html>

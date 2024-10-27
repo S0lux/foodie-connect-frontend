@@ -35,7 +35,7 @@ function SidebarItem({
     <SidebarMenuItem className="text-lg">
       <SidebarMenuButton size={"lg"} asChild>
         <Link
-          className="block items-center space-x-2 rounded-lg px-4 hover:scale-105 hover:transform hover:bg-foreground hover:text-white dark:hover:text-black"
+          className="block items-center space-x-2 rounded-lg px-4 hover:scale-105 hover:transform hover:bg-foreground/10 hover:text-foreground"
           href={url}
         >
           <Icon />

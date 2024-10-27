@@ -27,16 +27,16 @@ const UserDropDown = () => {
       <DropdownMenuContent>
         <DropdownMenuLabel>Khang Buoi</DropdownMenuLabel>
         <DropdownMenuSeparator className="my-1 bg-foreground/20" />
-        <DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer">
           <User></User>
           <span>Profile</span>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer">
           <Settings></Settings>
           <span>Settings</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="my-1 bg-foreground/20" />
-        <DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer">
           <LogOut></LogOut>
           <span>Log out</span>
         </DropdownMenuItem>

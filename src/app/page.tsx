@@ -1,3 +1,4 @@
+import Header from "@/components/header";
 import RestaurantCard from "@/components/restaurant-card";
 import RestaurantGrid from "@/components/restaurant-grid";
 import {
@@ -11,9 +12,14 @@ import {
 
 export default function Home() {
   return (
-    <div className="py-5">
-      <RestaurantGrid restaurants={mockData}></RestaurantGrid>
-    </div>
+    <>
+      <Header></Header>
+      <div className="mt-[--header-height] w-full">
+        <div className="py-5">
+          <RestaurantGrid restaurants={mockData}></RestaurantGrid>
+        </div>
+      </div>
+    </>
   );
 }
 

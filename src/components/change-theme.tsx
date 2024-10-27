@@ -19,7 +19,7 @@ export function ChangTheme() {
         variant="ghost"
         size="icon"
         onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-        className="hover:bg-foreground/10 hover:text-current dark:hover:bg-foreground/30"
+        className="hover:bg-foreground/10 hover:text-current"
       >
         {resolvedTheme === "dark" ? (
           <SunIcon className="h-[1.2rem] w-[1.2rem]" />
