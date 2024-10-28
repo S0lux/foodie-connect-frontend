@@ -1,4 +1,4 @@
-import { LogOut, Settings, Settings2, User, UserCog } from "lucide-react";
+import { LogOut, Settings, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   DropdownMenu,
@@ -8,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import Link from "next/link";
 
 const UserDropDown = () => {
   return (
@@ -31,10 +32,12 @@ const UserDropDown = () => {
           <User></User>
           <span>Profile</span>
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer">
-          <Settings></Settings>
-          <span>Settings</span>
-        </DropdownMenuItem>
+        <Link href="/settings">
+          <DropdownMenuItem className="cursor-pointer">
+            <Settings></Settings>
+            <span>Settings</span>
+          </DropdownMenuItem>
+        </Link>
         <DropdownMenuSeparator className="my-1 bg-foreground/20" />
         <DropdownMenuItem className="cursor-pointer">
           <LogOut></LogOut>
