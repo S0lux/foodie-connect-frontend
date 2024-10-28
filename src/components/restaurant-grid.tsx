@@ -21,6 +21,7 @@ import {
 import Loader from "./loader";
 
 export type RestaurantDto = {
+  id: string;
   name: string;
   category: string;
 };
@@ -44,21 +45,6 @@ const CategorySelector = ({
     >
       {children}
     </CardTitle>
-  );
-};
-
-const CategoryDropdown = () => {
-  return (
-    <Select>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Theme" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="light">Light</SelectItem>
-        <SelectItem value="dark">Dark</SelectItem>
-        <SelectItem value="system">System</SelectItem>
-      </SelectContent>
-    </Select>
   );
 };
 
@@ -178,9 +164,9 @@ const RestaurantGrid = ({
           {filerdRestaurants.map((restaurant: RestaurantDto) => {
             return (
               <RestaurantCard
-                name={restaurant.name}
-                category={restaurant.category}
-              />
+                key={restaurant.id}
+                restaurant={restaurant}
+              ></RestaurantCard>
             );
           })}
         </div>
