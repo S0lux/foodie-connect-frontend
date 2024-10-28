@@ -39,10 +39,12 @@ const UserDropDown = () => {
           </DropdownMenuItem>
         </Link>
         <DropdownMenuSeparator className="my-1 bg-foreground/20" />
-        <DropdownMenuItem className="cursor-pointer">
-          <LogOut></LogOut>
-          <span>Log out</span>
-        </DropdownMenuItem>
+        <Link href="/login">
+          <DropdownMenuItem className="cursor-pointer">
+            <LogOut></LogOut>
+            <span>Log out</span>
+          </DropdownMenuItem>
+        </Link>
       </DropdownMenuContent>
     </DropdownMenu>
   );
