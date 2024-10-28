@@ -14,7 +14,7 @@ const UserDropDown = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded px-2 py-1 outline-none xl:hover:bg-foreground/10">
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex items-center justify-center md:gap-3">
           <div className="invisible w-0 text-right sm:visible sm:w-auto">
             <div className="text-[14px]">Khang Buoi</div>
             <div className="text-xs opacity-50">Admin</div>

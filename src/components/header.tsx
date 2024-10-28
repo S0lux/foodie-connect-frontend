@@ -4,10 +4,10 @@ import UserDropDown from "./user-drop-down";
 
 export default function Header({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="fixed left-0 right-0 top-0 z-10 flex h-[--header-height] max-w-full items-center justify-between bg-card pl-4 pr-4 shadow">
+    <div className="fixed left-0 right-0 top-0 z-10 flex h-[--header-height] max-w-full items-center justify-between gap-3 bg-card pl-4 pr-4 shadow">
       <div className="flex items-center gap-4">
         {children}
-        <div className="invisible w-0 text-[24px] font-bold text-primary md:visible md:w-auto">
+        <div className="invisible size-0 text-[24px] font-bold text-primary md:visible md:size-auto">
           Foodie
         </div>
       </div>
@@ -20,7 +20,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
         ></input>
       </div>
 
-      <div className="flex items-center justify-end gap-4">
+      <div className="flex items-center justify-end md:gap-4">
         <ChangTheme />
         <UserDropDown />
       </div>

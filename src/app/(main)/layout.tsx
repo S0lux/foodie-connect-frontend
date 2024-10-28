@@ -8,7 +8,7 @@ export default function MainLayout({
   return (
     <>
       <Header></Header>
-      <div className="mt-[--header-height] w-full">
+      <div className="mt-[--header-height] w-full px-5 xl:px-40">
         <div className="w-full">
           <main className="w-full">
             <div className="mx-auto w-full max-w-screen-2xl p-4 md:p-6 2xl:p-10">
