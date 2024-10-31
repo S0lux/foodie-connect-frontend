@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import Header from "@/components/header";
+import TanstackProvider from "@/providers/tanstack-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,19 +36,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* <SidebarProvider>
-            <AppSidebar />
-            <div className="w-full">
-              <Header>
-                <SidebarTrigger />
-              </Header>
-              <div className="mx-10 mt-16">{children}</div>
-            </div>
-          </SidebarProvider> */}
-          {/* <Header></Header> */}
-          {/* <div className="mx-10 mt-[--header-height] lg:mx-40">{children}</div> */}
-          {/* <div className="mt-[--header-height] w-full">{children}</div> */}
-          {children}
+          <TanstackProvider>
+            <div>{children}</div>
+          </TanstackProvider>
         </ThemeProvider>
       </body>
     </html>
