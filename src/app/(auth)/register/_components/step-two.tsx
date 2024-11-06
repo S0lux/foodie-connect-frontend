@@ -18,7 +18,7 @@ export function StepTwo() {
       </h1>
       <FormField
         control={control}
-        name="displayname"
+        name="displayName"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-[16px] font-bold">
@@ -39,7 +39,7 @@ export function StepTwo() {
 
       <FormField
         control={control}
-        name="phone"
+        name="phoneNumber"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-[16px] font-bold">Phone</FormLabel>

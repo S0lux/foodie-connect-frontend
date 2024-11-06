@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,6 +9,9 @@ import { StepOne } from "@/app/(auth)/register/_components/step-one";
 import { StepTwo } from "@/app/(auth)/register/_components/step-two";
 import { StepThree } from "@/app/(auth)/register/_components/step-three";
 import SuccessForm from "@/app/(auth)/register/_components/success-form";
+import { set } from "date-fns";
+import { RegisterBodyType } from "@/schema/auth.schema";
+import authAction from "@/apis/auth.api";
 
 // Schema validation cho từng step
 const stepOneSchema = z.object({
@@ -16,20 +19,22 @@ const stepOneSchema = z.object({
 });
 
 const stepTwoSchema = z.object({
-  displayname: z
+  displayName: z
     .string()
     .min(2, "The display name must have at least 2 characters."),
-  phone: z.string().min(10, "The phone number must have at least 10 digits"),
+  phoneNumber: z
+    .string()
+    .min(10, "The phoneNumber number must have at least 10 digits"),
 });
 
 const stepThreeSchema = z
   .object({
-    username: z
+    userName: z
       .string()
-      .min(3, "Username must be at least 3 characters.")
+      .min(3, "userName must be at least 3 characters.")
       .regex(
         /^[a-zA-Z0-9_]+$/,
-        "Username contains only letters, numbers, and underscores.",
+        "userName contains only letters, numbers, and underscores.",
       ),
     password: z
       .string()
@@ -46,29 +51,89 @@ const stepThreeSchema = z
 
 const formSchema = z.object({
   email: z.string().email(),
-  displayname: z.string(),
-  phone: z.string(),
-  username: z.string(),
+  displayName: z.string(),
+  phoneNumber: z.string(),
+  userName: z.string(),
   password: z.string(),
   confirmPassword: z.string(),
 });
 
 type NewFormData = z.infer<typeof formSchema>;
 
-export function MultiForm() {
+export function MultiForm({ type }: { type: string }) {
+  console.log(type);
   const { step, nextStep, prevStep, createUserData } = useMultiContext();
+  const [loading, setLoading] = useState(false);
   const form = useForm<NewFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      displayname: "",
-      phone: "",
-      username: "",
+      displayName: "",
+      phoneNumber: "",
+      userName: "",
       password: "",
       confirmPassword: "",
     },
     mode: "onChange",
   });
+
+  const registerAction = authAction;
+
+  async function registerAccount(data: RegisterBodyType) {
+    if (loading) return;
+    setLoading(true);
+    if (type === "Head") {
+      try {
+        const result = await registerAction.useRegisterHead().mutateAsync(data);
+        console.log(result);
+        nextStep();
+      } catch (error: any) {
+        switch (error.status) {
+          case 400:
+            console.error("Request body does not meet specified requirements");
+            break;
+          case 409:
+            console.error("Username or Email is taken");
+            break;
+          default:
+            console.error("An error occurred");
+            break;
+        }
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      try {
+        await registerAction.useRegisterUser().mutateAsync(data);
+        nextStep();
+      } catch (error: any) {
+        switch (error.status) {
+          case 400:
+            console.error("Request body does not meet specified requirements");
+            break;
+          case 409:
+            console.error("Username or Email is taken");
+            break;
+          default:
+            console.error("An error occurred");
+            break;
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+  }
+
+  function submitForm(data: NewFormData) {
+    const registerData: RegisterBodyType = {
+      displayName: data.displayName,
+      phoneNumber: data.phoneNumber,
+      email: data.email,
+      userName: data.userName,
+      password: data.password,
+    };
+    registerAccount(registerData);
+  }
 
   const validateStep = async () => {
     let isValid = false;
@@ -96,8 +161,8 @@ export function MultiForm() {
       case 2:
         try {
           await stepTwoSchema.parseAsync({
-            displayname: currentValues.displayname,
-            phone: currentValues.phone,
+            displayName: currentValues.displayName,
+            phoneNumber: currentValues.phoneNumber,
           });
           isValid = true;
         } catch (error) {
@@ -115,7 +180,7 @@ export function MultiForm() {
       case 3:
         try {
           await stepThreeSchema.parseAsync({
-            username: currentValues.username,
+            userName: currentValues.userName,
             password: currentValues.password,
             confirmPassword: currentValues.confirmPassword,
           });
@@ -141,12 +206,18 @@ export function MultiForm() {
     if (isStepValid) {
       if (step === 3) {
         createUserData(values);
-        nextStep();
+        submitForm(values);
       } else {
         nextStep();
       }
     }
-    console.log(values);
+    console.log({
+      email: values.email,
+      displayName: values.displayName,
+      phoneNumber: values.phoneNumber,
+      userName: values.userName,
+      password: values.password,
+    });
   }
 
   return (

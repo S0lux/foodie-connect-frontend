@@ -1,4 +1,4 @@
-import { LoginBodyType } from "@/schema/auth.schema";
+import { LoginBodyType, RegisterBodyType } from "@/schema/auth.schema";
 import http from "@/lib/http";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -8,6 +8,32 @@ const authAction = {
     return useMutation({
       mutationFn: (loginDetails: LoginBodyType) =>
         http.post("v1/session", loginDetails),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["user-session"],
+        });
+      },
+    });
+  },
+
+  useRegisterHead() {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: (registerDetails: RegisterBodyType) =>
+        http.post("v1/heads", registerDetails),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["user-session"],
+        });
+      },
+    });
+  },
+
+  useRegisterUser() {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: (registerDetails: RegisterBodyType) =>
+        http.post("v1/users", registerDetails),
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: ["user-session"],

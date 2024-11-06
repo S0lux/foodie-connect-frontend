@@ -18,7 +18,7 @@ export function StepThree() {
       </h1>
       <FormField
         control={control}
-        name="username"
+        name="userName"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-[16px] font-bold">User Name</FormLabel>

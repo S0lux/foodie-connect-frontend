@@ -3,18 +3,18 @@ import { ReactNode, createContext, useContext, useState } from "react";
 
 interface FormData {
   email: string;
-  displayname: string;
-  phone: string;
-  username: string;
+  displayName: string;
+  phoneNumber: string;
+  userName: string;
   password: string;
   confirmPassword: string;
 }
 
 export interface UserData {
   email: string;
-  displayname: string;
-  phone: string;
-  username: string;
+  displayName: string;
+  phoneNumber: string;
+  userName: string;
   password: string;
   confirmPassword: string;
 }
@@ -42,14 +42,13 @@ export function MultiStepContenxtProvider({
   function createUserData(data: FormData) {
     const newUser: UserData = {
       email: data.email,
-      displayname: data.displayname,
-      phone: data.phone,
-      username: data.username,
+      displayName: data.displayName,
+      phoneNumber: data.phoneNumber,
+      userName: data.userName,
       password: data.password,
       confirmPassword: data.confirmPassword,
     };
     setUser([...user, newUser]);
-    console.log(newUser);
   }
   function nextStep() {
     if (step === 4) return;
