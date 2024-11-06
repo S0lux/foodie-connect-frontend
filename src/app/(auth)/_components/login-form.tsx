@@ -1,41 +1,86 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { z } from "zod";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-
-const LoginBody = z.object({
-  username: z.string().max(16),
-  password: z.string().min(6),
-});
-
-type LoginBodyType = z.infer<typeof LoginBody>;
+import { LoginBody, LoginBodyType } from "@/schema/auth.schema";
+import { useState } from "react";
+import authAction from "@/apis/auth.api";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const loginAction = authAction.useLogin();
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
-      username: "",
+      loginType: "Head",
+      userName: "",
       password: "",
     },
   });
 
-  const onSubmit = form.handleSubmit((values) => {
-    console.log(values);
-  });
+  async function onSubmit(values: LoginBodyType) {
+    if (loading) return;
+    setLoading(true);
+    try {
+      await loginAction.mutateAsync(values);
+      toast({
+        title: "Success",
+        description: "Logged in successfully",
+      });
+      router.push("/");
+    } catch (error: any) {
+      console.error({ error });
+      switch (error.status) {
+        case 400:
+          toast({
+            title: "Error",
+            description: "Request body is malformed",
+            variant: "destructive",
+          });
+          break;
+        case 401:
+          toast({
+            title: "Error",
+            description: "Invalid credentials",
+            variant: "destructive",
+          });
+          break;
+        default:
+          toast({
+            title: "Error",
+            description: "An error occurred",
+            variant: "destructive",
+          });
+          break;
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="rounded-md pb-12 pl-6 pr-6 pt-4 shadow-2xl md:mt-auto md:pl-12 md:pr-12">
@@ -50,7 +95,36 @@ const LoginForm = () => {
         >
           <FormField
             control={form.control}
-            name="username"
+            name="loginType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[16px] font-bold">Type</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="flex h-[48px] items-center">
+                      {" "}
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem className="hover:cursor-pointer" value="Head">
+                        Head
+                      </SelectItem>
+                      <SelectItem className="hover:cursor-pointer" value="User">
+                        User
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormDescription>
+                  Select the type of user you are logging in as (Head or User)
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="userName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[16px] font-bold">
@@ -59,7 +133,7 @@ const LoginForm = () => {
                 <FormControl>
                   <Input
                     className="h-[48px] rounded-xl px-4 text-[16px] hover:border-foreground/10 hover:bg-foreground/5"
-                    placeholder="Enter your email"
+                    placeholder="Enter your user name"
                     type="text"
                     {...field}
                   />
@@ -107,9 +181,15 @@ const LoginForm = () => {
             </Link>
           </div>
 
-          <Button type="submit" className="!mt-6 h-[48px] w-full text-2xl">
-            Log in
-          </Button>
+          {
+            <Button
+              className="h-[48px] w-full rounded-xl bg-primary text-[16px] font-bold text-white hover:bg-primary/90"
+              disabled={loading}
+              type="submit"
+            >
+              Log in
+            </Button>
+          }
         </form>
       </Form>
 
