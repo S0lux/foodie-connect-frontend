@@ -51,7 +51,7 @@ const RegisterForm = () => {
             </Select>
 
             <Button
-              className="h-[48px] w-full rounded-xl bg-primary text-[16px] font-bold text-white hover:bg-primary/90"
+              className="mt-2 h-[48px] w-full rounded-xl bg-primary text-[16px] font-bold text-white hover:bg-primary/90"
               onClick={() => changeForm()}
             >
               Continue

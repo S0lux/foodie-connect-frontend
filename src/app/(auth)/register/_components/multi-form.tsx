@@ -1,4 +1,5 @@
-import React, { use, useState } from "react";
+"use client";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,9 +10,12 @@ import { StepOne } from "@/app/(auth)/register/_components/step-one";
 import { StepTwo } from "@/app/(auth)/register/_components/step-two";
 import { StepThree } from "@/app/(auth)/register/_components/step-three";
 import SuccessForm from "@/app/(auth)/register/_components/success-form";
-import { set } from "date-fns";
 import { RegisterBodyType } from "@/schema/auth.schema";
 import authAction from "@/apis/auth.api";
+import { useToast } from "@/hooks/use-toast";
+import Loader from "@/components/loader";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 // Schema validation cho từng step
 const stepOneSchema = z.object({
@@ -61,7 +65,7 @@ const formSchema = z.object({
 type NewFormData = z.infer<typeof formSchema>;
 
 export function MultiForm({ type }: { type: string }) {
-  console.log(type);
+  const { toast } = useToast();
   const { step, nextStep, prevStep, createUserData } = useMultiContext();
   const [loading, setLoading] = useState(false);
   const form = useForm<NewFormData>({
@@ -77,26 +81,42 @@ export function MultiForm({ type }: { type: string }) {
     mode: "onChange",
   });
 
-  const registerAction = authAction;
+  const registerHeadAction = authAction.useRegisterHead();
+  const registerUserAction = authAction.useRegisterUser();
 
   async function registerAccount(data: RegisterBodyType) {
     if (loading) return;
     setLoading(true);
     if (type === "Head") {
       try {
-        const result = await registerAction.useRegisterHead().mutateAsync(data);
-        console.log(result);
+        await registerHeadAction.mutateAsync(data);
+        toast({
+          title: "Success",
+          description: "Account created successfully",
+        });
         nextStep();
       } catch (error: any) {
         switch (error.status) {
           case 400:
-            console.error("Request body does not meet specified requirements");
+            toast({
+              title: "Error",
+              description: "Request body does not meet specified requirements",
+              variant: "destructive",
+            });
             break;
           case 409:
-            console.error("Username or Email is taken");
+            toast({
+              title: "Error",
+              description: "Username or Email is taken",
+              variant: "destructive",
+            });
             break;
           default:
-            console.error("An error occurred");
+            toast({
+              title: "Error",
+              description: "An error occurred",
+              variant: "destructive",
+            });
             break;
         }
       } finally {
@@ -104,18 +124,31 @@ export function MultiForm({ type }: { type: string }) {
       }
     } else {
       try {
-        await registerAction.useRegisterUser().mutateAsync(data);
+        await registerUserAction.mutateAsync(data);
         nextStep();
       } catch (error: any) {
         switch (error.status) {
           case 400:
-            console.error("Request body does not meet specified requirements");
+            toast({
+              title: "Error",
+              description: "Request body does not meet specified requirements",
+              variant: "destructive",
+            });
+
             break;
           case 409:
-            console.error("Username or Email is taken");
+            toast({
+              title: "Error",
+              description: "Username or Email is taken",
+              variant: "destructive",
+            });
             break;
           default:
-            console.error("An error occurred");
+            toast({
+              title: "Error",
+              description: "An error occurred",
+              variant: "destructive",
+            });
             break;
         }
       } finally {
@@ -124,7 +157,7 @@ export function MultiForm({ type }: { type: string }) {
     }
   }
 
-  function submitForm(data: NewFormData) {
+  async function submitForm(data: NewFormData) {
     const registerData: RegisterBodyType = {
       displayName: data.displayName,
       phoneNumber: data.phoneNumber,
@@ -201,6 +234,55 @@ export function MultiForm({ type }: { type: string }) {
     return isValid;
   };
 
+  const WaitingRegistrationCard = () => {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+        <Card className="mx-4 w-full max-w-md bg-white/90">
+          <CardContent className="flex flex-col items-center space-y-6 p-8">
+            <div className="relative">
+              <div className="absolute inset-0 animate-ping rounded-full bg-blue-400/30" />
+              <div className="relative">
+                <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
+              </div>
+            </div>
+
+            <div className="space-y-2 text-center">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Registration is processing
+              </h3>
+              <p className="text-sm text-gray-500">
+                Please wait a moment while we create your account...
+              </p>
+            </div>
+
+            <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+              <div
+                className="animate-progress h-full rounded-full bg-blue-500"
+                style={{
+                  animation: "progress 2s ease-in-out infinite",
+                }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <style jsx>{`
+          @keyframes progress {
+            0% {
+              width: 0%;
+            }
+            50% {
+              width: 70%;
+            }
+            100% {
+              width: 100%;
+            }
+          }
+        `}</style>
+      </div>
+    );
+  };
+
   async function onSubmit(values: NewFormData) {
     const isStepValid = await validateStep();
     if (isStepValid) {
@@ -229,7 +311,12 @@ export function MultiForm({ type }: { type: string }) {
         <FormProvider {...form}>
           {step === 1 && <StepOne />}
           {step === 2 && <StepTwo />}
-          {step === 3 && <StepThree />}
+          {step === 3 && (
+            <div>
+              <StepThree />
+              {loading && <WaitingRegistrationCard />}
+            </div>
+          )}
           {step === 4 && <SuccessForm />}
         </FormProvider>
         {step < 4 && (

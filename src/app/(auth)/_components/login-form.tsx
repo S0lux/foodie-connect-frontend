@@ -43,46 +43,43 @@ const LoginForm = () => {
   });
 
   async function onSubmit(values: LoginBodyType) {
-    // if (loading) return;
-    // setLoading(true);
-    // try {
-
-    //   await loginAction.mutateAsync(values);
-    //   toast({
-    //     title: "Success",
-    //     description: "Logged in successfully",
-    //   });
-    //   router.push("/");
-    // } catch (error: any) {
-    //   console.error({ error });
-    //   switch (error.status) {
-    //     case 400:
-    //       toast({
-    //         title: "Error",
-    //         description: "Request body is malformed",
-    //         variant: "destructive",
-    //       });
-    //       break;
-    //     case 401:
-    //       toast({
-    //         title: "Error",
-    //         description: "Invalid credentials",
-    //         variant: "destructive",
-    //       });
-    //       break;
-    //     default:
-    //       toast({
-    //         title: "Error",
-    //         description: "An error occurred",
-    //         variant: "destructive",
-    //       });
-    //       break;
-    //   }
-    // } finally {
-    //   setLoading(false);
-    // }
-    const result = await loginAction.mutateAsync(values);
-    console.log(result);
+    if (loading) return;
+    setLoading(true);
+    try {
+      await loginAction.mutateAsync(values);
+      toast({
+        title: "Success",
+        description: "Logged in successfully",
+      });
+      router.push("/");
+    } catch (error: any) {
+      console.error({ error });
+      switch (error.status) {
+        case 400:
+          toast({
+            title: "Error",
+            description: "Request body is malformed",
+            variant: "destructive",
+          });
+          break;
+        case 401:
+          toast({
+            title: "Error",
+            description: "Invalid credentials",
+            variant: "destructive",
+          });
+          break;
+        default:
+          toast({
+            title: "Error",
+            description: "An error occurred",
+            variant: "destructive",
+          });
+          break;
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
