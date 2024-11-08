@@ -9,26 +9,54 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import Link from "next/link";
-import authAction from "@/apis/auth.api";
-import Loader from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import useAuth from "@/hooks/use-auth";
+import Loader from "@/components/loader";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { ErrorType } from "@/types/error.type";
 
 const UserDropDown = () => {
-  const { data: user, isLoading, isError, error } = authAction.useGetSession();
-  const logout = authAction.useLogout();
+  const { data: user, isLoading, isError, error } = useAuth.useGetSession();
+  console.log(user);
+  const logout = useAuth.useLogout();
   const route = useRouter();
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-  function handleLogout() {
-    const result = logout.mutate();
-    console.log(result);
-    route.push("/login");
+  async function handleLogout() {
+    if (loading) return;
+    setLoading(true);
+    try {
+      await logout.mutate();
+      route.push("/login");
+    } catch (error) {
+      switch ((error as ErrorType).code) {
+        case "NOT_AUTHENTICATED":
+          toast({
+            title: "Error",
+            description: "Not logged in",
+            variant: "destructive",
+          });
+          break;
+        default:
+          toast({
+            title: "Error",
+            description: "Something went wrong",
+            variant: "destructive",
+          });
+          break;
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (isError) {
-    switch ((error as any)?.status) {
-      case 401:
+    switch ((error as unknown as ErrorType)?.code) {
+      case "NOT_AUTHENTICATED":
         return (
           <div className="flex gap-2">
             <Link href="/login">
@@ -46,6 +74,15 @@ const UserDropDown = () => {
   }
   if (isLoading) return <Loader />;
 
+  function getInitials(name: string | undefined) {
+    if (!name) return "NO";
+    const initials = name
+      .split(" ")
+      .map((word) => word[0])
+      .join("");
+    return initials.slice(0, 2).toUpperCase();
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded px-2 py-1 outline-none xl:hover:bg-foreground/10">
@@ -56,7 +93,7 @@ const UserDropDown = () => {
           </div>
           <Avatar>
             <AvatarImage src={user?.avatar} alt={user?.displayName} />
-            <AvatarFallback>NO</AvatarFallback>
+            <AvatarFallback>{getInitials(user?.displayName)}</AvatarFallback>
           </Avatar>
         </div>
       </DropdownMenuTrigger>

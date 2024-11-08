@@ -11,13 +11,12 @@ import { StepTwo } from "@/app/(auth)/register/_components/step-two";
 import { StepThree } from "@/app/(auth)/register/_components/step-three";
 import SuccessForm from "@/app/(auth)/register/_components/success-form";
 import { RegisterBodyType } from "@/schema/auth.schema";
-import authAction from "@/apis/auth.api";
+import useAuth from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import Loader from "@/components/loader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { ErrorType } from "@/types/error.type";
 
-// Schema validation cho từng step
 const stepOneSchema = z.object({
   email: z.string().email("Invalid email."),
 });
@@ -81,8 +80,8 @@ export function MultiForm({ type }: { type: string }) {
     mode: "onChange",
   });
 
-  const registerHeadAction = authAction.useRegisterHead();
-  const registerUserAction = authAction.useRegisterUser();
+  const registerHeadAction = useAuth.useRegisterHead();
+  const registerUserAction = useAuth.useRegisterUser();
 
   async function registerAccount(data: RegisterBodyType) {
     if (loading) return;
@@ -95,19 +94,19 @@ export function MultiForm({ type }: { type: string }) {
           description: "Account created successfully",
         });
         nextStep();
-      } catch (error: any) {
-        switch (error.status) {
-          case 400:
+      } catch (error) {
+        switch ((error as ErrorType).code) {
+          case "USERNAME_ALREADY_EXISTS":
             toast({
               title: "Error",
-              description: "Request body does not meet specified requirements",
+              description: "Username is taken",
               variant: "destructive",
             });
             break;
-          case 409:
+          case "EMAIL_ALREADY_EXISTS":
             toast({
               title: "Error",
-              description: "Username or Email is taken",
+              description: "Email is taken",
               variant: "destructive",
             });
             break;
@@ -126,23 +125,21 @@ export function MultiForm({ type }: { type: string }) {
       try {
         await registerUserAction.mutateAsync(data);
         nextStep();
-      } catch (error: any) {
-        switch (error.status) {
-          case 400:
+      } catch (error) {
+        switch ((error as ErrorType).code) {
+          case "USERNAME_ALREADY_EXISTS":
             toast({
               title: "Error",
-              description: "Request body does not meet specified requirements",
-              variant: "destructive",
-            });
-
-            break;
-          case 409:
-            toast({
-              title: "Error",
-              description: "Username or Email is taken",
+              description: "Username is taken",
               variant: "destructive",
             });
             break;
+          case "EMAIL_ALREADY_EXISTS":
+            toast({
+              title: "Error",
+              description: "Email is taken",
+              variant: "destructive",
+            });
           default:
             toast({
               title: "Error",
@@ -293,13 +290,6 @@ export function MultiForm({ type }: { type: string }) {
         nextStep();
       }
     }
-    console.log({
-      email: values.email,
-      displayName: values.displayName,
-      phoneNumber: values.phoneNumber,
-      userName: values.userName,
-      password: values.password,
-    });
   }
 
   return (

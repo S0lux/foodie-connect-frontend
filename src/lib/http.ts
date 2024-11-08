@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosError } from "axios";
 
 class Http {
   instance: AxiosInstance;
@@ -11,6 +11,18 @@ class Http {
       },
       withCredentials: true,
     });
+
+    this.instance.interceptors.response.use(
+      (response) => response,
+      (error: AxiosError) => {
+        if (error.response?.data) {
+          console.error("HTTP error:", error.response.data);
+        } else {
+          console.error("Unexpected HTTP error:", error);
+        }
+        return Promise.reject(error);
+      },
+    );
   }
 }
 
