@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { LoginBody, LoginBodyType } from "@/schema/auth.schema";
 import { useState } from "react";
-import authAction from "@/apis/auth.api";
+import useAuth from "@/hooks/use-auth";
 import {
   Select,
   SelectContent,
@@ -27,12 +27,13 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { ErrorType } from "@/types/error.type";
 
 const LoginForm = () => {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const loginAction = authAction.useLogin();
+  const loginAction = useAuth.useLogin();
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
@@ -52,17 +53,10 @@ const LoginForm = () => {
         description: "Logged in successfully",
       });
       router.push("/");
-    } catch (error: any) {
+    } catch (error) {
       console.error({ error });
-      switch (error.status) {
-        case 400:
-          toast({
-            title: "Error",
-            description: "Request body is malformed",
-            variant: "destructive",
-          });
-          break;
-        case 401:
+      switch ((error as ErrorType).code) {
+        case "INVALID_CREDENTIALS":
           toast({
             title: "Error",
             description: "Invalid credentials",

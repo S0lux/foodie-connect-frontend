@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,27 +10,34 @@ import { StepOne } from "@/app/(auth)/register/_components/step-one";
 import { StepTwo } from "@/app/(auth)/register/_components/step-two";
 import { StepThree } from "@/app/(auth)/register/_components/step-three";
 import SuccessForm from "@/app/(auth)/register/_components/success-form";
+import { RegisterBodyType } from "@/schema/auth.schema";
+import useAuth from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
+import { ErrorType } from "@/types/error.type";
 
-// Schema validation cho từng step
 const stepOneSchema = z.object({
   email: z.string().email("Invalid email."),
 });
 
 const stepTwoSchema = z.object({
-  displayname: z
+  displayName: z
     .string()
     .min(2, "The display name must have at least 2 characters."),
-  phone: z.string().min(10, "The phone number must have at least 10 digits"),
+  phoneNumber: z
+    .string()
+    .min(10, "The phoneNumber number must have at least 10 digits"),
 });
 
 const stepThreeSchema = z
   .object({
-    username: z
+    userName: z
       .string()
-      .min(3, "Username must be at least 3 characters.")
+      .min(3, "userName must be at least 3 characters.")
       .regex(
         /^[a-zA-Z0-9_]+$/,
-        "Username contains only letters, numbers, and underscores.",
+        "userName contains only letters, numbers, and underscores.",
       ),
     password: z
       .string()
@@ -46,29 +54,116 @@ const stepThreeSchema = z
 
 const formSchema = z.object({
   email: z.string().email(),
-  displayname: z.string(),
-  phone: z.string(),
-  username: z.string(),
+  displayName: z.string(),
+  phoneNumber: z.string(),
+  userName: z.string(),
   password: z.string(),
   confirmPassword: z.string(),
 });
 
 type NewFormData = z.infer<typeof formSchema>;
 
-export function MultiForm() {
+export function MultiForm({ type }: { type: string }) {
+  const { toast } = useToast();
   const { step, nextStep, prevStep, createUserData } = useMultiContext();
+  const [loading, setLoading] = useState(false);
   const form = useForm<NewFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      displayname: "",
-      phone: "",
-      username: "",
+      displayName: "",
+      phoneNumber: "",
+      userName: "",
       password: "",
       confirmPassword: "",
     },
     mode: "onChange",
   });
+
+  const registerHeadAction = useAuth.useRegisterHead();
+  const registerUserAction = useAuth.useRegisterUser();
+
+  async function registerAccount(data: RegisterBodyType) {
+    if (loading) return;
+    setLoading(true);
+    if (type === "Head") {
+      try {
+        await registerHeadAction.mutateAsync(data);
+        toast({
+          title: "Success",
+          description: "Account created successfully",
+        });
+        nextStep();
+      } catch (error) {
+        switch ((error as ErrorType).code) {
+          case "USERNAME_ALREADY_EXISTS":
+            toast({
+              title: "Error",
+              description: "Username is taken",
+              variant: "destructive",
+            });
+            break;
+          case "EMAIL_ALREADY_EXISTS":
+            toast({
+              title: "Error",
+              description: "Email is taken",
+              variant: "destructive",
+            });
+            break;
+          default:
+            toast({
+              title: "Error",
+              description: "An error occurred",
+              variant: "destructive",
+            });
+            break;
+        }
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      try {
+        await registerUserAction.mutateAsync(data);
+        nextStep();
+      } catch (error) {
+        switch ((error as ErrorType).code) {
+          case "USERNAME_ALREADY_EXISTS":
+            toast({
+              title: "Error",
+              description: "Username is taken",
+              variant: "destructive",
+            });
+            break;
+          case "EMAIL_ALREADY_EXISTS":
+            toast({
+              title: "Error",
+              description: "Email is taken",
+              variant: "destructive",
+            });
+          default:
+            toast({
+              title: "Error",
+              description: "An error occurred",
+              variant: "destructive",
+            });
+            break;
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+  }
+
+  async function submitForm(data: NewFormData) {
+    const registerData: RegisterBodyType = {
+      displayName: data.displayName,
+      phoneNumber: data.phoneNumber,
+      email: data.email,
+      userName: data.userName,
+      password: data.password,
+    };
+    registerAccount(registerData);
+  }
 
   const validateStep = async () => {
     let isValid = false;
@@ -96,8 +191,8 @@ export function MultiForm() {
       case 2:
         try {
           await stepTwoSchema.parseAsync({
-            displayname: currentValues.displayname,
-            phone: currentValues.phone,
+            displayName: currentValues.displayName,
+            phoneNumber: currentValues.phoneNumber,
           });
           isValid = true;
         } catch (error) {
@@ -115,7 +210,7 @@ export function MultiForm() {
       case 3:
         try {
           await stepThreeSchema.parseAsync({
-            username: currentValues.username,
+            userName: currentValues.userName,
             password: currentValues.password,
             confirmPassword: currentValues.confirmPassword,
           });
@@ -136,17 +231,65 @@ export function MultiForm() {
     return isValid;
   };
 
+  const WaitingRegistrationCard = () => {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+        <Card className="mx-4 w-full max-w-md bg-white/90">
+          <CardContent className="flex flex-col items-center space-y-6 p-8">
+            <div className="relative">
+              <div className="absolute inset-0 animate-ping rounded-full bg-blue-400/30" />
+              <div className="relative">
+                <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
+              </div>
+            </div>
+
+            <div className="space-y-2 text-center">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Registration is processing
+              </h3>
+              <p className="text-sm text-gray-500">
+                Please wait a moment while we create your account...
+              </p>
+            </div>
+
+            <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+              <div
+                className="animate-progress h-full rounded-full bg-blue-500"
+                style={{
+                  animation: "progress 2s ease-in-out infinite",
+                }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <style jsx>{`
+          @keyframes progress {
+            0% {
+              width: 0%;
+            }
+            50% {
+              width: 70%;
+            }
+            100% {
+              width: 100%;
+            }
+          }
+        `}</style>
+      </div>
+    );
+  };
+
   async function onSubmit(values: NewFormData) {
     const isStepValid = await validateStep();
     if (isStepValid) {
       if (step === 3) {
         createUserData(values);
-        nextStep();
+        submitForm(values);
       } else {
         nextStep();
       }
     }
-    console.log(values);
   }
 
   return (
@@ -158,7 +301,12 @@ export function MultiForm() {
         <FormProvider {...form}>
           {step === 1 && <StepOne />}
           {step === 2 && <StepTwo />}
-          {step === 3 && <StepThree />}
+          {step === 3 && (
+            <div>
+              <StepThree />
+              {loading && <WaitingRegistrationCard />}
+            </div>
+          )}
           {step === 4 && <SuccessForm />}
         </FormProvider>
         {step < 4 && (

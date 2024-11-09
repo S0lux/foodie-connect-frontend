@@ -1,26 +1,84 @@
-import { LoginBodyType } from "@/schema/auth.schema";
+import { LoginBodyType, RegisterBodyType } from "@/schema/auth.schema";
+import { User } from "@/types/user.type";
 import http from "@/lib/http";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { ErrorType } from "@/types/error.type";
 
 const authAction = {
-  useLogin() {
-    const queryClient = useQueryClient();
-    return useMutation({
-      mutationFn: (loginDetails: LoginBodyType) =>
-        http.post("v1/session", loginDetails),
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ["user-session"],
-        });
-      },
-    });
+  login: async (loginDetails: LoginBodyType) => {
+    try {
+      const response = await http.post("v1/session", loginDetails);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const authError = error.response.data as ErrorType;
+        console.error("Error during login:", authError);
+        throw authError;
+      } else {
+        console.error("Unexpected error during login:", error);
+        throw error;
+      }
+    }
   },
-
-  GetSession() {
-    return useQuery({
-      queryKey: ["user-session"],
-      queryFn: () => http.get("v1/session"),
-    });
+  registerHead: async (registerDetails: RegisterBodyType) => {
+    try {
+      const response = await http.post("v1/heads", registerDetails);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const authError = error.response.data as ErrorType;
+        console.error("Error during register:", authError);
+        throw authError;
+      } else {
+        console.error("Unexpected error during register:", error);
+        throw error;
+      }
+    }
+  },
+  registerUser: async (registerDetails: RegisterBodyType) => {
+    try {
+      const response = await http.post("v1/users", registerDetails);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const authError = error.response.data as ErrorType;
+        console.error("Error during register:", authError);
+        throw authError;
+      } else {
+        console.error("Unexpected error during register:", error);
+        throw error;
+      }
+    }
+  },
+  logout: async () => {
+    try {
+      const response = await http.delete("v1/session");
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const authError = error.response.data as ErrorType;
+        console.error("Error during logout:", authError);
+        throw authError;
+      } else {
+        console.error("Unexpected error during logout:", error);
+        throw error;
+      }
+    }
+  },
+  getSession: async () => {
+    try {
+      const response = await http.get<User>("v1/session");
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const authError = error.response.data as ErrorType;
+        console.error("Error during get session:", authError);
+        throw authError;
+      } else {
+        console.error("Unexpected error during get session:", error);
+        throw error;
+      }
+    }
   },
 };
 
