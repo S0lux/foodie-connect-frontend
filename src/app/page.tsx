@@ -1,6 +1,6 @@
 import Header from "@/components/header";
 import RestaurantGrid, { RestaurantDto } from "@/components/restaurant-grid";
-
+import "dotenv/config";
 
 export default function Home() {
   return (

@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/dialog";
 import ChangePasswordForm from "@/app/(main)/settings/_components/change-password-form";
 import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
 
 const UserSettingBody = z.object({
   name: z.string().min(3),
@@ -111,6 +112,8 @@ export default function SettingForm() {
       setIsSubmitting(false);
     }
   });
+
+  const router = useRouter();
 
   return (
     <>
@@ -325,7 +328,12 @@ export default function SettingForm() {
             </div>
 
             <div className="!mt-8 flex justify-end gap-3">
-              <Button className="" variant={"outline"} size={"lg"}>
+              <Button
+                className=""
+                variant={"outline"}
+                size={"lg"}
+                onClick={() => router.back()}
+              >
                 Cancel
               </Button>
               <Button
