@@ -1,13 +1,12 @@
 "use client";
 import {
-  BadgeDollarSign,
-  BookA,
-  Calendar,
-  ChartArea,
-  HandPlatter,
-  Home,
+  Building2,
+  Users,
   Settings,
-  Utensils,
+  PlusCircle,
+  Bell,
+  History,
+  ChartLine,
 } from "lucide-react";
 import {
   Sidebar,
@@ -20,7 +19,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 
 function SidebarItem({
   title,
@@ -33,7 +31,7 @@ function SidebarItem({
 }) {
   return (
     <SidebarMenuItem className="text-lg">
-      <SidebarMenuButton size={"lg"} asChild>
+      <SidebarMenuButton size="lg" asChild>
         <Link
           className="rounded-lg block items-center space-x-2 px-4 hover:scale-105 hover:transform hover:bg-foreground/10 hover:text-foreground"
           href={url}
@@ -46,57 +44,51 @@ function SidebarItem({
   );
 }
 
-export function AppSidebar() {
-  const { restaurantName } = useParams();
-  console.log(restaurantName);
+export function HeadSidebar() {
   const items = [
     {
-      title: "Dashboard",
-      url: `/head/${restaurantName}/dashboard`,
-      icon: Home,
+      title: "Overview",
+      url: "/head/",
+      icon: ChartLine,
     },
     {
-      title: "Menu",
-      url: `/head/${restaurantName}/menu`,
-      icon: Utensils,
+      title: "Restaurants",
+      url: "/head/restaurants",
+      icon: Building2,
     },
     {
-      title: "Orders",
-      url: `/head/${restaurantName}/orders`,
-      icon: BookA,
+      title: "Add Restaurant",
+      url: "/head/restaurants/add",
+      icon: PlusCircle,
     },
     {
-      title: "Work Schedule",
-      url: `/head/${restaurantName}/work-schedule`,
-      icon: Calendar,
+      title: "Staff Management",
+      url: "/head/staff",
+      icon: Users,
     },
     {
-      title: "Services",
-      url: `/head/${restaurantName}/services`,
-      icon: HandPlatter,
+      title: "Notifications",
+      url: "/head/notifications",
+      icon: Bell,
     },
     {
-      title: "Promotions",
-      url: `/head/${restaurantName}/promotions`,
-      icon: BadgeDollarSign,
-    },
-    {
-      title: "Areas",
-      url: `/head/${restaurantName}/areas`,
-      icon: ChartArea,
+      title: "Activity Logs",
+      url: "/head/activity",
+      icon: History,
     },
     {
       title: "Settings",
-      url: `/head/${restaurantName}/settings`,
+      url: "/head/settings",
       icon: Settings,
     },
   ];
+
   return (
     <Sidebar className="mt-[--header-height] rounded border-r border-[#ccc] border-opacity-50">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="mb-2 text-[16px]">
-            {restaurantName}
+            Restaurant Management
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
