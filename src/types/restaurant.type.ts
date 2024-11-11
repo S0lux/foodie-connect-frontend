@@ -10,7 +10,7 @@ export type Restaurant = {
   name: string;
   openTime: number;
   closeTime: number;
-  status: "Open" | "Closed";
+  status: "Open" | "Closed" | "PermanentlyClosed";
   socialLinks: SocialLink[];
   phone: string;
   images: string[];

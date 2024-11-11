@@ -5,8 +5,6 @@ import { Line_Chart } from "@/components/line-chart";
 import { Order, columns } from "./_components/column";
 import { DataTable } from "./_components/data-table";
 
-import React from "react";
-
 async function getData(): Promise<Order[]> {
   // Fetch data from your API here.
   return [

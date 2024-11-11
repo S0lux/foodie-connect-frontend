@@ -10,12 +10,22 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Restaurant } from "@/types/restaurant.type";
+import Link from "next/link";
 
 export default function RestaurantCard({
   restaurant,
 }: {
   restaurant: Restaurant;
 }) {
+  const checkStatus = (status: string) => {
+    if (status === "Open") {
+      return "default";
+    } else if (status === "PermanentlyClosed") {
+      return "destructive";
+    } else {
+      return "secondary";
+    }
+  };
   return (
     <Card className="transition-shadow hover:shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -36,33 +46,41 @@ export default function RestaurantCard({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuItem>Edit Restaurant</DropdownMenuItem>
-            <DropdownMenuItem className="text-red-600">
+            <Link href={`/head/${restaurant.id}`}>
+              <DropdownMenuItem className="hover:cursor-pointer">
+                View Details
+              </DropdownMenuItem>
+            </Link>
+            <DropdownMenuItem className="hover:cursor-pointer">
+              Edit Restaurant
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-red-600 hover:cursor-pointer">
               Deactivate
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </CardHeader>
-      <CardContent>
-        <div className="grid gap-2">
-          <div className="flex items-center text-sm text-muted-foreground">
-            <MapPin className="mr-2 h-4 w-4" />
-            {restaurant.formattedAddress}
-          </div>
-          <div className="flex items-center text-sm text-muted-foreground">
-            <Phone className="mr-2 h-4 w-4" />
-            {restaurant.phone}
-          </div>
-          <div className="flex items-center text-sm text-muted-foreground">
-            <Clock className="mr-2 h-4 w-4" />
-            {`Open: ${restaurant.openTime} - Close: ${restaurant.closeTime}`}
+      <CardContent className="mt-2">
+        <div className="flex flex-col justify-between">
+          <div className="grid h-full gap-2">
+            <div className="flex items-center text-sm text-muted-foreground">
+              <MapPin className="mr-2 h-4 w-4" />
+              <p className="flex h-10 w-10/12 items-center">
+                {restaurant.formattedAddress}
+              </p>
+            </div>
+            <div className="flex items-center text-sm text-muted-foreground">
+              <Phone className="mr-2 h-4 w-4" />
+              {restaurant.phone}
+            </div>
+            <div className="flex items-center text-sm text-muted-foreground">
+              <Clock className="mr-2 h-4 w-4" />
+              {`Open: ${restaurant.openTime}h - Close: ${restaurant.closeTime}h`}
+            </div>
           </div>
           <div className="mt-4 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Badge
-                variant={restaurant.status === "Open" ? "default" : "secondary"}
-              >
+              <Badge variant={checkStatus(restaurant.status)}>
                 {restaurant.status}
               </Badge>
               {/* <Badge variant="outline">⭐ {restaurant.rating}</Badge> */}

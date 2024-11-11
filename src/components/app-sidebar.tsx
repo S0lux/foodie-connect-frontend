@@ -47,47 +47,37 @@ function SidebarItem({
 }
 
 export function AppSidebar() {
-  const { restaurantName } = useParams();
-  console.log(restaurantName);
+  const { restaurantId } = useParams();
+  console.log(restaurantId);
   const items = [
     {
-      title: "Dashboard",
-      url: `/head/${restaurantName}/dashboard`,
+      title: "Overview",
+      url: `/head/${restaurantId}/`,
       icon: Home,
     },
     {
       title: "Menu",
-      url: `/head/${restaurantName}/menu`,
+      url: `/head/${restaurantId}/menu`,
       icon: Utensils,
     },
     {
-      title: "Orders",
-      url: `/head/${restaurantName}/orders`,
-      icon: BookA,
-    },
-    {
-      title: "Work Schedule",
-      url: `/head/${restaurantName}/work-schedule`,
-      icon: Calendar,
-    },
-    {
-      title: "Services",
-      url: `/head/${restaurantName}/services`,
-      icon: HandPlatter,
-    },
-    {
       title: "Promotions",
-      url: `/head/${restaurantName}/promotions`,
+      url: `/head/${restaurantId}/promotions`,
       icon: BadgeDollarSign,
     },
     {
+      title: "Services",
+      url: `/head/${restaurantId}/services`,
+      icon: HandPlatter,
+    },
+    {
       title: "Areas",
-      url: `/head/${restaurantName}/areas`,
+      url: `/head/${restaurantId}/areas`,
       icon: ChartArea,
     },
     {
       title: "Settings",
-      url: `/head/${restaurantName}/settings`,
+      url: `/head/${restaurantId}/settings`,
       icon: Settings,
     },
   ];
@@ -96,7 +86,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="mb-2 text-[16px]">
-            {restaurantName}
+            Restaurant Management
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

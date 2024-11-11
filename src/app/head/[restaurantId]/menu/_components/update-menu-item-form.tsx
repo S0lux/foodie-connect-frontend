@@ -282,7 +282,7 @@ const UpdateMenuItemPage = () => {
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   <Label>Item Image</Label>
-                  <div className="aspect-video overflow-hidden rounded-lg border">
+                  <div className="rounded-lg aspect-video overflow-hidden border">
                     <img
                       src={imagePreview || form.watch("image")}
                       alt="Preview"
@@ -291,7 +291,7 @@ const UpdateMenuItemPage = () => {
                   </div>
                   <Label
                     htmlFor="image-upload"
-                    className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed px-6 py-4 hover:bg-gray-50"
+                    className="rounded-lg flex cursor-pointer items-center justify-center gap-2 border-2 border-dashed px-6 py-4 hover:bg-gray-50"
                   >
                     <Upload size={20} />
                     <span>Click to upload image</span>
