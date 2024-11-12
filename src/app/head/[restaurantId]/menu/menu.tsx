@@ -80,7 +80,10 @@ const MenuManagement = () => {
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-xl font-bold md:text-3xl">Menu Management</h1>
         <Button>
-          <Link className="flex items-center gap-2" href="/head/Loc/menu/add">
+          <Link
+            className="flex items-center gap-2"
+            href={`/head/${restaurantId}/menu/add`}
+          >
             <Plus size={16} />
             Add New Item
           </Link>

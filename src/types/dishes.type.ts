@@ -12,6 +12,15 @@ export interface ScoreOverview {
   oneStar: number;
 }
 
+export interface Promotion {
+  id: string;
+  name: string;
+  description: string;
+  bannerId: string;
+  targets: string[];
+  promotionalPrice: number;
+}
+
 export interface Dish {
   dishId: string;
   restaurantId: string;
@@ -21,4 +30,5 @@ export interface Dish {
   price: number;
   categories: string[];
   scoreOverview: ScoreOverview;
+  promotions: Promotion[];
 }

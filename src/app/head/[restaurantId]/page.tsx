@@ -46,7 +46,7 @@ const reviews = {
       id: "123",
       userName: "johndoe",
       displayName: "John Doe",
-      avatar: "/images/avatars/john-doe.jpg",
+      avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=Felix",
     },
     rating: 4,
     content: "Great food and service!",
@@ -61,7 +61,7 @@ const reviews = {
         id: "456",
         userName: "janesmith",
         displayName: "Jane Smith",
-        avatar: "/images/avatars/jane-smith.jpg",
+        avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=Felix",
       },
       rating: 5,
       content: "Absolutely delicious!",
@@ -75,7 +75,7 @@ const reviews = {
         id: "789",
         userName: "bobsmith",
         displayName: "Bob Smith",
-        avatar: "/images/avatars/bob-smith.jpg",
+        avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=Felix",
       },
       rating: 3,
       content: "The food was okay, but the service was slow.",
@@ -99,14 +99,18 @@ export default function Restaurant({
 
   if (!isLoading && !isError) {
     const logoMeta = restaurant!.images.find((image) => image.includes("logo"));
-    const [logoPath, logoVersion] = logoMeta!.split(".");
-    const logoUrl = cld.image(logoPath).setVersion(logoVersion).toURL();
+    const [logoPath, logoVersion] = logoMeta?.split(".") || [];
+    const logoUrl =
+      cld.image(logoPath).setVersion(logoVersion).toURL() ||
+      `https://api.dicebear.com/9.x/glass/svg?seed=${restaurant!.name}`;
 
     const bannerMeta = restaurant!.images.find((image) =>
       image.includes("banner"),
     );
-    const [bannerPath, bannerVersion] = bannerMeta!.split(".");
-    const bannerUrl = cld.image(bannerPath).setVersion(bannerVersion).toURL();
+    const [bannerPath, bannerVersion] = bannerMeta?.split(".") || [];
+    const bannerUrl =
+      cld.image(bannerPath).setVersion(bannerVersion).toURL() ||
+      `https://api.dicebear.com/9.x/icons/svg?seed=${restaurant!.name}`;
 
     return (
       <>

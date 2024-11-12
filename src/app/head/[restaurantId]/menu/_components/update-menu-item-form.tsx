@@ -1,22 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Upload } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -28,76 +25,56 @@ import {
   FormMessage,
   FormField,
 } from "@/components/ui/form";
-
-const DishBody = z.object({
-  id: z.string(),
-  name: z.string(),
-  price: z.coerce.number().positive(),
-  description: z.string(),
-  categoryId: z.string(),
-  image: z.string(),
-  status: z.string(),
-});
-
-type DishBodyType = z.infer<typeof DishBody>;
-
-const initialCategories = [
-  { id: "1", name: "Appetizer" },
-  { id: "2", name: "Main course" },
-  { id: "3", name: "Dessert" },
-  { id: "4", name: "Beverages" },
-];
+import useDishes from "@/hooks/use-dishes";
+import {
+  DishBody,
+  DishBodyType,
+  UpdateDishBody,
+  UpdateDishBodyType,
+} from "@/schema/dish.schema";
+import useDishCategories from "@/hooks/use-dish-categories";
+import { Checkbox } from "@/components/ui/checkbox";
+import Image from "next/image";
+import { ErrorType } from "@/types/error.type";
+import { toast } from "@/hooks/use-toast";
 
 const UpdateMenuItemPage = () => {
   const { id } = useParams<{ id: string }>();
-  const { restaurantName } = useParams<{ restaurantName: string }>();
+  const { restaurantId } = useParams<{ restaurantId: string }>();
+  const { data: categories } =
+    useDishCategories.useGetDishCategories(restaurantId);
+  const { data: dish, isLoading } = useDishes.useGetDish(id);
+  console.log("Dish:", dish);
   const router = useRouter();
+  const uploadImageAction = useDishes.useUploadDishImage();
+  const updateDishAction = useDishes.useUpdateDish();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const form = useForm<DishBodyType>({
-    resolver: zodResolver(DishBody),
+  const form = useForm<UpdateDishBodyType>({
+    resolver: zodResolver(UpdateDishBody),
     defaultValues: {
-      id: id,
-      name: "",
-      price: 0,
-      description: "",
-      categoryId: "1",
-      image: "https://placehold.co/230x150",
-      status: "available",
+      name: dish?.name,
+      price: dish?.price,
+      description: dish?.description,
+      categories: dish?.categories,
     },
     mode: "onChange",
   });
 
-  // Fetch menu item data when component mounts
   useEffect(() => {
-    const fetchMenuItem = async () => {
-      try {
-        const data = {
-          id: id,
-          name: "Sample Dish",
-          price: 9.99,
-          description: "A delicious sample dish",
-          categoryId: "2",
-          image: "https://placehold.co/230x150",
-          status: "available",
-        };
-
-        form.reset(data);
-        setImagePreview(data.image);
-      } catch (error) {
-        console.error("Error fetching menu item:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchMenuItem();
-  }, [id, form]);
+    form.reset({
+      name: dish?.name,
+      price: dish?.price,
+      description: dish?.description,
+      categories: dish?.categories,
+    });
+  }, [dish]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Check file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
         alert("File size must be less than 5MB");
         return;
@@ -107,23 +84,81 @@ const UpdateMenuItemPage = () => {
       reader.onloadend = () => {
         const imageDataUrl = reader.result as string;
         setImagePreview(imageDataUrl);
-        // Update the form value with the new image
-        form.setValue("image", imageDataUrl, {
-          shouldValidate: true,
-          shouldDirty: true,
-        });
+        setImage(file);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const updateImage = async () => {
+    console.log(image);
+    if (image) {
+      const data = await uploadImageAction.mutateAsync({
+        dishId: id,
+        image,
+      });
+      console.log("Image updated:", data);
     }
   };
 
   const onSubmit = form.handleSubmit(async (values) => {
     setIsSubmitting(true);
     try {
-      console.log("Updated values:", values);
-      router.push(`/head/${restaurantName}/menu`); // Redirect to menu items list
+      const data = await updateDishAction.mutateAsync({
+        dishId: id,
+        dishDetails: values,
+      });
+      toast({
+        title: "Success",
+        description: "Menu item update successfully",
+      });
+      console.log({ data });
+      // if (image) {
+      //   await uploadImageAction.mutateAsync({
+      //     dishId: data.dishId,
+      //     image: image,
+      //   });
+      // }
+      // router.push(`/head/${restaurantId}/menu`);
     } catch (error) {
-      console.error("Error updating menu item:", error);
+      console.error({ error });
+      switch ((error as ErrorType).code) {
+        case "NOT_AUTHENTICATED":
+          toast({
+            title: "Error",
+            description: "You are not authenticated",
+            variant: "destructive",
+          });
+          break;
+        case "NOT_OWNER":
+          toast({
+            title: "Error",
+            description: "You are not the owner of this restaurant",
+            variant: "destructive",
+          });
+          break;
+        case "DISH_NOT_FOUND":
+          toast({
+            title: "Error",
+            description: "Menu item not found",
+            variant: "destructive",
+          });
+          break;
+        case "NAME_ALREADY_EXISTS":
+          toast({
+            title: "Error",
+            description: "A menu item with this name already exists",
+            variant: "destructive",
+          });
+          break;
+        default:
+          toast({
+            title: "Error",
+            description: "An error occurred",
+            variant: "destructive",
+          });
+          break;
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -148,7 +183,13 @@ const UpdateMenuItemPage = () => {
         >
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             <Card>
-              <CardContent className="pt-6">
+              <CardHeader className="pb-0">
+                <CardTitle>Dish details</CardTitle>
+                <CardDescription>
+                  Update the details of the menu item
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -206,34 +247,41 @@ const UpdateMenuItemPage = () => {
 
                 <FormField
                   control={form.control}
-                  name="categoryId"
+                  name="categories"
                   render={({ field }) => (
                     <FormItem className="mb-4">
                       <FormLabel className="text-[16px] font-bold">
                         Category
                       </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value.toString()}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {initialCategories.map((category) => (
-                            <SelectGroup key={category.id}>
-                              <SelectItem
-                                className="hover:cursor-pointer"
-                                value={category.id}
-                              >
-                                {category.name}
-                              </SelectItem>
-                            </SelectGroup>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      {categories?.map((category) => (
+                        <div
+                          key={category.categoryName}
+                          className="flex items-center gap-2"
+                        >
+                          <Checkbox
+                            id={category.categoryName}
+                            checked={field.value?.includes(
+                              category.categoryName,
+                            )}
+                            onCheckedChange={(checked) => {
+                              return checked
+                                ? field.onChange([
+                                    ...field.value,
+                                    category.categoryName,
+                                  ])
+                                : field.onChange(
+                                    field.value?.filter(
+                                      (value) =>
+                                        value !== category.categoryName,
+                                    ),
+                                  );
+                            }}
+                          />
+                          <Label htmlFor={category.categoryName}>
+                            {category.categoryName}
+                          </Label>
+                        </div>
+                      ))}
                       <FormDescription>
                         Choose the category for the menu item
                       </FormDescription>
@@ -241,40 +289,19 @@ const UpdateMenuItemPage = () => {
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem className="mb-4">
-                      <FormLabel className="text-[16px] font-bold">
-                        Status
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a status" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value="available">Available</SelectItem>
-                            <SelectItem value="unavailable">
-                              Unavailable
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        Choose the status for the menu item
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="mt-6 flex justify-center gap-3">
+                  <Button
+                    type="button"
+                    size="lg"
+                    variant="outline"
+                    onClick={() => router.back()}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" size="lg" disabled={isSubmitting}>
+                    {isSubmitting ? "Updating..." : "Update Item"}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
@@ -283,10 +310,14 @@ const UpdateMenuItemPage = () => {
                 <div className="space-y-4">
                   <Label>Item Image</Label>
                   <div className="rounded-lg aspect-video overflow-hidden border">
-                    <img
-                      src={imagePreview || form.watch("image")}
+                    <Image
+                      src={
+                        imagePreview || "https://api.dicebear.com/9.x/glass/svg"
+                      }
                       alt="Preview"
-                      className="h-full w-full object-cover"
+                      width={230}
+                      height={150}
+                      layout="responsive"
                     />
                   </div>
                   <Label
@@ -317,8 +348,12 @@ const UpdateMenuItemPage = () => {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" size="lg" disabled={isSubmitting}>
-                    {isSubmitting ? "Updating..." : "Update Item"}
+                  <Button
+                    onClick={() => updateImage()}
+                    size="lg"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Updating..." : "Update Image"}
                   </Button>
                 </div>
               </CardContent>

@@ -18,26 +18,26 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 const chartData = [
-  { month: "January", revenue: 186 },
-  { month: "February", revenue: 305 },
-  { month: "March", revenue: 237 },
-  { month: "April", revenue: 73 },
-  { month: "May", revenue: 209 },
-  { month: "June", revenue: 214 },
+  { month: "January", rating: 186 },
+  { month: "February", rating: 305 },
+  { month: "March", rating: 237 },
+  { month: "April", rating: 73 },
+  { month: "May", rating: 209 },
+  { month: "June", rating: 214 },
 ];
 
 const chartConfig = {
-  revenue: {
-    label: "Revenue",
+  rating: {
+    label: "Rating",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
-export function RevenueChart() {
+export function RatingChart() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Revenue Overview</CardTitle>
+        <CardTitle>Rating Overview</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>
@@ -70,12 +70,12 @@ export function RevenueChart() {
             />
 
             <Line
-              dataKey="revenue"
+              dataKey="rating"
               type="linear"
-              stroke="var(--color-revenue)"
+              stroke="var(--color-rating)"
               strokeWidth={2}
               dot={{
-                fill: "var(--color-revenue)",
+                fill: "var(--color-rating)",
               }}
             />
           </LineChart>

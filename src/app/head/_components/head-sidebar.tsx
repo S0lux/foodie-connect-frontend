@@ -62,16 +62,6 @@ export function HeadSidebar() {
       icon: PlusCircle,
     },
     {
-      title: "Staff Management",
-      url: "/head/staff",
-      icon: Users,
-    },
-    {
-      title: "Notifications",
-      url: "/head/notifications",
-      icon: Bell,
-    },
-    {
       title: "Activity Logs",
       url: "/head/activity",
       icon: History,

@@ -8,9 +8,9 @@ export type Performance = {
   id: string;
   restaurantName: string;
   status: "active" | "inactive";
-  growth: number;
-  revenue: number;
-  orders: number;
+  rating: number;
+  open: string;
+  closed: string;
 };
 
 export const columns: ColumnDef<Performance>[] = [
@@ -19,16 +19,16 @@ export const columns: ColumnDef<Performance>[] = [
     header: "Restaurant",
   },
   {
-    accessorKey: "revenue",
-    header: "Revenue",
+    accessorKey: "rating",
+    header: "Rating",
   },
   {
-    accessorKey: "growth",
-    header: "Growth",
+    accessorKey: "open",
+    header: "Open",
   },
   {
-    accessorKey: "orders",
-    header: "Orders",
+    accessorKey: "closed",
+    header: "Closed",
   },
   {
     accessorKey: "status",

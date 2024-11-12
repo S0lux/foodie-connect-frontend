@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, DollarSign, Users, Utensils } from "lucide-react";
+import { Building2, Star, Users, Utensils } from "lucide-react";
 import { HeadStatCard } from "@/app/head/_components/head-stat-card";
-import { RevenueChart } from "@/app/head/_components/revenue-chart";
+import { RatingChart } from "@/app/head/_components/rating-chart";
 import { Performance, columns } from "@/app/head/_components/column";
 import { DataTable } from "@/app/head/_components/data-table";
 
@@ -18,33 +18,33 @@ async function getData(): Promise<Performance[]> {
       id: "1",
       restaurantName: "Restaurant A",
       status: "active",
-      growth: 12.5,
-      revenue: 150000,
-      orders: 1200,
+      rating: 4.5,
+      open: "9:00 AM",
+      closed: "10:00 PM",
     },
     {
       id: "2",
       restaurantName: "Restaurant B",
       status: "active",
-      growth: -2.3,
-      revenue: 120000,
-      orders: 980,
+      rating: 4.2,
+      open: "9:00 AM",
+      closed: "10:00 PM",
     },
     {
       id: "3",
       restaurantName: "Restaurant C",
-      status: "active",
-      growth: 15.7,
-      revenue: 180000,
-      orders: 1500,
+      status: "inactive",
+      rating: 3.9,
+      open: "9:00 AM",
+      closed: "10:00 PM",
     },
     {
       id: "4",
       restaurantName: "Restaurant D",
       status: "active",
-      growth: 5.2,
-      revenue: 90000,
-      orders: 850,
+      rating: 4.0,
+      open: "9:00 AM",
+      closed: "10:00 PM",
     },
   ];
 }
@@ -73,16 +73,16 @@ export default async function HeadDashboard() {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <HeadStatCard
-          title="Total Revenue"
+          title="Total Dish"
           value={totalRevenue}
-          icon={DollarSign}
+          icon={Utensils}
           prefix="$"
           change={{ value: Number(averageGrowth), timespan: "month" }}
         />
         <HeadStatCard
-          title="Total Orders"
+          title="Total Ratings"
           value={totalOrders}
-          icon={Utensils}
+          icon={Star}
           change={{ value: 12.3, timespan: "month" }}
         />
         <HeadStatCard
@@ -92,14 +92,14 @@ export default async function HeadDashboard() {
           change={{ value: 1, timespan: "month" }}
         />
         <HeadStatCard
-          title="Total Staff"
+          title="Total Users"
           value={124}
           icon={Users}
           change={{ value: 6, timespan: "month" }}
         />
       </div>
 
-      <RevenueChart />
+      <RatingChart />
 
       <Card>
         <CardHeader>
