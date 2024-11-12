@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -13,14 +13,17 @@ import { Plus, Edit } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import DeleteDish from "@/app/head/[restaurantId]/menu/_components/delete-menu-item";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import useDishCategories from "@/hooks/use-dish-categories";
 import useDishes from "@/hooks/use-dishes";
 import Loader from "@/components/loader";
 import Image from "next/image";
 import cld from "@/lib/cld";
+import { toast } from "@/hooks/use-toast";
+import { ErrorType } from "@/types/error.type";
 
 const MenuManagement = () => {
+  const router = useRouter();
   const { restaurantId } = useParams<{ restaurantId: string }>();
   const { data: categories } =
     useDishCategories.useGetDishCategories(restaurantId);
@@ -34,6 +37,7 @@ const MenuManagement = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | "all">(
     "all",
   );
+  const deleteDishAction = useDishes.useDeleteDish();
 
   const getImageUrl = (imageId: string | null) => {
     if (!imageId) return "";
@@ -62,8 +66,47 @@ const MenuManagement = () => {
   };
 
   // Handle delete item
-  const handleDeleteItem = (id: string) => {
-    console.log(id);
+  const handleDeleteItem = async (id: string) => {
+    try {
+      await deleteDishAction.mutateAsync(id);
+      toast({
+        title: "Success",
+        description: "Dish deleted successfully",
+      });
+      router.refresh();
+    } catch (error) {
+      console.error({ error });
+      switch ((error as ErrorType).code) {
+        case "NOT_AUTHENTICATED":
+          toast({
+            title: "Error",
+            description: "You are not authenticated",
+            variant: "destructive",
+          });
+          break;
+        case "NOT_OWNER":
+          toast({
+            title: "Error",
+            description: "You are not the owner of this restaurant",
+            variant: "destructive",
+          });
+          break;
+        case "DISH_NOT_FOUND":
+          toast({
+            title: "Error",
+            description: "Dish not found",
+            variant: "destructive",
+          });
+          break;
+        default:
+          toast({
+            title: "Error",
+            description: "An error occurred",
+            variant: "destructive",
+          });
+          break;
+      }
+    }
   };
 
   if (isError) return <div>Error</div>;
@@ -79,15 +122,15 @@ const MenuManagement = () => {
     <div className="container mx-auto p-4">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-xl font-bold md:text-3xl">Menu Management</h1>
-        <Button>
-          <Link
-            className="flex items-center gap-2"
-            href={`/head/${restaurantId}/menu/add`}
-          >
+        <Link
+          className="flex items-center gap-2"
+          href={`/head/${restaurantId}/menu/add`}
+        >
+          <Button>
             <Plus size={16} />
             Add New Item
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
 
       <div className="mb-6 flex flex-wrap gap-2">
@@ -143,11 +186,11 @@ const MenuManagement = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-              <Button variant="outline" size="icon">
-                <Link href={`/head/${restaurantId}/menu/update/${item.dishId}`}>
+              <Link href={`/head/${restaurantId}/menu/update/${item.dishId}`}>
+                <Button variant="outline" size="icon">
                   <Edit size={16} />
-                </Link>
-              </Button>
+                </Button>
+              </Link>
               <DeleteDish onDelete={() => handleDeleteItem(item.dishId)} />
             </CardFooter>
           </Card>

@@ -24,7 +24,7 @@ export default function DeleteDish({ onDelete }: { onDelete: () => void }) {
           <Trash2 size={16} />
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="rounded-md">
         <AlertDialogHeader>
           <AlertDialogTitle>Do you want to delete this dish?</AlertDialogTitle>
           <AlertDialogDescription>

@@ -75,7 +75,7 @@ export default function RestaurantCard({
             </div>
             <div className="flex items-center text-sm text-muted-foreground">
               <Clock className="mr-2 h-4 w-4" />
-              {`Open: ${restaurant.openTime}h - Close: ${restaurant.closeTime}h`}
+              {`Open: ${restaurant.openTime} - Close: ${restaurant.closeTime}`}
             </div>
           </div>
           <div className="mt-4 flex items-center justify-between">

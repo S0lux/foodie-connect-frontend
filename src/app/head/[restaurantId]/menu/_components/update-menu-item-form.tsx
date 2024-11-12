@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Upload } from "lucide-react";
+import { ArrowBigLeftDashIcon, Upload } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -93,18 +93,51 @@ const UpdateMenuItemPage = () => {
   const updateImage = async () => {
     console.log(image);
     if (image) {
-      const data = await uploadImageAction.mutateAsync({
-        dishId: id,
-        image,
-      });
-      console.log("Image updated:", data);
+      try {
+        await uploadImageAction.mutateAsync({
+          dishId: id,
+          image,
+        });
+      } catch (error) {
+        console.error({ error });
+        switch ((error as ErrorType).code) {
+          case "NOT_AUTHENTICATED":
+            toast({
+              title: "Error",
+              description: "You are not authenticated",
+              variant: "destructive",
+            });
+            break;
+          case "NOT_OWNER":
+            toast({
+              title: "Error",
+              description: "You are not the owner of this restaurant",
+              variant: "destructive",
+            });
+            break;
+          case "DISH_NOT_FOUND":
+            toast({
+              title: "Error",
+              description: "Menu item not found",
+              variant: "destructive",
+            });
+            break;
+          default:
+            toast({
+              title: "Error",
+              description: "An error occurred",
+              variant: "destructive",
+            });
+            break;
+        }
+      }
     }
   };
 
   const onSubmit = form.handleSubmit(async (values) => {
     setIsSubmitting(true);
     try {
-      const data = await updateDishAction.mutateAsync({
+      await updateDishAction.mutateAsync({
         dishId: id,
         dishDetails: values,
       });
@@ -112,14 +145,6 @@ const UpdateMenuItemPage = () => {
         title: "Success",
         description: "Menu item update successfully",
       });
-      console.log({ data });
-      // if (image) {
-      //   await uploadImageAction.mutateAsync({
-      //     dishId: data.dishId,
-      //     image: image,
-      //   });
-      // }
-      // router.push(`/head/${restaurantId}/menu`);
     } catch (error) {
       console.error({ error });
       switch ((error as ErrorType).code) {
@@ -172,7 +197,15 @@ const UpdateMenuItemPage = () => {
 
   return (
     <div className="container mx-auto px-4">
-      <div className="mb-4">
+      <div className="mb-4 flex gap-2">
+        <Button
+          size="lg"
+          variant="outline"
+          onClick={() => router.back()}
+          className="mb-4"
+        >
+          <ArrowBigLeftDashIcon size={20} /> Back to menu
+        </Button>
         <h1 className="text-3xl font-bold">Update Menu Item</h1>
       </div>
       <Form {...form}>

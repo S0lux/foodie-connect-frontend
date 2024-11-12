@@ -11,7 +11,7 @@ const useDishes = {
     maxPrice?: number,
   ) {
     return useQuery({
-      queryKey: ["dishes", restaurantId, categories, minPrice, maxPrice],
+      queryKey: ["dishes"],
       queryFn: async () => {
         try {
           const result = await dishesActions.getDishes(
@@ -31,7 +31,7 @@ const useDishes = {
 
   useGetDish(dishId: string) {
     return useQuery({
-      queryKey: ["dish", dishId],
+      queryKey: ["dish"],
       queryFn: async () => {
         try {
           const result = await dishesActions.getDish(dishId);
@@ -90,6 +90,22 @@ const useDishes = {
       }) => dishesActions.updateDish(dishId, dishDetails),
       onError: (error: ErrorType) => {
         console.error("Error during dish update:", error);
+        throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["dishes"],
+        });
+      },
+    });
+  },
+
+  useDeleteDish() {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: (dishId: string) => dishesActions.deleteDish(dishId),
+      onError: (error: ErrorType) => {
+        console.error("Error during dish deletion:", error);
         throw error;
       },
       onSuccess: () => {

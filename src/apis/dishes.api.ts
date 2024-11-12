@@ -103,6 +103,22 @@ const dishesActions = {
       }
     }
   },
+
+  deleteDish: async (dishId: string) => {
+    try {
+      const response = await http.delete(`v1/dishes/${dishId}`);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const dishError = error.response.data as ErrorType;
+        console.error("Error during delete dish:", dishError);
+        throw dishError;
+      } else {
+        console.error("Unexpected error during delete dish:", error);
+        throw error;
+      }
+    }
+  },
 };
 
 export default dishesActions;
