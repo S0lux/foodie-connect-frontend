@@ -4,21 +4,13 @@ import RestaurantCard from "./restaurant-card";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { twMerge } from "tailwind-merge";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import Loader from "./loader";
+import { Restaurant } from "@/types/retaurant.type";
 
 export type RestaurantDto = {
   id: string;
@@ -52,21 +44,21 @@ const RestaurantGrid = ({
   restaurants,
   className,
 }: {
-  restaurants: RestaurantDto[];
+  restaurants: Restaurant[];
   className?: string;
 }) => {
   // handle category selection
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const filerdRestaurants = restaurants.filter((restaurant) => {
-    if (selectedCategory === "All") {
-      return true;
-    }
-    if (selectedCategory === "Others") {
-      return (
-        restaurant.category !== "Foods" && restaurant.category !== "Drinks"
-      );
-    } else return restaurant.category === selectedCategory;
-  });
+  // const [selectedCategory, setSelectedCategory] = useState("All");
+  // const filerdRestaurants = restaurants.filter((restaurant) => {
+  //   if (selectedCategory === "All") {
+  //     return true;
+  //   }
+  //   if (selectedCategory === "Others") {
+  //     return (
+  //       restaurant.category !== "Foods" && restaurant.category !== "Drinks"
+  //     );
+  //   } else return restaurant.category === selectedCategory;
+  // });
 
   // Handle responsive design
   const [windowWidth, setWidth] = useState(0);
@@ -82,14 +74,12 @@ const RestaurantGrid = ({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  if (!mounted) return <Loader className="flex h-10 w-full justify-center" />;
-
   return (
     <Card className={twMerge("h-fit border-none", className)}>
       <CardHeader className="flex flex-row space-x-5 space-y-0 border-b border-muted-foreground/30 xl:space-x-10">
-        <CardTitle className="flex items-center">Explore</CardTitle>
+        <CardTitle className="flex items-center">Restaurants</CardTitle>
         {/* small screen drop down */}
-        {windowWidth < 500 ? (
+        {/* {windowWidth < 500 ? (
           <Select>
             <SelectTrigger className="w-auto min-w-24">
               <SelectValue placeholder="Category" />
@@ -157,11 +147,11 @@ const RestaurantGrid = ({
               Others
             </CategorySelector>
           </div>
-        )}
+        )} */}
       </CardHeader>
       <CardContent className="">
         <div className="grid grid-flow-row grid-cols-1 justify-items-center gap-4 bg-inherit py-5 md:grid-cols-3 xl:grid-cols-4">
-          {filerdRestaurants.map((restaurant: RestaurantDto) => {
+          {restaurants.map((restaurant: Restaurant) => {
             return (
               <RestaurantCard
                 key={restaurant.id}

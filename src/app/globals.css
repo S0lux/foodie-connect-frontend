@@ -103,3 +103,17 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.map {
+  width: 100%;
+  height: 15rem;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .map {
+    width: 100%;
+    height: 30rem;
+    position: relative;
+  }
+}

@@ -1,4 +1,4 @@
-import { Tag } from "lucide-react";
+import { Clock, Tag } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -8,8 +8,10 @@ import {
 } from "./ui/card";
 import Link from "next/link";
 import { RestaurantDto } from "./restaurant-grid";
+import { Restaurant } from "@/types/retaurant.type";
+import { formatTime } from "@/app/(main)/restaurant-detail/[id]/page";
 
-const RestaurantCard = ({ restaurant }: { restaurant: RestaurantDto }) => {
+const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
   return (
     <Link href={`/restaurant-detail/${restaurant.id}`}>
       <Card className="size-fit border-none bg-sidebar transition-all ease-in xl:hover:scale-105">
@@ -23,15 +25,16 @@ const RestaurantCard = ({ restaurant }: { restaurant: RestaurantDto }) => {
           <section className="space-y-1 text-ellipsis">
             <CardTitle>{restaurant.name}</CardTitle>
             <CardDescription className="max-w-min text-nowrap">
-              {truncate(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-              )}
+              {truncate(restaurant.formattedAddress)}
             </CardDescription>
           </section>
           <section className="flex flex-row items-center">
-            <Tag className="p-1.5 text-primary"></Tag>
+            <Clock className="py-1.5 pr-1 text-primary"></Clock>
             <CardDescription className="text-primary">
-              {restaurant.category}
+              <span>
+                {formatTime(restaurant.openTime)} -{" "}
+                {formatTime(restaurant.closeTime)}
+              </span>
             </CardDescription>
           </section>
         </CardFooter>
