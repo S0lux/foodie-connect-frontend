@@ -3,6 +3,8 @@
 import RestaurantHomePage from "@/app/head/[restaurantId]/_components/restaurant-home-page";
 import useRestaurants from "@/hooks/use-restaurants";
 import cld from "@/lib/cld";
+import { getBannerUrl, getLogoUrl } from "@/lib/handleImage";
+import { Loader } from "lucide-react";
 import Image from "next/image";
 
 const promotions = [
@@ -98,19 +100,8 @@ export default function Restaurant({
   } = useRestaurants.useGetRestaurant(params.restaurantId);
 
   if (!isLoading && !isError) {
-    const logoMeta = restaurant!.images.find((image) => image.includes("logo"));
-    const [logoPath, logoVersion] = logoMeta?.split(".") || [];
-    const logoUrl =
-      cld.image(logoPath).setVersion(logoVersion).toURL() ||
-      `https://api.dicebear.com/9.x/glass/svg?seed=${restaurant!.name}`;
-
-    const bannerMeta = restaurant!.images.find((image) =>
-      image.includes("banner"),
-    );
-    const [bannerPath, bannerVersion] = bannerMeta?.split(".") || [];
-    const bannerUrl =
-      cld.image(bannerPath).setVersion(bannerVersion).toURL() ||
-      `https://api.dicebear.com/9.x/icons/svg?seed=${restaurant!.name}`;
+    const logoUrl = getLogoUrl(restaurant!.images, restaurant!.name);
+    const bannerUrl = getBannerUrl(restaurant!.images, restaurant!.name);
 
     return (
       <>
@@ -154,5 +145,10 @@ export default function Restaurant({
     return <div>Something went wrong</div>;
   }
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader />
+      </div>
+    );
 }

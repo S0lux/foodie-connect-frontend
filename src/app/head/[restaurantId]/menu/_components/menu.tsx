@@ -21,11 +21,22 @@ import Image from "next/image";
 import cld from "@/lib/cld";
 import { toast } from "@/hooks/use-toast";
 import { ErrorType } from "@/types/error.type";
+import { getDefaultImageUrl } from "@/lib/handleImage";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import AddCategoryForm from "@/app/head/[restaurantId]/menu/_components/add-category-form";
 
 const MenuManagement = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
   const { restaurantId } = useParams<{ restaurantId: string }>();
-  const { data: categories } =
+  const { data: categories, isLoading: isLoadingCategories } =
     useDishCategories.useGetDishCategories(restaurantId);
   const {
     data: dishes,
@@ -38,12 +49,6 @@ const MenuManagement = () => {
     "all",
   );
   const deleteDishAction = useDishes.useDeleteDish();
-
-  const getImageUrl = (imageId: string | null) => {
-    if (!imageId) return "";
-    const [imagePath, imageVersion] = imageId.split(".");
-    return cld.image(imagePath).setVersion(imageVersion).toURL();
-  };
 
   // Format price to VND
   const formatPrice = (price: number) => {
@@ -111,7 +116,7 @@ const MenuManagement = () => {
 
   if (isError) return <div>Error</div>;
 
-  if (isLoading)
+  if (isLoading || isLoadingCategories)
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader />
@@ -151,6 +156,37 @@ const MenuManagement = () => {
             {category.categoryName}
           </Button>
         ))}
+
+        <div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                className=""
+                variant={"secondary"}
+                onClick={() => setIsDialogOpen(true)}
+              >
+                <Plus size={16} />
+                Add Category
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="rounded-md">
+              <DialogHeader>
+                <DialogTitle className="text-center">
+                  Add New Category
+                </DialogTitle>
+                <DialogDescription className="text-center">
+                  Add a new category to your menu
+                </DialogDescription>
+              </DialogHeader>
+              <AddCategoryForm
+                onSuccess={() => {
+                  setIsDialogOpen(false);
+                  router.refresh();
+                }}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -159,7 +195,10 @@ const MenuManagement = () => {
             <div className="relative h-48">
               <Image
                 src={
-                  getImageUrl(item.imageId) || "https://placehold.co/230x150"
+                  getDefaultImageUrl(
+                    item?.imageId ? [item.imageId] : [],
+                    item.name,
+                  ) || "https://placehold.co/230x150"
                 }
                 alt={item.name}
                 layout="fill"

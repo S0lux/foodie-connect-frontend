@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Restaurant } from "@/types/restaurant.type";
 import Link from "next/link";
+import { getLogoUrl } from "@/lib/handleImage";
 
 export default function RestaurantCard({
   restaurant,
@@ -31,7 +32,10 @@ export default function RestaurantCard({
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center space-x-4">
           <Avatar className="h-12 w-12">
-            <AvatarImage src={restaurant.images[0]} alt={restaurant.name} />
+            <AvatarImage
+              src={getLogoUrl(restaurant.images, restaurant.name)}
+              alt={restaurant.name}
+            />
             <AvatarFallback>{restaurant.name.slice(0, 2)}</AvatarFallback>
           </Avatar>
           <div>

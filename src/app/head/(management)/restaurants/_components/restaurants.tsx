@@ -11,10 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Restaurant } from "@/types/restaurant.type";
 import RestaurantCard from "@/app/head/(management)/restaurants/_components/restaurant-card";
 import useAuth from "@/hooks/use-auth";
 import useRestaurants from "@/hooks/use-restaurants";
+import Loader from "@/components/loader";
 
 // Mock data
 // const restaurants: Restaurant[] = [
@@ -109,7 +109,7 @@ import useRestaurants from "@/hooks/use-restaurants";
 // ];
 
 export default function Restaurants() {
-  const { data: user, isLoading, isError, error } = useAuth.useGetSession();
+  const { data: user, isLoading, isError } = useAuth.useGetSession();
 
   const {
     data: restaurants,
@@ -131,6 +131,18 @@ export default function Restaurants() {
 
     return matchesSearch && matchesStatus;
   });
+
+  if (isLoading || restaurantsLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (isError || restaurantsError) {
+    return <div>Error</div>;
+  }
 
   return (
     <div className="space-y-6 p-6">
