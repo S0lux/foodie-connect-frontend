@@ -1,5 +1,7 @@
 import restaurantsActions from "@/apis/restaurants.api";
-import { useQuery } from "@tanstack/react-query";
+import { CreateRestaurantBodyType } from "@/schema/restaurant.schema";
+import { ErrorType } from "@/types/error.type";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const useRestaurants = {
   useGetRestaurants(ownerId?: string, radius?: number, origin?: string) {
@@ -32,6 +34,23 @@ const useRestaurants = {
           console.error("Error during session retrieval:", error);
           throw error;
         }
+      },
+    });
+  },
+
+  useCreateRestaurant() {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: (restaurantDetails: CreateRestaurantBodyType) =>
+        restaurantsActions.createRestaurant(restaurantDetails),
+      onError: (error: ErrorType) => {
+        console.error("Error during restaurant creation:", error);
+        throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["restaurants"],
+        });
       },
     });
   },
