@@ -37,7 +37,7 @@ export default function ChangePasswordForm() {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={onSubmit}
         className="w-full flex-shrink-0 space-y-4"
         noValidate
       >

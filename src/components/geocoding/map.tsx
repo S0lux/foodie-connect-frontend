@@ -23,8 +23,10 @@ export default function Map({
     libraries: ["places"],
   });
 
-  const mapRef = useRef<GoogleMap>();
-  const onLoad = useCallback((map) => (mapRef.current = map), []);
+  const mapRef = useRef<google.maps.Map>();
+  const onLoad = useCallback((map: google.maps.Map) => {
+    mapRef.current = map;
+  }, []);
 
   const options = useMemo<MapOptions>(
     () => ({

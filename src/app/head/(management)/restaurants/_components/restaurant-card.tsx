@@ -36,7 +36,7 @@ export default function RestaurantCard({
           </Avatar>
           <div>
             <CardTitle className="text-lg">{restaurant.name}</CardTitle>
-            <p className="text-sm text-muted-foreground">{restaurant.type}</p>
+            <p className="text-sm text-muted-foreground">{restaurant.phone}</p>
           </div>
         </div>
         <DropdownMenu>

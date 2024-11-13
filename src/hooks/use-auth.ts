@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LoginBodyType, RegisterBodyType } from "@/schema/auth.schema";
 import authAction from "@/apis/auth.api";
-import { useState } from "react";
 import { ErrorType } from "@/types/error.type";
 
 const useAuth = {
@@ -46,14 +45,12 @@ const useAuth = {
 
   useLogout() {
     const queryClient = useQueryClient();
-    const [logoutError, setLogoutError] = useState<unknown>(null);
     return useMutation({
       mutationFn: async () => {
         try {
           const result = await authAction.logout();
           return result;
         } catch (error) {
-          setLogoutError(error);
           console.error("Error during logout:", error);
           throw error;
         }
@@ -71,7 +68,6 @@ const useAuth = {
   },
 
   useGetSession() {
-    const [sessionError, setSessionError] = useState<unknown>(null);
     return useQuery({
       queryKey: ["user-session"],
       queryFn: async () => {
@@ -79,7 +75,6 @@ const useAuth = {
           const result = await authAction.getSession();
           return result;
         } catch (error) {
-          setSessionError(error);
           console.error("Error during session retrieval:", error);
           throw error;
         }

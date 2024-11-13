@@ -1,5 +1,4 @@
 import { mockData } from "@/app/page";
-import Header from "@/components/header";
 import { RestaurantDto } from "@/components/restaurant-grid";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { AlarmClock, MapPin, PhoneIcon, Tag } from "lucide-react";
