@@ -4,6 +4,7 @@ import {
   BookA,
   Calendar,
   ChartArea,
+  ChartBarStacked,
   HandPlatter,
   Home,
   Settings,
@@ -66,9 +67,9 @@ export function AppSidebar() {
       icon: BadgeDollarSign,
     },
     {
-      title: "Services",
-      url: `/head/${restaurantId}/services`,
-      icon: HandPlatter,
+      title: "Categories",
+      url: `/head/${restaurantId}/categories`,
+      icon: ChartBarStacked,
     },
     {
       title: "Areas",

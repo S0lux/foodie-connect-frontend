@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit } from "lucide-react";
+import { Plus, Edit, Pen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import DeleteDish from "@/app/head/[restaurantId]/menu/_components/delete-menu-item";
@@ -18,7 +18,6 @@ import useDishCategories from "@/hooks/use-dish-categories";
 import useDishes from "@/hooks/use-dishes";
 import Loader from "@/components/loader";
 import Image from "next/image";
-import cld from "@/lib/cld";
 import { toast } from "@/hooks/use-toast";
 import { ErrorType } from "@/types/error.type";
 import { getDefaultImageUrl } from "@/lib/handleImage";
@@ -31,13 +30,71 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import AddCategoryForm from "@/app/head/[restaurantId]/menu/_components/add-category-form";
+import DeleteCategory from "@/app/head/[restaurantId]/menu/_components/delete-category";
+import UpdateCategoryForm from "@/app/head/[restaurantId]/menu/_components/update-category-form";
+
+const EditMode = ({
+  categoryName,
+  onDelete,
+  isDialogOpen,
+  setIsDialogOpen,
+  refetchCategories,
+}: {
+  categoryName: string;
+  isDialogOpen: boolean;
+  setIsDialogOpen: (value: boolean) => void;
+  refetchCategories: () => void;
+  onDelete: () => void;
+}) => {
+  return (
+    <div className="flex gap-1">
+      {/* <Button variant="outline" size="icon" onClick={() => onEdit()}>
+        <Edit size={16} />
+      </Button> */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <Button
+            className=""
+            variant={"outline"}
+            size={"icon"}
+            onClick={() => setIsDialogOpen(true)}
+          >
+            <Edit size={16} />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="rounded-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Update Category</DialogTitle>
+            <DialogDescription className="text-center">
+              Update the category name
+            </DialogDescription>
+          </DialogHeader>
+          <UpdateCategoryForm
+            categoryName={categoryName}
+            onSuccess={() => {
+              setIsDialogOpen(false);
+              refetchCategories();
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+      <DeleteCategory onDelete={() => onDelete()} />
+    </div>
+  );
+};
 
 const MenuManagement = () => {
+  const [edit, setEdit] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editCategoryName, setEditCategoryName] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
   const { restaurantId } = useParams<{ restaurantId: string }>();
-  const { data: categories, isLoading: isLoadingCategories } =
-    useDishCategories.useGetDishCategories(restaurantId);
+  const {
+    data: categories,
+    isLoading: isLoadingCategories,
+    refetch: refetchCategories,
+  } = useDishCategories.useGetDishCategories(restaurantId);
   const {
     data: dishes,
     isLoading,
@@ -49,6 +106,14 @@ const MenuManagement = () => {
     "all",
   );
   const deleteDishAction = useDishes.useDeleteDish();
+  const deleteCategory = useDishCategories.useDeleteDishCategory();
+  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
+  const handleEditCategory = (categoryName: string) => {
+    setEditCategoryName(categoryName);
+  };
+  const handleCloseEditDialog = () => {
+    setEditCategoryName(null);
+  };
 
   // Format price to VND
   const formatPrice = (price: number) => {
@@ -70,8 +135,63 @@ const MenuManagement = () => {
     return category ? category.categoryName : "";
   };
 
+  // Handle delete category
+  const handleDeleteCategory = async (categoryName: string) => {
+    if (isLoadingCategories) return;
+    try {
+      await deleteCategory.mutateAsync({
+        restaurantId,
+        categoryName,
+      });
+      toast({
+        title: "Success",
+        description: "Category deleted successfully",
+      });
+      refetchCategories();
+    } catch (error) {
+      console.error({ error });
+      switch ((error as ErrorType).code) {
+        case "NOT_AUTHENTICATED":
+          toast({
+            title: "Error",
+            description: "You are not authenticated",
+            variant: "destructive",
+          });
+          break;
+        case "NOT_OWNER":
+          toast({
+            title: "Error",
+            description: "You are not the owner",
+            variant: "destructive",
+          });
+          break;
+        case "RESTAURANT_NOT_EXIST":
+          toast({
+            title: "Error",
+            description: "Restaurant does not exist",
+            variant: "destructive",
+          });
+        case "DISH_CATEGORY_NOT_EXIST":
+          toast({
+            title: "Error",
+            description: "Category does not exist",
+            variant: "destructive",
+          });
+        default:
+          toast({
+            title: "Error",
+            description: "An error occurred",
+            variant: "destructive",
+          });
+          break;
+      }
+    }
+  };
+
   // Handle delete item
   const handleDeleteItem = async (id: string) => {
+    if (isLoadingDelete) return;
+    setIsLoadingDelete(true);
     try {
       await deleteDishAction.mutateAsync(id);
       toast({
@@ -111,12 +231,14 @@ const MenuManagement = () => {
           });
           break;
       }
+    } finally {
+      setIsLoadingDelete(false);
     }
   };
 
   if (isError) return <div>Error</div>;
 
-  if (isLoading || isLoadingCategories)
+  if (isLoading || isLoadingCategories || !dishes || !categories)
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader />
@@ -125,6 +247,13 @@ const MenuManagement = () => {
 
   return (
     <div className="container mx-auto p-4">
+      {isLoadingDelete ? (
+        <div className="flex h-screen items-center justify-center">
+          <Loader />
+        </div>
+      ) : (
+        <></>
+      )}
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-xl font-bold md:text-3xl">Menu Management</h1>
         <Link
@@ -146,17 +275,39 @@ const MenuManagement = () => {
           All Items
         </Button>
         {categories?.map((category) => (
-          <Button
-            key={category.categoryName}
-            variant={
-              selectedCategory === category.categoryName ? "default" : "outline"
-            }
-            onClick={() => setSelectedCategory(category.categoryName)}
+          <div
+            className={`flex gap-2 rounded-md border-input ${edit ? "border" : "border-none"} `}
           >
-            {category.categoryName}
-          </Button>
+            <Button
+              disabled={edit}
+              className={`${edit ? "border-none" : ""}`}
+              key={category.categoryName}
+              variant={
+                selectedCategory === category.categoryName
+                  ? "default"
+                  : "outline"
+              }
+              onClick={() => setSelectedCategory(category.categoryName)}
+            >
+              <p> {category.categoryName}</p>
+            </Button>
+            {edit ? (
+              <EditMode
+                categoryName={category.categoryName}
+                isDialogOpen={editCategoryName === category.categoryName}
+                setIsDialogOpen={(isOpen) =>
+                  isOpen
+                    ? handleEditCategory(category.categoryName)
+                    : handleCloseEditDialog()
+                }
+                refetchCategories={refetchCategories}
+                onDelete={() => handleDeleteCategory(category.categoryName)}
+              />
+            ) : (
+              <></>
+            )}
+          </div>
         ))}
-
         <div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -181,12 +332,15 @@ const MenuManagement = () => {
               <AddCategoryForm
                 onSuccess={() => {
                   setIsDialogOpen(false);
-                  router.refresh();
+                  refetchCategories();
                 }}
               />
             </DialogContent>
           </Dialog>
         </div>
+        <Button onClick={() => setEdit(!edit)}>
+          <Pen /> Edit
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

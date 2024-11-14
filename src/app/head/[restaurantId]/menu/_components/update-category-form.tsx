@@ -1,7 +1,7 @@
 import useDishCategories from "@/hooks/use-dish-categories";
 import {
-  CreateDishCategoriesBody,
-  CreateDishCategoriesBodyType,
+  UpdateDishCategoryBody,
+  UpdateDishCategoryBodyType,
 } from "@/schema/dishCategories.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -15,34 +15,45 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from "next/navigation";
 import { ErrorType } from "@/types/error.type";
 
-export default function AddCategoryForm({
+export default function UpdateCategoryForm({
   onSuccess,
+  categoryName,
 }: {
+  categoryName: string;
   onSuccess: () => void;
 }) {
   const { restaurantId } = useParams<{ restaurantId: string }>();
-  const createCategory = useDishCategories.useCreateDishCategory();
+  const updateCategory = useDishCategories.useUpdateDishCategory();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const form = useForm<CreateDishCategoriesBodyType>({
-    resolver: zodResolver(CreateDishCategoriesBody),
+  const form = useForm<UpdateDishCategoryBodyType>({
+    resolver: zodResolver(UpdateDishCategoryBody),
     defaultValues: {
-      categoryName: "",
+      newName: categoryName,
     },
+    mode: "onChange",
   });
 
-  async function onSubmit(values: CreateDishCategoriesBodyType) {
+  useEffect(() => {
+    form.reset({
+      newName: categoryName,
+    });
+  }, [categoryName]);
+
+  async function onSubmit(values: UpdateDishCategoryBodyType) {
+    console.log(values);
     if (loading) return;
     setLoading(true);
     try {
-      const data = await createCategory.mutateAsync({
+      const data = await updateCategory.mutateAsync({
         restaurantId,
-        categoryName: { categoryName: values.categoryName.trim() },
+        categoryName,
+        newName: values,
       });
       console.log(data);
       toast({
@@ -103,7 +114,7 @@ export default function AddCategoryForm({
         >
           <FormField
             control={form.control}
-            name="categoryName"
+            name="newName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[16px]">Category Name</FormLabel>
@@ -120,7 +131,7 @@ export default function AddCategoryForm({
           />
 
           <Button type="submit" className="!mt-8 h-[60px] w-full text-xl">
-            Add Category
+            Update Category
           </Button>
         </form>
       </Form>

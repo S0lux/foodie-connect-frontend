@@ -12,7 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
-export default function DeleteDish({ onDelete }: { onDelete: () => void }) {
+export default function DeleteCategory({ onDelete }: { onDelete: () => void }) {
   const deleteDish = async () => {
     onDelete();
   };
@@ -25,9 +25,11 @@ export default function DeleteDish({ onDelete }: { onDelete: () => void }) {
       </AlertDialogTrigger>
       <AlertDialogContent className="rounded-md">
         <AlertDialogHeader>
-          <AlertDialogTitle>Do you want to delete this dish?</AlertDialogTitle>
+          <AlertDialogTitle>
+            Do you want to delete this category?
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently delete the dish from your menu.
+            This will permanently delete the category from your menu.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
