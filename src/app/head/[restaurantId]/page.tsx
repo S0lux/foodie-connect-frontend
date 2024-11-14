@@ -2,7 +2,6 @@
 
 import RestaurantHomePage from "@/app/head/[restaurantId]/_components/restaurant-home-page";
 import useRestaurants from "@/hooks/use-restaurants";
-import cld from "@/lib/cld";
 import { getBannerUrl, getLogoUrl } from "@/lib/handleImage";
 import { Loader } from "lucide-react";
 import Image from "next/image";
@@ -118,14 +117,15 @@ export default function Restaurant({
             </div>
             <div className="relative top-3/4 pl-4 md:absolute">
               <div className="flex items-center">
-                <div className="mt-4 h-24 w-24 rounded-full bg-white p-2 md:mt-0 md:h-32 md:w-32">
+                <div className="mt-4 flex h-24 w-24 rounded-full bg-white p-2 md:mt-0 md:h-32 md:w-32">
                   <Image
                     src={logoUrl}
                     alt="Banner"
-                    width={150}
-                    height={150}
+                    width={128}
+                    height={128}
                     layout="responsive"
-                    className="rounded-full"
+                    objectFit="cover"
+                    className="h-full w-full rounded-full"
                   />
                 </div>
                 <div className="h-full">

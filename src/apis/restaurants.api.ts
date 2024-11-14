@@ -1,5 +1,8 @@
 import http from "@/lib/http";
-import { CreateRestaurantBodyType } from "@/schema/restaurant.schema";
+import {
+  CreateRestaurantBodyType,
+  UpdateRestaurantBodyType,
+} from "@/schema/restaurant.schema";
 import { ErrorType } from "@/types/error.type";
 import { Restaurant } from "@/types/restaurant.type";
 import axios from "axios";
@@ -61,6 +64,89 @@ const restaurantsActions = {
         throw createRestaurantError;
       } else {
         console.error("Unexpected error during create restaurant:", error);
+        throw error;
+      }
+    }
+  },
+
+  updateRestaurant: async (
+    restaurantId: string,
+    restaurant: UpdateRestaurantBodyType,
+  ) => {
+    try {
+      const response = await http.put(
+        `v1/restaurants/${restaurantId}`,
+        restaurant,
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const updateRestaurantError = error.response.data as ErrorType;
+        console.error("Error during update restaurant:", updateRestaurantError);
+        throw updateRestaurantError;
+      } else {
+        console.error("Unexpected error during update restaurant:", error);
+        throw error;
+      }
+    }
+  },
+
+  updateRestaurantLogo: async (restaurantId: string, logo: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", logo);
+      const response = await http.put(
+        `v1/restaurants/${restaurantId}/logo`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const updateRestaurantLogoError = error.response.data as ErrorType;
+        console.error(
+          "Error during update restaurant logo:",
+          updateRestaurantLogoError,
+        );
+        throw updateRestaurantLogoError;
+      } else {
+        console.error("Unexpected error during update restaurant logo:", error);
+        throw error;
+      }
+    }
+  },
+
+  updateRestaurantBanner: async (restaurantId: string, banner: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", banner);
+      const response = await http.put(
+        `v1/restaurants/${restaurantId}/banner`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const updateRestaurantBannerError = error.response.data as ErrorType;
+        console.error(
+          "Error during update restaurant banner:",
+          updateRestaurantBannerError,
+        );
+        throw updateRestaurantBannerError;
+      } else {
+        console.error(
+          "Unexpected error during update restaurant banner:",
+          error,
+        );
         throw error;
       }
     }

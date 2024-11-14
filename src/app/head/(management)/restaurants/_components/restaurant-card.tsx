@@ -13,6 +13,18 @@ import { Restaurant } from "@/types/restaurant.type";
 import Link from "next/link";
 import { getLogoUrl } from "@/lib/handleImage";
 
+const Rating = ({ value }: { value: number }) => {
+  const stars = [];
+  for (let i = 0; i < 5; i++) {
+    if (i < value) {
+      stars.push(<span key={i}>&#9733;</span>);
+    } else {
+      stars.push(<span key={i}>&#9734;</span>);
+    }
+  }
+  return <div className="flex">{stars}</div>;
+};
+
 export default function RestaurantCard({
   restaurant,
 }: {
@@ -40,7 +52,6 @@ export default function RestaurantCard({
           </Avatar>
           <div>
             <CardTitle className="text-lg">{restaurant.name}</CardTitle>
-            <p className="text-sm text-muted-foreground">{restaurant.phone}</p>
           </div>
         </div>
         <DropdownMenu>
@@ -55,9 +66,11 @@ export default function RestaurantCard({
                 View Details
               </DropdownMenuItem>
             </Link>
-            <DropdownMenuItem className="hover:cursor-pointer">
-              Edit Restaurant
-            </DropdownMenuItem>
+            <Link href={`/head/${restaurant.id}/update`}>
+              <DropdownMenuItem className="hover:cursor-pointer">
+                Edit Restaurant
+              </DropdownMenuItem>
+            </Link>
             <DropdownMenuItem className="text-red-600 hover:cursor-pointer">
               Deactivate
             </DropdownMenuItem>
@@ -83,15 +96,15 @@ export default function RestaurantCard({
             </div>
           </div>
           <div className="mt-4 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
+            <div className="flex w-full items-center justify-between space-x-2">
               <Badge variant={checkStatus(restaurant.status)}>
                 {restaurant.status}
               </Badge>
-              {/* <Badge variant="outline">⭐ {restaurant.rating}</Badge> */}
+              <div className="flex items-center">
+                {" "}
+                <Rating value={restaurant.scoreOverview.averageRating} />
+              </div>
             </div>
-            {/* <div className="text-sm font-medium">
-              ${restaurant.revenue.toLocaleString()}
-            </div> */}
           </div>
         </div>
       </CardContent>

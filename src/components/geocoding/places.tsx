@@ -7,11 +7,16 @@ import usePlacesAutocomplete, {
 } from "use-places-autocomplete";
 
 interface PlacesProps {
+  children: React.ReactNode;
   setFormatAddress: (address: string) => void;
   setOffice: (position: google.maps.LatLngLiteral) => void;
 }
 
-export default function Places({ setFormatAddress, setOffice }: PlacesProps) {
+export default function Places({
+  children,
+  setFormatAddress,
+  setOffice,
+}: PlacesProps) {
   const {
     ready,
     value,
@@ -48,6 +53,7 @@ export default function Places({ setFormatAddress, setOffice }: PlacesProps) {
       >
         Clear
       </Button>
+      {children}
       {status === "OK" && (
         <div className="relative w-full">
           <ul className="absolute z-10 w-full bg-white shadow-md">

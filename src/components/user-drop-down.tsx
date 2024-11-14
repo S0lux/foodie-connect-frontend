@@ -20,7 +20,6 @@ import { ErrorType } from "@/types/error.type";
 
 const UserDropDown = () => {
   const { data: user, isLoading, isError, error } = useAuth.useGetSession();
-  console.log(user);
   const logout = useAuth.useLogout();
   const route = useRouter();
   const [loading, setLoading] = useState(false);

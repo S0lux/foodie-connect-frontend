@@ -113,152 +113,165 @@ const AddRestaurantForm = () => {
           className="w-full flex-shrink-0 space-y-4"
           noValidate
         >
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            <Card>
-              <CardContent className="pt-6">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="mb-4">
-                      <FormLabel className="text-[16px] font-bold">
-                        Name
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          <div className="grid grid-cols-1 gap-8">
+            <div className="flex w-full justify-center">
+              <Card>
+                <CardContent className="pt-6">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="mb-4">
+                        <FormLabel className="text-[16px] font-bold">
+                          Name
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem className="mb-4">
-                      <FormLabel className="text-[16px] font-bold">
-                        Phone
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter the phone number"
-                          type="tel"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="longitudeLatitude"
-                  render={({ field }) => (
-                    <FormItem className="mb-4">
-                      <FormLabel className="text-[16px] font-bold">
-                        Location
-                      </FormLabel>
-                      <div className="flex gap-2">
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem className="mb-4">
+                        <FormLabel className="text-[16px] font-bold">
+                          Phone
+                        </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Selected location"
-                            value={office ? `${formatAddress}` : ""}
-                            readOnly
-                          />
-                        </FormControl>
-                        <FormControl className="hidden">
-                          <Input
-                            placeholder="Selected location"
+                            placeholder="Enter the phone number"
+                            type="tel"
                             {...field}
-                            value={office ? `${office.lng},${office.lat}` : ""}
-                            readOnly
-                            hidden={true}
                           />
                         </FormControl>
-                        <FormControl className="">
-                          <Sheet>
-                            <SheetTrigger asChild>
-                              <Button variant="outline">Select Location</Button>
-                            </SheetTrigger>
-                            <SheetContent side={"bottom"} className="h-4/5">
-                              <SheetHeader>
-                                <SheetTitle>Select location</SheetTitle>
-                                <SheetDescription></SheetDescription>
-                              </SheetHeader>
-                              <Map
-                                setFormatAddress={setFormatAddress}
-                                office={office}
-                                setOffice={setOffice}
-                              />
-                              <SheetFooter>
-                                <SheetClose asChild>
-                                  <Button type="submit">Save changes</Button>
-                                </SheetClose>
-                              </SheetFooter>
-                            </SheetContent>
-                          </Sheet>
-                        </FormControl>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex justify-between">
-                  {" "}
-                  <FormField
-                    control={form.control}
-                    name="openTime"
-                    render={({ field }) => (
-                      <FormItem className="mb-4">
-                        <FormLabel className="text-[16px] font-bold">
-                          Open Time
-                        </FormLabel>
-                        <TimePicker
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
-                        <FormDescription>Select opening hours</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
-                    name="closeTime"
+                    name="longitudeLatitude"
                     render={({ field }) => (
                       <FormItem className="mb-4">
                         <FormLabel className="text-[16px] font-bold">
-                          Close Time
+                          Location
                         </FormLabel>
-                        <TimePicker
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
-                        <FormDescription>Select closing hours</FormDescription>
+                        <div className="flex gap-2">
+                          <FormControl>
+                            <Input
+                              placeholder="Selected location"
+                              value={office ? `${formatAddress}` : ""}
+                              readOnly
+                            />
+                          </FormControl>
+                          <FormControl className="hidden">
+                            <Input
+                              placeholder="Selected location"
+                              {...field}
+                              value={
+                                office ? `${office.lng},${office.lat}` : ""
+                              }
+                              readOnly
+                              hidden={true}
+                            />
+                          </FormControl>
+                          <FormControl className="">
+                            <Sheet>
+                              <SheetTrigger asChild>
+                                <Button variant="outline">
+                                  Select Location
+                                </Button>
+                              </SheetTrigger>
+                              <SheetContent side={"bottom"} className="h-4/5">
+                                <SheetHeader>
+                                  <SheetTitle>Select location</SheetTitle>
+                                  <SheetDescription></SheetDescription>
+                                </SheetHeader>
+                                <Map
+                                  children={
+                                    <SheetClose asChild>
+                                      <Button type="submit">
+                                        Save changes
+                                      </Button>
+                                    </SheetClose>
+                                  }
+                                  setFormatAddress={setFormatAddress}
+                                  office={office}
+                                  setOffice={setOffice}
+                                />
+                                <SheetFooter></SheetFooter>
+                              </SheetContent>
+                            </Sheet>
+                          </FormControl>
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </div>
 
-                <div className="mt-6 flex justify-center gap-3">
-                  <Button
-                    type="button"
-                    size={"lg"}
-                    variant="outline"
-                    onClick={() => router.back()}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" size={"lg"} disabled={loading}>
-                    {loading ? "Adding..." : "Add Item"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="flex gap-5">
+                    {" "}
+                    <FormField
+                      control={form.control}
+                      name="openTime"
+                      render={({ field }) => (
+                        <FormItem className="mb-4">
+                          <FormLabel className="text-[16px] font-bold">
+                            Open Time
+                          </FormLabel>
+                          <TimePicker
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                          <FormDescription>
+                            Select opening hours
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="closeTime"
+                      render={({ field }) => (
+                        <FormItem className="mb-4">
+                          <FormLabel className="text-[16px] font-bold">
+                            Close Time
+                          </FormLabel>
+                          <TimePicker
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                          <FormDescription>
+                            Select closing hours
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="mt-6 flex justify-center gap-3">
+                    <Button
+                      type="button"
+                      size={"lg"}
+                      variant="outline"
+                      onClick={() => router.back()}
+                    >
+                      Cancel
+                    </Button>
+                    <Button type="submit" size={"lg"} disabled={loading}>
+                      {loading ? "Adding..." : "Add Item"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </form>
       </Form>

@@ -4,6 +4,14 @@ export type SocialLink = {
   platformType: string;
   url: string;
 };
+export type ScoreOverview = {
+  averageRating: number;
+  fiveStars: number;
+  fourStars: number;
+  threeStars: number;
+  twoStars: number;
+  oneStar: number;
+};
 
 export type Restaurant = {
   id: string;
@@ -19,4 +27,5 @@ export type Restaurant = {
   longitude: number;
   headId: string;
   createdAt: string;
+  scoreOverview: ScoreOverview;
 };

@@ -27,8 +27,10 @@ export const CreateRestaurantBody = z.object({
         "Invalid format. Please enter as 'longitude,latitude' (e.g. 103.8198,1.3521)",
     },
   ),
-  status: z.enum(["Open", "Closed"]),
+  status: z.enum(["Open", "Closed", "PermanentlyClosed"]),
   phone: z.string().regex(/^\d{10}$/),
 });
+
+export type UpdateRestaurantBodyType = z.TypeOf<typeof CreateRestaurantBody>;
 
 export type CreateRestaurantBodyType = z.TypeOf<typeof CreateRestaurantBody>;

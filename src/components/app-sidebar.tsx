@@ -1,12 +1,9 @@
 "use client";
 import {
   BadgeDollarSign,
-  BookA,
-  Calendar,
-  ChartArea,
-  ChartBarStacked,
-  HandPlatter,
+  ChartLine,
   Home,
+  Salad,
   Settings,
   Utensils,
 } from "lucide-react";
@@ -52,6 +49,11 @@ export function AppSidebar() {
   console.log(restaurantId);
   const items = [
     {
+      title: "Head Dashboard",
+      url: "/head/",
+      icon: ChartLine,
+    },
+    {
       title: "Overview",
       url: `/head/${restaurantId}/`,
       icon: Home,
@@ -62,23 +64,18 @@ export function AppSidebar() {
       icon: Utensils,
     },
     {
+      title: "Add Menu Item",
+      url: `/head/${restaurantId}/menu/add`,
+      icon: Salad,
+    },
+    {
       title: "Promotions",
       url: `/head/${restaurantId}/promotions`,
       icon: BadgeDollarSign,
     },
     {
-      title: "Categories",
-      url: `/head/${restaurantId}/categories`,
-      icon: ChartBarStacked,
-    },
-    {
-      title: "Areas",
-      url: `/head/${restaurantId}/areas`,
-      icon: ChartArea,
-    },
-    {
       title: "Settings",
-      url: `/head/${restaurantId}/settings`,
+      url: `/head/${restaurantId}/update`,
       icon: Settings,
     },
   ];

@@ -1,5 +1,8 @@
 import restaurantsActions from "@/apis/restaurants.api";
-import { CreateRestaurantBodyType } from "@/schema/restaurant.schema";
+import {
+  CreateRestaurantBodyType,
+  UpdateRestaurantBodyType,
+} from "@/schema/restaurant.schema";
 import { ErrorType } from "@/types/error.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -50,6 +53,73 @@ const useRestaurants = {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: ["restaurants"],
+        });
+      },
+    });
+  },
+
+  useUpdateRestaurant() {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: ({
+        restaurantId,
+        restaurantDetails,
+      }: {
+        restaurantId: string;
+        restaurantDetails: UpdateRestaurantBodyType;
+      }) =>
+        restaurantsActions.updateRestaurant(restaurantId, restaurantDetails),
+      onError: (error: ErrorType) => {
+        console.error("Error during restaurant creation:", error);
+        throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["restaurants"],
+        });
+      },
+    });
+  },
+
+  useUpdateRestaurantLogo() {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: ({
+        restaurantId,
+        logo,
+      }: {
+        restaurantId: string;
+        logo: File;
+      }) => restaurantsActions.updateRestaurantLogo(restaurantId, logo),
+      onError: (error: ErrorType) => {
+        console.error("Error during restaurant logo update:", error);
+        throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["restaurants", "restaurant"],
+        });
+      },
+    });
+  },
+
+  useUpdateRestaurantBanner() {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: ({
+        restaurantId,
+        banner,
+      }: {
+        restaurantId: string;
+        banner: File;
+      }) => restaurantsActions.updateRestaurantBanner(restaurantId, banner),
+      onError: (error: ErrorType) => {
+        console.error("Error during restaurant banner update:", error);
+        throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["restaurants", "restaurant"],
         });
       },
     });

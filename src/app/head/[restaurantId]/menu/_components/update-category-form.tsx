@@ -91,6 +91,7 @@ export default function UpdateCategoryForm({
             description: "Category already exists",
             variant: "destructive",
           });
+          break;
         default:
           toast({
             title: "Error",

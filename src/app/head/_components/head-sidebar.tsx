@@ -47,7 +47,7 @@ function SidebarItem({
 export function HeadSidebar() {
   const items = [
     {
-      title: "Overview",
+      title: "Head Dashboard",
       url: "/head/",
       icon: ChartLine,
     },
@@ -60,16 +60,6 @@ export function HeadSidebar() {
       title: "Add Restaurant",
       url: "/head/restaurants/add",
       icon: PlusCircle,
-    },
-    {
-      title: "Activity Logs",
-      url: "/head/activity",
-      icon: History,
-    },
-    {
-      title: "Settings",
-      url: "/head/settings",
-      icon: Settings,
     },
   ];
 

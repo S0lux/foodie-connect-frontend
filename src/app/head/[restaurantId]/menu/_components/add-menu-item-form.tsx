@@ -74,16 +74,22 @@ const AddMenuItemPage = () => {
     setLoading(true);
     try {
       const data = await createDishAction.mutateAsync(values);
-      toast({
-        title: "Success",
-        description: "Menu item added successfully",
-      });
-      console.log({ data });
+      if (!image) {
+        toast({
+          title: "Success",
+          description: "Menu item added successfully",
+        });
+      }
+
       if (image) {
         try {
           await uploadImageAction.mutateAsync({
             dishId: data.dishId,
             image: image,
+          });
+          toast({
+            title: "Success",
+            description: "Menu item added successfully",
           });
           router.push(`/head/${restaurantId}/menu`);
         } catch (error) {
@@ -272,21 +278,33 @@ const AddMenuItemPage = () => {
                   )}
                 />
               </CardContent>
+              <div className="mt-6 flex justify-center gap-3">
+                <Button
+                  type="button"
+                  size={"lg"}
+                  variant="outline"
+                  onClick={() => router.back()}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" size={"lg"} disabled={loading}>
+                  {loading ? "Adding..." : "Add Item"}
+                </Button>
+              </div>
             </Card>
 
             <Card>
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   <Label>Item Image</Label>
-                  <div className="rounded-lg aspect-video overflow-hidden border">
+                  <div className="rounded-lg overflow-hidden border">
                     <Image
-                      src={
-                        imagePreview || "https://api.dicebear.com/9.x/glass/svg"
-                      }
+                      src={imagePreview || "/images/no_image_dish.png"}
                       alt="Preview"
                       width={230}
                       height={150}
                       layout="responsive"
+                      objectFit="cover"
                     />
                   </div>
                   <Label
@@ -306,20 +324,6 @@ const AddMenuItemPage = () => {
                   <p className="text-center text-sm text-gray-500">
                     Supported formats: JPG, PNG. Max file size: 5MB
                   </p>
-                </div>
-
-                <div className="mt-6 flex justify-center gap-3">
-                  <Button
-                    type="button"
-                    size={"lg"}
-                    variant="outline"
-                    onClick={() => router.back()}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" size={"lg"} disabled={loading}>
-                    {loading ? "Adding..." : "Add Item"}
-                  </Button>
                 </div>
               </CardContent>
             </Card>

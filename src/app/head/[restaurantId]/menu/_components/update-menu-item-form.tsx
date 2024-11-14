@@ -91,7 +91,6 @@ const UpdateMenuItemPage = () => {
   };
 
   const updateImage = async () => {
-    console.log(image);
     if (image) {
       try {
         await uploadImageAction.mutateAsync({

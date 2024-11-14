@@ -6,12 +6,14 @@ type LatLngLiteral = google.maps.LatLngLiteral;
 type MapOptions = google.maps.MapOptions;
 
 interface PlacesProps {
+  children: React.ReactNode;
   setFormatAddress: (address: string) => void;
   office: LatLngLiteral | null;
   setOffice: (position: google.maps.LatLngLiteral) => void;
 }
 
 export default function Map({
+  children,
   setFormatAddress,
   office,
   setOffice,
@@ -53,6 +55,7 @@ export default function Map({
       <div className="flex h-screen flex-col">
         <div className="mb-4 flex gap-2">
           <Places
+            children={children}
             setFormatAddress={setFormatAddress}
             setOffice={(position: LatLngLiteral) => {
               setOffice(position);
