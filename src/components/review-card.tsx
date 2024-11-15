@@ -8,19 +8,79 @@ import {
   CardTitle,
 } from "./ui/card";
 import { twMerge } from "tailwind-merge";
-import { Star, Store, Utensils } from "lucide-react";
+import {
+  Edit,
+  EllipsisVertical,
+  Menu,
+  Star,
+  Store,
+  Trash,
+  Utensils,
+} from "lucide-react";
 import { DishReview } from "@/types/dish-review.type";
 import { RestaurantReview } from "@/types/restaurant-review.type";
+import useRestaurantDetail from "@/hooks/use-restaurant-detail";
+import useAuth from "@/hooks/use-auth";
+import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { DropdownMenuItem } from "./ui/dropdown-menu";
+import { toast } from "@/hooks/use-toast";
+import { description } from "./pie-chart";
+import useDishReview from "@/hooks/use-dish-review";
 
 export const ReviewCard = ({
-  children,
+  id,
+  refetch,
   reviewType,
   review,
 }: {
+  id: string;
+  refetch: Array<() => void>;
   children?: ReactNode;
   review?: DishReview | RestaurantReview;
   reviewType: ReviewEnum;
 }) => {
+  const deleteRestaurantReviewAction =
+    useRestaurantDetail.useDeleteRestaurantReview();
+  const deleteDishAction = useDishReview.useDeleteDishReview();
+
+  const { data: user } = useAuth.useGetSession();
+  const canEdit = review?.author.id === user?.id;
+
+  const handleDelete = async () => {
+    try {
+      if (reviewType === ReviewEnum.RESTAURANT && review) {
+        await deleteRestaurantReviewAction.mutateAsync({
+          restaurantId: id,
+          reviewId: review.reviewId,
+        });
+      }
+      if (reviewType === ReviewEnum.DISH && review) {
+        await deleteDishAction.mutateAsync({
+          dishId: id,
+          reviewId: review.reviewId,
+        });
+      }
+      refetch.forEach((func) => {
+        func();
+      });
+      toast({
+        title: "Success",
+        description: "Review removed",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        variant: "destructive",
+      });
+      console.log(err);
+    }
+  };
+
   return (
     <Card className="relative border-none dark:bg-muted/20">
       <CardHeader className="border-b border-muted-foreground/30 py-2">
@@ -40,24 +100,44 @@ export const ReviewCard = ({
           </div>
 
           {/* review's rating */}
-          <div className="flex flex-row">
-            {review &&
-              Array.from({ length: review.rating }, (_, i) => (
-                <Star fill="#D4AF37" stroke="#D4AF37" size={20} />
-              ))}
-          </div>
+          {canEdit && (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="mx-1">
+                <EllipsisVertical size={20}></EllipsisVertical>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="absoute right-0 py-2">
+                <DropdownMenuItem
+                  className="cursor-pointer text-red-500"
+                  onClick={handleDelete}
+                >
+                  <Trash></Trash>
+                  <span>Delete review</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="mt-5">
         {/* review content */}
         {review?.content}
       </CardContent>
-      <CardFooter className="text-sm text-muted-foreground">
+
+      <CardFooter className="flex flex-col items-start space-y-2 text-sm text-muted-foreground">
+        {/* review's rating */}
+        <div className="flex flex-row items-center">
+          {review &&
+            Array.from({ length: review.rating }, (_, i) => (
+              <Star fill="#D4AF37" stroke="#D4AF37" size={20} />
+            ))}
+        </div>
         {/* posted date */}
-        Posted in: {review && new Date(review.createdAt).toLocaleDateString()}
+        <span>
+          Posted in: {review && new Date(review.createdAt).toLocaleDateString()}
+        </span>
       </CardFooter>
 
-      <ReviewTag className="bottom-0 right-7">
+      <ReviewTag className="bottom-0 right-6">
         {reviewType === ReviewEnum.RESTAURANT && <Store size={20}></Store>}
         {reviewType === ReviewEnum.DISH && <Utensils size={20}></Utensils>}
       </ReviewTag>

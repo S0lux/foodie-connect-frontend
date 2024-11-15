@@ -2,20 +2,9 @@
 import FoodGrid from "@/components/food-grid";
 import ReviewGrid from "@/components/review-grid";
 import { Card, CardTitle } from "@/components/ui/card";
-import useRestaurantDetail from "@/lib/use-restaurant-detail";
+import useRestaurantDetail from "@/hooks/use-restaurant-detail";
 import { AlarmClock, MapPin, PhoneIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
-
-export type DishDto = {
-  name: string;
-  price: number;
-};
-
-export type ReviewDto = {
-  content: string;
-  rating: number;
-  postedDate: Date;
-};
 
 export default function RestauranDetailPage({
   params,
@@ -26,7 +15,6 @@ export default function RestauranDetailPage({
     params.id,
   );
   console.log(params.id);
-
   return (
     <div className="flex flex-col space-y-5">
       <Card className="flex flex-col space-x-5 border-none md:flex-row">

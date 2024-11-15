@@ -23,9 +23,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@/lib/http";
 import { set } from "date-fns";
 import { toast } from "@/hooks/use-toast";
-import useDishReview from "@/lib/use-dish-review";
+import useDishReview from "@/hooks/use-dish-review";
 import useAuth from "@/hooks/use-auth";
-import useRestaurantDetail from "@/lib/use-restaurant-detail";
+import useRestaurantDetail from "@/hooks/use-restaurant-detail";
 
 export enum ReviewEnum {
   RESTAURANT,

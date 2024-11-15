@@ -1,29 +1,25 @@
 "use client";
-import { ReviewDto } from "@/app/(main)/restaurant-detail/[id]/page";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { ReactNode, useState } from "react";
-import { twMerge } from "tailwind-merge";
-import { ArrowDown, ArrowUp, StarIcon, Store, Utensils } from "lucide-react";
-import ReviewForm, { ReviewEnum } from "./dish-review-form";
+import { Card, CardContent, CardFooter, CardTitle } from "./ui/card";
+import { useEffect, useState } from "react";
+import { ArrowDown, ArrowUp, Star, StarIcon } from "lucide-react";
+import { ReviewEnum } from "./dish-review-form";
 import { ReviewCard } from "./review-card";
-import { DishReview } from "@/types/dish-review.type";
-import useRestaurantDetail from "@/lib/use-restaurant-detail";
+import useRestaurantDetail from "@/hooks/use-restaurant-detail";
 import { RestaurantReview } from "@/types/restaurant-review.type";
 import RestaurantReviewForm from "./restaurant-review-form";
+import { Restaurant } from "@/types/restaurant.type";
+import { ScoreOverview } from "@/schema/dish.schema";
 
 const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const { data: restaurantReviews, refetch } =
+  const { data: restaurantReviews, refetch: refetchReviews } =
     useRestaurantDetail.useGetRestaurantReview(restaurantId);
 
-  console.log(restaurantId);
+  const { data: restaurantDetail, refetch: refetchDetail } =
+    useRestaurantDetail.useGetRestaurantDetail(restaurantId);
+
+  const totalReview = getTotalReviews(restaurantDetail?.scoreOverview);
 
   return (
     <Card className="space-y-3 border-none px-2 py-2 md:px-7">
@@ -32,20 +28,22 @@ const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
       </CardTitle>
       <CardContent className="flex flex-col space-y-5 md:flex-row">
         {/* reviews statistics */}
-        <ReviewStatistics></ReviewStatistics>
+        <ReviewStatistics restaurant={restaurantDetail}></ReviewStatistics>
 
         {/* reviews */}
         <div className="relative flex flex-col space-y-5 md:w-1/2">
           {/* leave a review */}
           {restaurantReviews?.myReview ? (
             <ReviewCard
+              refetch={[refetchDetail, refetchReviews]}
+              id={restaurantId}
               reviewType={ReviewEnum.RESTAURANT}
               review={restaurantReviews.myReview}
             />
           ) : (
             <RestaurantReviewForm
               id={restaurantId}
-              refetch={refetch}
+              refetch={[refetchDetail, refetchReviews]}
             ></RestaurantReviewForm>
           )}
 
@@ -54,6 +52,8 @@ const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
               (review: RestaurantReview, index: number) => {
                 return (
                   <ReviewCard
+                    refetch={[refetchDetail, refetchReviews]}
+                    id={restaurantId}
                     reviewType={ReviewEnum.RESTAURANT}
                     key={index}
                     review={review}
@@ -78,58 +78,126 @@ const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
   );
 };
 
-const ReviewStatistics = () => {
+const ReviewStatistics = ({ restaurant }: { restaurant?: Restaurant }) => {
   return (
     <div className="mt-5 md:sticky md:top-28 md:w-1/2">
       <div className="mt-5 grid grid-rows-2 md:sticky md:top-28 md:grid-cols-3">
         {/* overal rating */}
+
         <div className="flex flex-col place-self-center">
           <span className="text-center text-5xl font-bold text-primary">
-            4.3
+            {restaurant?.scoreOverview.averageRating}
           </span>
           <div className="flex flex-row justify-center text-primary">
-            <StarIcon size={15}></StarIcon>
-            <StarIcon size={15}></StarIcon>
-            <StarIcon size={15}></StarIcon>
-            <StarIcon size={15}></StarIcon>
-            <StarIcon size={15}></StarIcon>
+            {restaurant &&
+              Array.from(
+                { length: restaurant.scoreOverview.averageRating },
+                (_, i) => <Star fill="#D4AF37" stroke="#D4AF37" size={20} />,
+              )}
           </div>
           <span className="mt-2 text-center text-sm text-foreground">
-            10 reviews
+            {getTotalReviews(restaurant?.scoreOverview)} reviews
           </span>
         </div>
 
         {/* rating statistics */}
-        <div className="flex flex-col md:col-span-2">
-          <RatingStats label="5" percentage={"60"}></RatingStats>
-          <RatingStats label="4" percentage={"20"}></RatingStats>
-          <RatingStats label="3" percentage={"10"}></RatingStats>
-          <RatingStats label="2" percentage={"5"}></RatingStats>
-          <RatingStats label="1" percentage={"5"}></RatingStats>
+        <RatingStats scoreOverView={restaurant?.scoreOverview}></RatingStats>
+      </div>
+    </div>
+  );
+};
+
+const RatingStats = ({ scoreOverView }: { scoreOverView?: ScoreOverview }) => {
+  const [totalReview, setTotal] = useState(0);
+
+  useEffect(() => {
+    setTotal(getTotalReviews(scoreOverView));
+  }, [totalReview]);
+
+  return (
+    <div className="flex flex-col md:col-span-2">
+      {/* 5 stars */}
+      <div className="relative flex w-full flex-row items-center space-x-3 md:pr-10">
+        <span>5</span>
+        <div className="relative h-2 w-full rounded bg-background">
+          {scoreOverView && (
+            <div
+              className="absolute left-0 top-0 h-2 rounded bg-primary"
+              style={{
+                width: `${(scoreOverView.fiveStars / totalReview) * 100}%`,
+              }}
+            />
+          )}
+        </div>
+      </div>
+      {/* 4 stars */}
+      <div className="relative flex w-full flex-row items-center space-x-3 md:pr-10">
+        <span>4</span>
+        <div className="relative h-2 w-full rounded bg-background">
+          {scoreOverView && (
+            <div
+              className="absolute left-0 top-0 h-2 rounded bg-primary"
+              style={{
+                width: `${(scoreOverView.fourStars / totalReview) * 100}%`,
+              }}
+            />
+          )}
+        </div>
+      </div>
+      {/* 3 stars */}
+      <div className="relative flex w-full flex-row items-center space-x-3 md:pr-10">
+        <span>3</span>
+        <div className="relative h-2 w-full rounded bg-background">
+          {scoreOverView && (
+            <div
+              className="absolute left-0 top-0 h-2 rounded bg-primary"
+              style={{
+                width: `${(scoreOverView.threeStars / totalReview) * 100}%`,
+              }}
+            />
+          )}
+        </div>
+      </div>
+      {/* 2 stars */}
+      <div className="relative flex w-full flex-row items-center space-x-3 md:pr-10">
+        <span>2</span>
+        <div className="relative h-2 w-full rounded bg-background">
+          {scoreOverView && (
+            <div
+              className="absolute left-0 top-0 h-2 rounded bg-primary"
+              style={{
+                width: `${(scoreOverView.twoStars / totalReview) * 100}%`,
+              }}
+            />
+          )}
+        </div>
+      </div>
+      {/* 1 stars */}
+      <div className="relative flex w-full flex-row items-center space-x-3 md:pr-10">
+        <span>1</span>
+        <div className="relative h-2 w-full rounded bg-background">
+          {scoreOverView && (
+            <div
+              className="absolute left-0 top-0 h-2 rounded bg-primary"
+              style={{
+                width: `${(scoreOverView.oneStar / totalReview) * 100}%`,
+              }}
+            />
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-const RatingStats = ({
-  label,
-  percentage,
-}: {
-  label: string;
-  percentage: string;
-}) => {
-  return (
-    <div className="relative flex w-full flex-row items-center space-x-3 md:pr-10">
-      <span>{label}</span>
-      <div className="relative h-2 w-full rounded bg-background">
-        <div
-          className="absolute left-0 top-0 h-2 rounded bg-primary"
-          style={{ width: `${percentage}%` }}
-        />
-      </div>
-    </div>
-  );
-};
+function getTotalReviews(score?: ScoreOverview): number {
+  return score
+    ? score.fiveStars +
+        score.fourStars +
+        score.threeStars +
+        score.twoStars +
+        score.oneStar
+    : 1;
+}
 
 export default ReviewGrid;

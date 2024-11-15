@@ -13,12 +13,14 @@ import { ReviewCard } from "@/components/review-card";
 import http from "@/lib/http";
 import { Dish } from "@/types/dish.type";
 import { DishReview } from "@/types/dish-review.type";
-import useDishReview from "@/lib/use-dish-review";
+import useDishReview from "@/hooks/use-dish-review";
 import DishReviewForm from "@/components/dish-review-form";
 
 export default function DishDetailPage({ params }: { params: { id: string } }) {
   // helper functions
-  const { data: dishReviewsData } = useDishReview.useGetDishReview(params.id);
+  const { data: dishReviewsData, refetch } = useDishReview.useGetDishReview(
+    params.id,
+  );
   const { data: dishInfo } = useDishReview.useGetDishInfo(params.id);
 
   const formatedPrice = new Intl.NumberFormat("vi-VN", {
@@ -75,6 +77,8 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
             {/* leave a review */}
             {dishReviewsData?.myReview ? (
               <ReviewCard
+                refetch={[refetch]}
+                id={params.id}
                 review={dishReviewsData.myReview}
                 reviewType={ReviewEnum.DISH}
               />
@@ -86,6 +90,8 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
               (review: DishReview, index: number) => {
                 return (
                   <ReviewCard
+                    refetch={[refetch]}
+                    id={params.id}
                     reviewType={ReviewEnum.DISH}
                     key={index}
                     review={review}

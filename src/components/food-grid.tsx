@@ -1,11 +1,8 @@
-import { Key } from "react";
 import { Card, CardContent, CardDescription, CardTitle } from "./ui/card";
-import { DishDto } from "@/app/(main)/restaurant-detail/[id]/page";
 import { Dish } from "@/types/dish.type";
-import { Star, StarHalfIcon, StarIcon } from "lucide-react";
-import { StarFilledIcon } from "@radix-ui/react-icons";
+import { Star } from "lucide-react";
 import Link from "next/link";
-import useRestaurantDetail from "@/lib/use-restaurant-detail";
+import useRestaurantDetail from "@/hooks/use-restaurant-detail";
 
 const FoodGrid = ({ restaurantId }: { restaurantId: string }) => {
   const { data: dishes } =
