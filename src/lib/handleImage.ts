@@ -30,6 +30,14 @@ export function getBannerUrl(images: string[], restaurantName: string) {
   return handleImage(images, "banner", restaurantName);
 }
 
+export function getAvatarUrl(image?: string, userName?: string) {
+  if (image) {
+    const [imagePath, imageVersion] = image.split(".");
+    return cld.image(imagePath).setVersion(imageVersion).toURL();
+  }
+  return `https://api.dicebear.com/9.x/initials/svg?seed=${userName}`;
+}
+
 export function getDefaultImageUrl(images: string[], restaurantName: string) {
   return handleImage(images, "", restaurantName);
 }

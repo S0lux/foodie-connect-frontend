@@ -7,8 +7,8 @@ import {
   CardTitle,
 } from "./ui/card";
 import Link from "next/link";
-import { RestaurantDto } from "./restaurant-grid";
 import { Restaurant } from "@/types/retaurant.type";
+import { getLogoUrl } from "@/lib/handleImage";
 
 const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
   return (
@@ -16,7 +16,7 @@ const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
       <Card className="size-fit border-none bg-sidebar transition-all ease-in xl:hover:scale-105">
         <CardContent className="p-0">
           <img
-            src="https://placehold.co/230x150"
+            src={getLogoUrl(restaurant.images, restaurant.name)}
             className="h-40 w-60 rounded-t"
           ></img>
         </CardContent>

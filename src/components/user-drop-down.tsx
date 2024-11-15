@@ -17,6 +17,7 @@ import Loader from "@/components/loader";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ErrorType } from "@/types/error.type";
+import { getAvatarUrl } from "@/lib/handleImage";
 
 const UserDropDown = () => {
   const { data: user, isLoading, isError, error } = useAuth.useGetSession();
@@ -92,10 +93,7 @@ const UserDropDown = () => {
           </div>
           <Avatar>
             <AvatarImage
-              src={
-                user!.avatar ||
-                `https://api.dicebear.com/9.x/initials/svg?seed=${user!.userName}`
-              }
+              src={getAvatarUrl(user?.avatar, user?.displayName)}
               alt={user?.displayName}
             />
             <AvatarFallback>{getInitials(user?.displayName)}</AvatarFallback>

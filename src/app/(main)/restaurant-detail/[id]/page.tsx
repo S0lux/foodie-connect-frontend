@@ -3,6 +3,7 @@ import FoodGrid from "@/components/food-grid";
 import ReviewGrid from "@/components/review-grid";
 import { Card, CardTitle } from "@/components/ui/card";
 import useRestaurantDetail from "@/hooks/use-restaurant-detail";
+import { getLogoUrl } from "@/lib/handleImage";
 import { AlarmClock, MapPin, PhoneIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -20,7 +21,10 @@ export default function RestauranDetailPage({
       <Card className="flex flex-col space-x-5 border-none md:flex-row">
         <div className="rounded md:h-52 md:w-96">
           <img
-            src="https://placehold.co/230x150"
+            src={
+              restaurantDetail &&
+              getLogoUrl(restaurantDetail?.images, restaurantDetail?.name)
+            }
             className="size-full rounded"
           ></img>
         </div>
