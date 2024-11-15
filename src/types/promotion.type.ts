@@ -4,10 +4,17 @@ export interface PromotionDetail {
 }
 
 export interface Promotion {
+  promotionId: string;
+  restaurantId: string;
   name: string;
+  bannerId: string;
   description: string;
   targets: string[];
   promotionDetails: PromotionDetail[];
   beginsAt: string;
   endsAt: string;
+}
+
+export interface Promotions {
+  promotions: Promotion[];
 }
