@@ -9,7 +9,6 @@ import {
 import Link from "next/link";
 import { RestaurantDto } from "./restaurant-grid";
 import { Restaurant } from "@/types/retaurant.type";
-import { formatTime } from "@/app/(main)/restaurant-detail/[id]/page";
 
 const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
   return (
@@ -32,8 +31,7 @@ const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
             <Clock className="py-1.5 pr-1 text-primary"></Clock>
             <CardDescription className="text-primary">
               <span>
-                {formatTime(restaurant.openTime)} -{" "}
-                {formatTime(restaurant.closeTime)}
+                {restaurant.openTime} - {restaurant.closeTime}
               </span>
             </CardDescription>
           </section>

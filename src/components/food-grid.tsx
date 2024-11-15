@@ -2,18 +2,22 @@ import { Key } from "react";
 import { Card, CardContent, CardDescription, CardTitle } from "./ui/card";
 import { DishDto } from "@/app/(main)/restaurant-detail/[id]/page";
 import { Dish } from "@/types/dish.type";
-import { Star } from "lucide-react";
+import { Star, StarHalfIcon, StarIcon } from "lucide-react";
 import { StarFilledIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
+import useRestaurantDetail from "@/lib/use-restaurant-detail";
 
-const FoodGrid = ({ dishList }: { dishList: Dish[] }) => {
+const FoodGrid = ({ restaurantId }: { restaurantId: string }) => {
+  const { data: dishes } =
+    useRestaurantDetail.useGetRestaurantDetailMenu(restaurantId);
   return (
-    <Card className="border-none px-3 py-2">
+    <Card className="border-none px-2 py-2 md:px-7">
       <CardTitle className="border-b border-muted-foreground/30 py-3 text-xl">
-        Menu
+        <span className="px-4 md:px-0">Menu</span>
       </CardTitle>
       <CardContent className="grid grid-flow-row grid-cols-1 gap-3 px-0 py-2 md:grid-cols-2">
-        {dishList.length > 0 ? (
-          dishList.map((dish) => {
+        {dishes && dishes.length > 0 ? (
+          dishes.map((dish) => {
             return <FoodCard dishItem={dish} key={dish.dishId} />;
           })
         ) : (
@@ -34,19 +38,28 @@ const FoodCard = ({ dishItem }: { dishItem: Dish }) => {
   return (
     <CardContent className="flex w-full border-b border-muted-foreground/30 px-0 py-2">
       <img src="https://placehold.co/50x50" className="size-12 rounded"></img>
-      <CardTitle className="flex size-full flex-col items-start justify-between px-3 py-1 md:flex-row md:items-center">
-        <div className="flex h-full flex-col justify-between">
-          <span className="">{dishItem.name}</span>
-          <div className="flex flex-row">
-            <StarFilledIcon className="text-primary" />
-            <StarFilledIcon className="text-primary" />
-            <StarFilledIcon className="text-primary" />
-            <StarFilledIcon className="text-primary" />
-            <StarFilledIcon className="text-primary" />
+      <Link href={`/dishes/${dishItem.dishId}`} className="size-full">
+        <CardTitle className="group flex size-full items-start justify-between px-3 py-1 text-primary hover:bg-background md:flex-row md:items-center">
+          <div className="flex h-full flex-col justify-between">
+            <span className="group-hover:underline group-hover:underline-offset-2">
+              {dishItem.name}
+            </span>
+            <div className="flex flex-row">
+              {dishItem &&
+                Array.from(
+                  {
+                    length:
+                      dishItem.scoreOverview.averageRating > 0
+                        ? dishItem.scoreOverview.averageRating
+                        : 1,
+                  },
+                  (_, i) => <Star fill="#D4AF37" stroke="#D4AF37" size={15} />,
+                )}
+            </div>
           </div>
-        </div>
-        <span className="text-primary">{formatedPrice}</span>
-      </CardTitle>
+          <span className="">{formatedPrice}</span>
+        </CardTitle>
+      </Link>
     </CardContent>
   );
 };

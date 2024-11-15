@@ -1,9 +1,7 @@
 "use client";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
-import { ReactNode, useMemo, useState } from "react";
 import Loader from "./loader";
 import { MapMarker } from "@/types/map-maker.type";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const Map = ({
@@ -13,6 +11,8 @@ const Map = ({
   center: MapMarker;
   markers?: MapMarker[];
 }) => {
+  const router = useRouter();
+
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: `${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`,
@@ -29,8 +29,6 @@ const Map = ({
     strokeColor: "#FFF",
   };
 
-  const router = useRouter();
-
   return (
     <GoogleMap center={center} zoom={16} mapContainerClassName="map">
       {markers &&
@@ -41,8 +39,7 @@ const Map = ({
               position={marker}
               icon={markerIcon}
               onClick={() => {
-                marker.restaurantId &&
-                  router.push(`/restaurant-detail/${marker.restaurantId}`);
+                router.push(`/restaurant-detail/${marker.restaurantId}`);
               }}
             ></Marker>
           );

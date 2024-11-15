@@ -9,37 +9,59 @@ import {
 } from "./ui/card";
 import { ReactNode, useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { ArrowDown, ArrowDownFromLine, ArrowUp } from "lucide-react";
-import { StarFilledIcon } from "@radix-ui/react-icons";
+import { ArrowDown, ArrowUp, StarIcon, Store, Utensils } from "lucide-react";
+import ReviewForm, { ReviewEnum } from "./dish-review-form";
+import { ReviewCard } from "./review-card";
+import { DishReview } from "@/types/dish-review.type";
+import useRestaurantDetail from "@/lib/use-restaurant-detail";
+import { RestaurantReview } from "@/types/restaurant-review.type";
+import RestaurantReviewForm from "./restaurant-review-form";
 
-export const ReviewGrid = ({ reviews }: { reviews: ReviewDto[] }) => {
+const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const alterReview = menuOpen ? reviews : reviews.slice(0, 3);
+  const { data: restaurantReviews, refetch } =
+    useRestaurantDetail.useGetRestaurantReview(restaurantId);
 
-  const avgRating =
-    reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+  console.log(restaurantId);
+
   return (
-    <Card className="space-y-3 border-none px-3 py-2">
+    <Card className="space-y-3 border-none px-2 py-2 md:px-7">
       <CardTitle className="flex flex-row items-center justify-between border-b border-muted-foreground/30 py-3 text-xl">
-        <span>Reviews</span>
+        <span className="px-4 md:px-0">Reviews</span>
       </CardTitle>
-      <CardContent className="flex flex-row">
+      <CardContent className="flex flex-col space-y-5 md:flex-row">
+        {/* reviews statistics */}
+        <ReviewStatistics></ReviewStatistics>
+
         {/* reviews */}
         <div className="relative flex flex-col space-y-5 md:w-1/2">
-          {alterReview.map((review: ReviewDto, index: number) => {
-            return (
-              <RatingCard
-                key={index}
-                rating={review.rating}
-                postedDate={review.postedDate}
-              >
-                {review.content}
-              </RatingCard>
-            );
-          })}
+          {/* leave a review */}
+          {restaurantReviews?.myReview ? (
+            <ReviewCard
+              reviewType={ReviewEnum.RESTAURANT}
+              review={restaurantReviews.myReview}
+            />
+          ) : (
+            <RestaurantReviewForm
+              id={restaurantId}
+              refetch={refetch}
+            ></RestaurantReviewForm>
+          )}
+
+          {restaurantReviews &&
+            restaurantReviews?.otherReviews.map(
+              (review: RestaurantReview, index: number) => {
+                return (
+                  <ReviewCard
+                    reviewType={ReviewEnum.RESTAURANT}
+                    key={index}
+                    review={review}
+                  ></ReviewCard>
+                );
+              },
+            )}
         </div>
-        <ReviewStatistics></ReviewStatistics>
       </CardContent>
       <CardFooter>
         <div
@@ -56,62 +78,29 @@ export const ReviewGrid = ({ reviews }: { reviews: ReviewDto[] }) => {
   );
 };
 
-const RatingCard = ({
-  children,
-  rating,
-  postedDate,
-}: {
-  children?: ReactNode;
-  rating: number;
-  postedDate: Date;
-}) => {
-  return (
-    <Card className="border-none dark:bg-muted/20">
-      <CardHeader className="">
-        <CardTitle>
-          <div
-            className={twMerge(
-              "flex size-10 items-center justify-center rounded-full text-white",
-              rating >= 7 && "bg-green-500",
-              rating < 7 && rating >= 4 && "bg-yellow-500",
-              rating < 4 && "bg-red-500",
-            )}
-          >
-            <span>{rating}</span>
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="md:text-lg">{children}</CardContent>
-      <CardFooter className="text-sm text-muted-foreground">
-        Posted in: {postedDate.toLocaleDateString()}
-      </CardFooter>
-    </Card>
-  );
-};
-
 const ReviewStatistics = () => {
   return (
-    <div className="sticky top-28 mt-5 w-1/2">
-      <div className="sticky top-20 mt-5 grid grid-cols-3">
+    <div className="mt-5 md:sticky md:top-28 md:w-1/2">
+      <div className="mt-5 grid grid-rows-2 md:sticky md:top-28 md:grid-cols-3">
         {/* overal rating */}
         <div className="flex flex-col place-self-center">
           <span className="text-center text-5xl font-bold text-primary">
             4.3
           </span>
           <div className="flex flex-row justify-center text-primary">
-            <StarFilledIcon></StarFilledIcon>
-            <StarFilledIcon></StarFilledIcon>
-            <StarFilledIcon></StarFilledIcon>
-            <StarFilledIcon></StarFilledIcon>
-            <StarFilledIcon></StarFilledIcon>
+            <StarIcon size={15}></StarIcon>
+            <StarIcon size={15}></StarIcon>
+            <StarIcon size={15}></StarIcon>
+            <StarIcon size={15}></StarIcon>
+            <StarIcon size={15}></StarIcon>
           </div>
-          <span className="mt-3 text-center text-sm text-foreground">
+          <span className="mt-2 text-center text-sm text-foreground">
             10 reviews
           </span>
         </div>
 
         {/* rating statistics */}
-        <div className="col-span-2 flex flex-col">
+        <div className="flex flex-col md:col-span-2">
           <RatingStats label="5" percentage={"60"}></RatingStats>
           <RatingStats label="4" percentage={"20"}></RatingStats>
           <RatingStats label="3" percentage={"10"}></RatingStats>
@@ -131,7 +120,7 @@ const RatingStats = ({
   percentage: string;
 }) => {
   return (
-    <div className="relative flex w-full flex-row items-center space-x-3">
+    <div className="relative flex w-full flex-row items-center space-x-3 md:pr-10">
       <span>{label}</span>
       <div className="relative h-2 w-full rounded bg-background">
         <div
@@ -142,3 +131,5 @@ const RatingStats = ({
     </div>
   );
 };
+
+export default ReviewGrid;

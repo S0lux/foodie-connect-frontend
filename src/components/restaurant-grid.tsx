@@ -47,19 +47,6 @@ const RestaurantGrid = ({
   restaurants: Restaurant[];
   className?: string;
 }) => {
-  // handle category selection
-  // const [selectedCategory, setSelectedCategory] = useState("All");
-  // const filerdRestaurants = restaurants.filter((restaurant) => {
-  //   if (selectedCategory === "All") {
-  //     return true;
-  //   }
-  //   if (selectedCategory === "Others") {
-  //     return (
-  //       restaurant.category !== "Foods" && restaurant.category !== "Drinks"
-  //     );
-  //   } else return restaurant.category === selectedCategory;
-  // });
-
   // Handle responsive design
   const [windowWidth, setWidth] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -78,76 +65,6 @@ const RestaurantGrid = ({
     <Card className={twMerge("h-fit border-none", className)}>
       <CardHeader className="flex flex-row space-x-5 space-y-0 border-b border-muted-foreground/30 xl:space-x-10">
         <CardTitle className="flex items-center">Restaurants</CardTitle>
-        {/* small screen drop down */}
-        {/* {windowWidth < 500 ? (
-          <Select>
-            <SelectTrigger className="w-auto min-w-24">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem
-                value="All"
-                onClick={() => {
-                  setSelectedCategory("All");
-                }}
-              >
-                All
-              </SelectItem>
-              <SelectItem
-                value="Foods"
-                onClick={() => {
-                  setSelectedCategory("Foods");
-                }}
-              >
-                Foods
-              </SelectItem>
-              <SelectItem
-                value="Drinks"
-                onClick={() => {
-                  setSelectedCategory("Drinks");
-                }}
-              >
-                Drinks
-              </SelectItem>
-              <SelectItem
-                value="Others"
-                onClick={() => {
-                  setSelectedCategory("Others");
-                }}
-              >
-                Others
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        ) : (
-          // large screen selector
-          <div className="flex flex-row space-x-5">
-            <CategorySelector
-              isSelected={selectedCategory === "All"}
-              onClick={() => setSelectedCategory("All")}
-            >
-              All
-            </CategorySelector>
-            <CategorySelector
-              isSelected={selectedCategory === "Foods"}
-              onClick={() => setSelectedCategory("Foods")}
-            >
-              Foods
-            </CategorySelector>
-            <CategorySelector
-              isSelected={selectedCategory === "Drinks"}
-              onClick={() => setSelectedCategory("Drinks")}
-            >
-              Drinks
-            </CategorySelector>
-            <CategorySelector
-              isSelected={selectedCategory === "Others"}
-              onClick={() => setSelectedCategory("Others")}
-            >
-              Others
-            </CategorySelector>
-          </div>
-        )} */}
       </CardHeader>
       <CardContent className="">
         <div className="grid grid-flow-row grid-cols-1 justify-items-center gap-4 bg-inherit py-5 md:grid-cols-3 xl:grid-cols-4">
