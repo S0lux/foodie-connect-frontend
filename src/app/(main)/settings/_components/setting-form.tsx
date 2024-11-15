@@ -160,7 +160,7 @@ export default function SettingForm() {
       <div className="mt-8 px-4 sm:px-8 md:px-16 lg:px-40 xl:px-80">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={onSubmit}
             className="w-full flex-shrink-0 space-y-4"
             noValidate
           >

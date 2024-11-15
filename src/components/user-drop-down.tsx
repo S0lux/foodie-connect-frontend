@@ -20,7 +20,6 @@ import { ErrorType } from "@/types/error.type";
 
 const UserDropDown = () => {
   const { data: user, isLoading, isError, error } = useAuth.useGetSession();
-  console.log(user);
   const logout = useAuth.useLogout();
   const route = useRouter();
   const [loading, setLoading] = useState(false);
@@ -92,13 +91,19 @@ const UserDropDown = () => {
             <div className="text-xs opacity-50">{user?.type}</div>
           </div>
           <Avatar>
-            <AvatarImage src={user?.avatar} alt={user?.displayName} />
+            <AvatarImage
+              src={
+                user!.avatar ||
+                `https://api.dicebear.com/9.x/initials/svg?seed=${user!.userName}`
+              }
+              alt={user?.displayName}
+            />
             <AvatarFallback>{getInitials(user?.displayName)}</AvatarFallback>
           </Avatar>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>{user?.displayName}</DropdownMenuLabel>
+        <DropdownMenuLabel>{user!.displayName}</DropdownMenuLabel>
         <DropdownMenuSeparator className="my-1 bg-foreground/20" />
         <DropdownMenuItem className="cursor-pointer">
           <User></User>
