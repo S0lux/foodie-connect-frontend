@@ -118,9 +118,9 @@ export const ReviewCard = ({
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="mt-5">
+      <CardContent className="mt-5 text-clip">
         {/* review content */}
-        {review?.content}
+        <p className="break-words">{review?.content}</p>
       </CardContent>
 
       <CardFooter className="flex flex-col items-start space-y-2 text-sm text-muted-foreground">

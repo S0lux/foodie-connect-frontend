@@ -7,25 +7,20 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Star, Store, Utensils } from "lucide-react";
+import { Star, Store } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { ReviewTag } from "./review-card";
-import { Select, SelectContent } from "@radix-ui/react-select";
 import { useState } from "react";
 import { Controller, Form, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReviewBody, ReviewSchema } from "@/schema/review.schema";
 import { FormField } from "./ui/form";
-import { register } from "module";
-import { FORMERR } from "dns";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@/lib/http";
-import { set } from "date-fns";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
-import useDishReview from "@/hooks/use-dish-review";
 import useAuth from "@/hooks/use-auth";
 import useRestaurantDetail from "@/hooks/use-restaurant-detail";
+import { Textarea } from "./ui/textarea";
 
 export enum ReviewEnum {
   RESTAURANT,
@@ -145,11 +140,10 @@ const RestaurantReviewForm = ({
             control={form.control}
             name="content"
             render={(field) => (
-              <Input
-                type="text"
+              <Textarea
                 placeholder="Leave your review here!"
                 {...form.register("content")}
-              ></Input>
+              ></Textarea>
             )}
           />
         </CardContent>
