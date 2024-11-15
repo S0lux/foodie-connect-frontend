@@ -1,11 +1,12 @@
 "use client";
 import {
-  BadgeDollarSign,
-  ChartLine,
-  Home,
-  Salad,
+  Building2,
+  Users,
   Settings,
-  Utensils,
+  PlusCircle,
+  Bell,
+  History,
+  ChartLine,
 } from "lucide-react";
 import {
   Sidebar,
@@ -18,7 +19,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 
 function SidebarItem({
   title,
@@ -31,7 +31,7 @@ function SidebarItem({
 }) {
   return (
     <SidebarMenuItem className="text-lg">
-      <SidebarMenuButton size={"lg"} asChild>
+      <SidebarMenuButton size="lg" asChild>
         <Link
           className="rounded-lg block items-center space-x-2 px-4 hover:scale-105 hover:transform hover:bg-foreground/10 hover:text-foreground"
           href={url}
@@ -44,9 +44,7 @@ function SidebarItem({
   );
 }
 
-export function AppSidebar() {
-  const { restaurantId } = useParams();
-  console.log(restaurantId);
+export function HeadSidebar() {
   const items = [
     {
       title: "Head Dashboard",
@@ -54,31 +52,17 @@ export function AppSidebar() {
       icon: ChartLine,
     },
     {
-      title: "Overview",
-      url: `/head/${restaurantId}/`,
-      icon: Home,
+      title: "Restaurants",
+      url: "/head/restaurants",
+      icon: Building2,
     },
     {
-      title: "Menu",
-      url: `/head/${restaurantId}/menu`,
-      icon: Utensils,
-    },
-    {
-      title: "Add Menu Item",
-      url: `/head/${restaurantId}/menu/add`,
-      icon: Salad,
-    },
-    {
-      title: "Promotions",
-      url: `/head/${restaurantId}/promotions`,
-      icon: BadgeDollarSign,
-    },
-    {
-      title: "Settings",
-      url: `/head/${restaurantId}/update`,
-      icon: Settings,
+      title: "Add Restaurant",
+      url: "/head/restaurants/add",
+      icon: PlusCircle,
     },
   ];
+
   return (
     <Sidebar className="mt-[--header-height] rounded border-r border-[#ccc] border-opacity-50">
       <SidebarContent>
