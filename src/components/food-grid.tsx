@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardTitle } from "./ui/card";
 import { Dish } from "@/types/dish.type";
-import { Star } from "lucide-react";
+import { Star, StarHalf } from "lucide-react";
 import Link from "next/link";
 import useRestaurantDetail from "@/hooks/use-restaurant-detail";
 
@@ -32,6 +32,10 @@ const FoodCard = ({ dishItem }: { dishItem: Dish }) => {
     style: "currency",
     currency: "VND",
   }).format(dishItem.price);
+  const halfStar =
+    dishItem.scoreOverview.averageRating %
+      Math.round(dishItem.scoreOverview.averageRating) >
+    0.5;
   return (
     <CardContent className="flex w-full border-b border-muted-foreground/30 px-0 py-2">
       <img src="https://placehold.co/50x50" className="size-12 rounded"></img>
@@ -52,6 +56,9 @@ const FoodCard = ({ dishItem }: { dishItem: Dish }) => {
                   },
                   (_, i) => <Star fill="#D4AF37" stroke="#D4AF37" size={15} />,
                 )}
+              {halfStar && (
+                <StarHalf fill="#D4AF37" stroke="#D4AF37" size={15} />
+              )}
             </div>
           </div>
           <span className="">{formatedPrice}</span>

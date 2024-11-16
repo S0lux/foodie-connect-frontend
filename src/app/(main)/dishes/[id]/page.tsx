@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardTitle,
 } from "@/components/ui/card";
-import { Star, StarIcon } from "lucide-react";
+import { Star, StarHalf, StarIcon } from "lucide-react";
 
 import ReviewForm, { ReviewEnum } from "@/components/dish-review-form";
 import { ReviewCard } from "@/components/review-card";
@@ -15,6 +15,7 @@ import { Dish } from "@/types/dish.type";
 import { DishReview } from "@/types/dish-review.type";
 import useDishReview from "@/hooks/use-dish-review";
 import DishReviewForm from "@/components/dish-review-form";
+import { useState } from "react";
 
 export default function DishDetailPage({ params }: { params: { id: string } }) {
   // helper functions
@@ -28,6 +29,11 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
     currency: "VND",
   }).format(dishInfo?.price ? dishInfo.price : 0);
 
+  const [isEditting, setEditting] = useState(false);
+  const halfStar =
+    dishInfo?.scoreOverview.averageRating %
+      Math.round(dishInfo?.scoreOverview.averageRating) >
+    0.5;
   return (
     <div className="relative flex flex-col gap-5 md:grid md:grid-cols-2">
       {/* dish info */}
@@ -63,6 +69,7 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
                 },
                 (_, i) => <Star fill="#D4AF37" stroke="#D4AF37" size={20} />,
               )}
+            {halfStar && <StarHalf fill="#D4AF37" stroke="#D4AF37" size={20} />}
           </div>
         </div>
       </Card>
@@ -75,15 +82,25 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
           {/* reviews */}
           <div className="relative flex w-full flex-col space-y-5">
             {/* leave a review */}
-            {dishReviewsData?.myReview ? (
+            {!dishReviewsData?.myReview || isEditting ? (
+              <DishReviewForm
+                id={dishInfo?.dishId}
+                review={dishReviewsData?.myReview}
+                isEditting={isEditting}
+                onCancelReview={() => {
+                  setEditting(!isEditting);
+                }}
+              ></DishReviewForm>
+            ) : (
               <ReviewCard
                 refetch={[refetch]}
                 id={params.id}
                 review={dishReviewsData.myReview}
                 reviewType={ReviewEnum.DISH}
+                onEdit={() => {
+                  setEditting(!isEditting);
+                }}
               />
-            ) : (
-              <DishReviewForm id={dishInfo?.dishId}></DishReviewForm>
             )}
 
             {dishReviewsData?.otherReviews.map(

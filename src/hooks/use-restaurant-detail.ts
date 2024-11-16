@@ -64,6 +64,31 @@ const useRestaurantDetail = {
     });
   },
 
+  useUpdateRestauantReview() {
+    const client = useQueryClient();
+    return useMutation({
+      mutationFn: async (data: {
+        restaurantId: string;
+        reviewId: string;
+        review: ReviewBody;
+      }) => {
+        const response = await http.put(
+          `v1/restaurants/${data.restaurantId}/reviews/${data.reviewId}`,
+          data.review,
+        );
+        return response;
+      },
+      onSuccess: (variables) => {
+        client.invalidateQueries({
+          queryKey: ["restaurant-detail-review", variables.data.restaurantId],
+        });
+        client.invalidateQueries({
+          queryKey: ["restaurant-detail", variables.data.restaurantId],
+        });
+      },
+    });
+  },
+
   useDeleteRestaurantReview() {
     const client = useQueryClient();
     return useMutation({

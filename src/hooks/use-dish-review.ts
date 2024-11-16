@@ -45,6 +45,31 @@ const useDishReview = {
     });
   },
 
+  useUpdateDishReview() {
+    const client = useQueryClient();
+    return useMutation({
+      mutationFn: async (data: {
+        dishId: string;
+        reviewId: string;
+        review: ReviewBody;
+      }) => {
+        const response = await http.put(
+          `/v1/dishes/${data.dishId}/reviews/${data.reviewId}`,
+          data.review,
+        );
+        return response;
+      },
+      onSuccess: (variables) => {
+        client.invalidateQueries({
+          queryKey: ["dish-reviews", variables.data.dishId],
+        });
+        client.invalidateQueries({
+          queryKey: ["dish-info", variables.data.dishId],
+        });
+      },
+    });
+  },
+
   useDeleteDishReview() {
     const client = useQueryClient();
     return useMutation({

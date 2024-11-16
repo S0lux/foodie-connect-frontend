@@ -20,6 +20,7 @@ import { toast } from "@/hooks/use-toast";
 import useDishReview from "@/hooks/use-dish-review";
 import useAuth from "@/hooks/use-auth";
 import { Textarea } from "./ui/textarea";
+import { DishReview } from "@/types/dish-review.type";
 
 export enum ReviewEnum {
   RESTAURANT,
@@ -29,33 +30,22 @@ export enum ReviewEnum {
 const DishReviewForm = ({
   id,
   className,
+  isEditting,
+  review,
+  onCancelReview,
 }: {
   id: string;
   className?: string;
+  isEditting: boolean;
+  review: DishReview | null | undefined;
+  onCancelReview: () => void;
 }) => {
   //handle rating animation
   const [rating, setRating] = useState(1);
   const [loading, setLoading] = useState(false);
-  const submitDishReviewAction = useDishReview.useCreateDishReview();
+  const createDishReviewAction = useDishReview.useCreateDishReview();
+  const updateDishReviewAction = useDishReview.useUpdateDishReview();
   const { data: user } = useAuth.useGetSession();
-
-  // const emptyStars = Array.from({ length: 5 - rating }, (_, i) => (
-  //   <Star
-  //     onMouseEnter={() => {
-  //       if (rating != i + rating + 1) setRating(i + rating + 1);
-  //     }}
-  //     className="hover:cursor-pointer"
-  //   />
-  // ));
-  // const goldenStars = Array.from({ length: rating }, (_, i) => (
-  //   <Star
-  //     fill="#000000"
-  //     onMouseEnter={() => {
-  //       if (rating != i + 1) setRating(i + 1);
-  //     }}
-  //     className="hover:cursor-pointer"
-  //   />
-  // ));
 
   const StarRating = ({
     value,
@@ -97,7 +87,16 @@ const DishReviewForm = ({
   const onSubmit = async (value: ReviewBody) => {
     setLoading(true);
     try {
-      await submitDishReviewAction.mutateAsync({ dishId: id, review: value });
+      if (isEditting && review) {
+        await updateDishReviewAction.mutateAsync({
+          dishId: id,
+          reviewId: review?.reviewId,
+          review: value,
+        });
+      } else {
+        await createDishReviewAction.mutateAsync({ dishId: id, review: value });
+      }
+      onCancelReview();
       toast({
         title: "Success",
         description: "Review submitted",
@@ -148,15 +147,22 @@ const DishReviewForm = ({
               <Textarea
                 placeholder="Leave your review here!"
                 {...form.register("content")}
-              ></Textarea>
+              >
+                {review && review.content}
+              </Textarea>
             )}
           />
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="flex flex-row space-x-3">
           <Button type="submit" disabled={!form.formState.isValid || loading}>
             {loading ? "Loading..." : "Submit"}
           </Button>
+          {isEditting && (
+            <Button onClick={onCancelReview} variant={"ghost"}>
+              Cancel
+            </Button>
+          )}
         </CardFooter>
 
         <ReviewTag className="bottom-0 right-7">

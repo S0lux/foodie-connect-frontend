@@ -1,7 +1,7 @@
 "use client";
 import { Card, CardContent, CardFooter, CardTitle } from "./ui/card";
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, Star, StarIcon } from "lucide-react";
+import { ArrowDown, ArrowUp, Star, StarHalf, StarIcon } from "lucide-react";
 import { ReviewEnum } from "./dish-review-form";
 import { ReviewCard } from "./review-card";
 import useRestaurantDetail from "@/hooks/use-restaurant-detail";
@@ -9,9 +9,11 @@ import { RestaurantReview } from "@/types/restaurant-review.type";
 import RestaurantReviewForm from "./restaurant-review-form";
 import { Restaurant } from "@/types/restaurant.type";
 import { ScoreOverview } from "@/schema/dish.schema";
+import { get } from "react-hook-form";
 
 const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isEditting, setEditting] = useState(false);
 
   const { data: restaurantReviews, refetch: refetchReviews } =
     useRestaurantDetail.useGetRestaurantReview(restaurantId);
@@ -19,7 +21,10 @@ const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
   const { data: restaurantDetail, refetch: refetchDetail } =
     useRestaurantDetail.useGetRestaurantDetail(restaurantId);
 
-  const totalReview = getTotalReviews(restaurantDetail?.scoreOverview);
+  useEffect(() => {
+    refetchDetail();
+    refetchReviews();
+  }, [restaurantDetail?.scoreOverview, restaurantReviews]);
 
   return (
     <Card className="space-y-3 border-none px-2 py-2 md:px-7">
@@ -33,18 +38,22 @@ const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
         {/* reviews */}
         <div className="relative flex flex-col space-y-5 md:w-1/2">
           {/* leave a review */}
-          {restaurantReviews?.myReview ? (
+          {!restaurantReviews?.myReview || isEditting ? (
+            <RestaurantReviewForm
+              isEditting={isEditting}
+              id={restaurantId}
+              review={restaurantReviews?.myReview}
+              refetch={[refetchDetail, refetchReviews]}
+              onCancelReview={() => setEditting(false)}
+            />
+          ) : (
             <ReviewCard
               refetch={[refetchDetail, refetchReviews]}
               id={restaurantId}
               reviewType={ReviewEnum.RESTAURANT}
               review={restaurantReviews.myReview}
+              onEdit={() => setEditting(!isEditting)}
             />
-          ) : (
-            <RestaurantReviewForm
-              id={restaurantId}
-              refetch={[refetchDetail, refetchReviews]}
-            ></RestaurantReviewForm>
           )}
 
           {restaurantReviews &&
@@ -79,6 +88,11 @@ const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
 };
 
 const ReviewStatistics = ({ restaurant }: { restaurant?: Restaurant }) => {
+  const halfStar =
+    restaurant &&
+    restaurant?.scoreOverview.averageRating %
+      Math.round(restaurant.scoreOverview.averageRating) >
+      0;
   return (
     <div className="mt-5 md:sticky md:top-28 md:w-1/2">
       <div className="mt-5 grid grid-rows-2 md:sticky md:top-28 md:grid-cols-3">
@@ -86,7 +100,7 @@ const ReviewStatistics = ({ restaurant }: { restaurant?: Restaurant }) => {
 
         <div className="flex flex-col place-self-center">
           <span className="text-center text-5xl font-bold text-primary">
-            {restaurant?.scoreOverview.averageRating}
+            {restaurant?.scoreOverview.averageRating?.toFixed(1)}
           </span>
           <div className="flex flex-row justify-center text-primary">
             {restaurant &&
@@ -94,25 +108,36 @@ const ReviewStatistics = ({ restaurant }: { restaurant?: Restaurant }) => {
                 { length: restaurant.scoreOverview.averageRating },
                 (_, i) => <Star fill="#D4AF37" stroke="#D4AF37" size={20} />,
               )}
+            {halfStar && <StarHalf fill="#D4AF37" stroke="#D4AF37" size={20} />}
           </div>
           <span className="mt-2 text-center text-sm text-foreground">
-            {getTotalReviews(restaurant?.scoreOverview)} reviews
+            {restaurant && getTotalReviews(restaurant.scoreOverview)} reviews
           </span>
         </div>
 
         {/* rating statistics */}
-        <RatingStats scoreOverView={restaurant?.scoreOverview}></RatingStats>
+        {restaurant && (
+          <RatingStats scoreOverView={restaurant.scoreOverview}></RatingStats>
+        )}
       </div>
     </div>
   );
 };
 
-const RatingStats = ({ scoreOverView }: { scoreOverView?: ScoreOverview }) => {
-  const [totalReview, setTotal] = useState(0);
+const RatingStats = ({ scoreOverView }: { scoreOverView: ScoreOverview }) => {
+  useEffect(() => {}, [scoreOverView]);
 
-  useEffect(() => {
-    setTotal(getTotalReviews(scoreOverView));
-  }, [totalReview]);
+  const totalReview = getTotalReviews(scoreOverView);
+  const fiveStars =
+    (scoreOverView.fiveStars / (totalReview === 0 ? 1 : totalReview)) * 100;
+  const fourStars =
+    (scoreOverView.fourStars / (totalReview === 0 ? 1 : totalReview)) * 100;
+  const threeStars =
+    (scoreOverView.threeStars / (totalReview === 0 ? 1 : totalReview)) * 100;
+  const twoStars =
+    (scoreOverView.twoStars / (totalReview === 0 ? 1 : totalReview)) * 100;
+  const oneStar =
+    (scoreOverView.oneStar / (totalReview === 0 ? 1 : totalReview)) * 100;
 
   return (
     <div className="flex flex-col md:col-span-2">
@@ -124,7 +149,7 @@ const RatingStats = ({ scoreOverView }: { scoreOverView?: ScoreOverview }) => {
             <div
               className="absolute left-0 top-0 h-2 rounded bg-primary"
               style={{
-                width: `${(scoreOverView.fiveStars / totalReview) * 100}%`,
+                width: `${fiveStars}%`,
               }}
             />
           )}
@@ -138,7 +163,7 @@ const RatingStats = ({ scoreOverView }: { scoreOverView?: ScoreOverview }) => {
             <div
               className="absolute left-0 top-0 h-2 rounded bg-primary"
               style={{
-                width: `${(scoreOverView.fourStars / totalReview) * 100}%`,
+                width: `${fourStars}%`,
               }}
             />
           )}
@@ -152,7 +177,7 @@ const RatingStats = ({ scoreOverView }: { scoreOverView?: ScoreOverview }) => {
             <div
               className="absolute left-0 top-0 h-2 rounded bg-primary"
               style={{
-                width: `${(scoreOverView.threeStars / totalReview) * 100}%`,
+                width: `${threeStars}%`,
               }}
             />
           )}
@@ -166,7 +191,7 @@ const RatingStats = ({ scoreOverView }: { scoreOverView?: ScoreOverview }) => {
             <div
               className="absolute left-0 top-0 h-2 rounded bg-primary"
               style={{
-                width: `${(scoreOverView.twoStars / totalReview) * 100}%`,
+                width: `${twoStars}%`,
               }}
             />
           )}
@@ -180,7 +205,7 @@ const RatingStats = ({ scoreOverView }: { scoreOverView?: ScoreOverview }) => {
             <div
               className="absolute left-0 top-0 h-2 rounded bg-primary"
               style={{
-                width: `${(scoreOverView.oneStar / totalReview) * 100}%`,
+                width: `${oneStar}%`,
               }}
             />
           )}
@@ -190,14 +215,14 @@ const RatingStats = ({ scoreOverView }: { scoreOverView?: ScoreOverview }) => {
   );
 };
 
-function getTotalReviews(score?: ScoreOverview): number {
-  return score
-    ? score.fiveStars +
-        score.fourStars +
-        score.threeStars +
-        score.twoStars +
-        score.oneStar
-    : 1;
+function getTotalReviews(score: ScoreOverview): number {
+  const total =
+    score.fiveStars +
+    score.fourStars +
+    score.threeStars +
+    score.twoStars +
+    score.oneStar;
+  return total;
 }
 
 export default ReviewGrid;

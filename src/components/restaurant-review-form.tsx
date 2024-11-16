@@ -21,6 +21,7 @@ import { toast } from "@/hooks/use-toast";
 import useAuth from "@/hooks/use-auth";
 import useRestaurantDetail from "@/hooks/use-restaurant-detail";
 import { Textarea } from "./ui/textarea";
+import { RestaurantReview } from "@/types/restaurant-review.type";
 
 export enum ReviewEnum {
   RESTAURANT,
@@ -31,16 +32,24 @@ const RestaurantReviewForm = ({
   id,
   className,
   refetch,
+  isEditting,
+  review,
+  onCancelReview,
 }: {
   id: string;
   className?: string;
   refetch: Array<() => void>;
+  isEditting: boolean;
+  review: RestaurantReview | null | undefined;
+  onCancelReview: () => void;
 }) => {
   //handle rating animation
   const [rating, setRating] = useState(1);
   const [loading, setLoading] = useState(false);
-  const submitRestaurantReviewAction =
+  const createRestaurantReviewAction =
     useRestaurantDetail.useCreateRestaurantReview();
+  const updateRestaurantReviewAction =
+    useRestaurantDetail.useUpdateRestauantReview();
   const { data: user } = useAuth.useGetSession();
 
   const StarRating = ({
@@ -81,18 +90,26 @@ const RestaurantReviewForm = ({
     resolver: zodResolver(ReviewSchema),
   });
 
-  console.log(id);
-
   const onSubmit = async (value: ReviewBody) => {
     setLoading(true);
     try {
-      await submitRestaurantReviewAction.mutateAsync({
-        restaurantId: id,
-        review: value,
-      });
+      if (isEditting && review) {
+        await updateRestaurantReviewAction.mutateAsync({
+          restaurantId: id,
+          reviewId: review?.reviewId,
+          review: value,
+        });
+      } else {
+        await createRestaurantReviewAction.mutateAsync({
+          restaurantId: id,
+          review: value,
+        });
+      }
+
       refetch.forEach((func) => {
         func();
       });
+      onCancelReview();
       toast({
         title: "Success",
         description: "Review submitted",
@@ -143,15 +160,22 @@ const RestaurantReviewForm = ({
               <Textarea
                 placeholder="Leave your review here!"
                 {...form.register("content")}
-              ></Textarea>
+              >
+                {isEditting && review?.content}
+              </Textarea>
             )}
           />
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="flex flex-row space-x-3">
           <Button type="submit" disabled={!form.formState.isValid || loading}>
             {loading ? "Loading..." : "Submit"}
           </Button>
+          {isEditting && (
+            <Button onClick={onCancelReview} variant={"ghost"}>
+              Cancel
+            </Button>
+          )}
         </CardFooter>
 
         <ReviewTag className="bottom-0 right-7">
