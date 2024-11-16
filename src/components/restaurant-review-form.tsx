@@ -105,11 +105,6 @@ const RestaurantReviewForm = ({
           review: value,
         });
       }
-
-      refetch.forEach((func) => {
-        func();
-      });
-      onCancelReview();
       toast({
         title: "Success",
         description: "Review submitted",
@@ -117,6 +112,10 @@ const RestaurantReviewForm = ({
     } catch (err) {
       console.error(err);
     }
+    refetch.forEach((func) => {
+      func();
+    });
+    onCancelReview();
     setLoading(false);
   };
 

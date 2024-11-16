@@ -1,21 +1,82 @@
-import { Card, CardContent, CardDescription, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Dish } from "@/types/dish.type";
-import { Star, StarHalf } from "lucide-react";
+import { Edit, Star, StarHalf } from "lucide-react";
 import Link from "next/link";
 import useRestaurantDetail from "@/hooks/use-restaurant-detail";
+import { getDefaultImageUrl } from "@/lib/handleImage";
+import Image from "next/image";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { truncate } from "./restaurant-card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Category } from "@/types/dishes.type";
+import { useState } from "react";
 
-const FoodGrid = ({ restaurantId }: { restaurantId: string }) => {
+const FoodGrid = ({
+  restaurantId,
+  dishCategories,
+}: {
+  restaurantId: string;
+  dishCategories?: Category[];
+}) => {
+  const [selectedCat, setSelectedCat] = useState<string>("All");
   const { data: dishes } =
     useRestaurantDetail.useGetRestaurantDetailMenu(restaurantId);
+
+  const filteredDish = dishes?.filter((dish) => {
+    if (selectedCat === "All") return true;
+    else return dish.categories.includes(selectedCat);
+  });
   return (
     <Card className="border-none px-2 py-2 md:px-7">
-      <CardTitle className="border-b border-muted-foreground/30 py-3 text-xl">
+      <CardTitle className="flex flex-row items-center space-x-5 border-b border-muted-foreground/30 py-3 text-xl">
         <span className="px-4 md:px-0">Menu</span>
+        <Select
+          onValueChange={(e) => {
+            setSelectedCat(e);
+          }}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem key={"All"} value={"All"}>
+                All
+              </SelectItem>
+              {dishCategories &&
+                dishCategories.map((category) => {
+                  return (
+                    <SelectItem
+                      key={category.categoryName}
+                      value={category.categoryName}
+                    >
+                      {category.categoryName}
+                    </SelectItem>
+                  );
+                })}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </CardTitle>
-      <CardContent className="grid grid-flow-row grid-cols-1 gap-3 px-0 py-2 md:grid-cols-2">
-        {dishes && dishes.length > 0 ? (
-          dishes.map((dish) => {
-            return <FoodCard dishItem={dish} key={dish.dishId} />;
+      <CardContent className="grid grid-flow-row grid-cols-1 justify-items-center gap-4 bg-inherit py-5 md:grid-cols-2 xl:grid-cols-3">
+        {filteredDish && filteredDish?.length > 0 ? (
+          filteredDish?.map((item) => {
+            return <FoodCard key={item.dishId} dishItem={item}></FoodCard>;
           })
         ) : (
           <CardDescription className="col-span-3 flex w-full justify-center">
@@ -36,35 +97,60 @@ const FoodCard = ({ dishItem }: { dishItem: Dish }) => {
     dishItem.scoreOverview.averageRating %
       Math.round(dishItem.scoreOverview.averageRating) >
     0.5;
+
   return (
-    <CardContent className="flex w-full border-b border-muted-foreground/30 px-0 py-2">
-      <img src="https://placehold.co/50x50" className="size-12 rounded"></img>
-      <Link href={`/dishes/${dishItem.dishId}`} className="size-full">
-        <CardTitle className="group flex size-full items-start justify-between px-3 py-1 text-primary hover:bg-background md:flex-row md:items-center">
-          <div className="flex h-full flex-col justify-between">
-            <span className="group-hover:underline group-hover:underline-offset-2">
-              {dishItem.name}
-            </span>
-            <div className="flex flex-row">
-              {dishItem &&
-                Array.from(
-                  {
-                    length:
-                      dishItem.scoreOverview.averageRating > 0
-                        ? dishItem.scoreOverview.averageRating
-                        : 1,
-                  },
-                  (_, i) => <Star fill="#D4AF37" stroke="#D4AF37" size={15} />,
-                )}
-              {halfStar && (
-                <StarHalf fill="#D4AF37" stroke="#D4AF37" size={15} />
-              )}
-            </div>
+    <Link href={`/dishes/${dishItem.dishId}`}>
+      <Card
+        key={dishItem.dishId}
+        className="flex w-72 flex-col border-none transition-all ease-in xl:hover:scale-105"
+      >
+        <div className="relative h-40">
+          <Image
+            src={
+              getDefaultImageUrl(
+                dishItem?.imageId ? [dishItem.imageId] : [],
+                dishItem.name,
+              ) || "https://placehold.co/230x150"
+            }
+            alt={dishItem.name}
+            layout="fill"
+            objectFit="cover"
+            className="rounded-t"
+          />
+        </div>
+        <CardContent className="flex flex-col space-y-2 py-4">
+          <div className="flex flex-col items-start">
+            <CardTitle className="">{dishItem.name}</CardTitle>
+            <CardDescription className="font-semibold text-primary">
+              {formatedPrice}
+            </CardDescription>
           </div>
-          <span className="">{formatedPrice}</span>
-        </CardTitle>
-      </Link>
-    </CardContent>
+          <CardDescription className="">
+            {truncate(dishItem.description, 35)}
+          </CardDescription>
+          <div className="flex flex-row space-x-2">
+            {dishItem.categories.map((category) => (
+              <Badge key={category} variant="outline">
+                <span>{category}</span>
+              </Badge>
+            ))}
+          </div>
+        </CardContent>
+        <CardFooter className="">
+          {dishItem &&
+            Array.from(
+              {
+                length:
+                  dishItem.scoreOverview.averageRating > 0
+                    ? dishItem.scoreOverview.averageRating
+                    : 1,
+              },
+              (_, i) => <Star fill="#D4AF37" stroke="#D4AF37" size={15} />,
+            )}
+          {halfStar && <StarHalf fill="#D4AF37" stroke="#D4AF37" size={15} />}
+        </CardFooter>
+      </Card>
+    </Link>
   );
 };
 

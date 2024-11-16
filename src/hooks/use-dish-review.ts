@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import http from "../lib/http";
 import { DishReviews } from "@/types/dish-reviews.type";
 import { ReviewBody } from "@/schema/review.schema";
+import { Dish } from "@/types/dish.type";
 
 const useDishReview = {
   useGetDishReview(dishId: string) {
@@ -18,7 +19,9 @@ const useDishReview = {
   useGetDishInfo(dishId: string) {
     return useQuery({
       queryFn: async () => {
-        return await http.get(`v1/dishes/${dishId}`).then((res) => res.data);
+        return await http
+          .get<Dish>(`v1/dishes/${dishId}`)
+          .then((res) => res.data);
       },
       queryKey: ["dish-info", dishId],
     });

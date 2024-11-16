@@ -32,12 +32,14 @@ const DishReviewForm = ({
   className,
   isEditting,
   review,
+  refetch,
   onCancelReview,
 }: {
-  id: string;
+  id?: string;
   className?: string;
   isEditting: boolean;
   review: DishReview | null | undefined;
+  refetch?: Array<() => void>;
   onCancelReview: () => void;
 }) => {
   //handle rating animation
@@ -87,16 +89,21 @@ const DishReviewForm = ({
   const onSubmit = async (value: ReviewBody) => {
     setLoading(true);
     try {
-      if (isEditting && review) {
+      if (isEditting && id && review) {
+        console.log("update hit");
         await updateDishReviewAction.mutateAsync({
           dishId: id,
           reviewId: review?.reviewId,
           review: value,
         });
-      } else {
-        await createDishReviewAction.mutateAsync({ dishId: id, review: value });
       }
-      onCancelReview();
+      if (!isEditting && id) {
+        console.log("create hit");
+        await createDishReviewAction.mutateAsync({
+          dishId: id,
+          review: value,
+        });
+      }
       toast({
         title: "Success",
         description: "Review submitted",
@@ -104,6 +111,8 @@ const DishReviewForm = ({
     } catch (err) {
       console.error(err);
     }
+    refetch && refetch.forEach((func) => func());
+    onCancelReview();
     setLoading(false);
   };
 
