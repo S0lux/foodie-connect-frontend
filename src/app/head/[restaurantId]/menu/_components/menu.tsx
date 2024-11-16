@@ -85,7 +85,6 @@ const EditMode = ({
 
 const MenuManagement = () => {
   const [edit, setEdit] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editCategoryName, setEditCategoryName] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
@@ -99,6 +98,7 @@ const MenuManagement = () => {
     data: dishes,
     isLoading,
     isError,
+    refetch,
   } = useDishes.useGetDishes(restaurantId);
   console.log(dishes);
   console.log(categories);
@@ -198,7 +198,7 @@ const MenuManagement = () => {
         title: "Success",
         description: "Dish deleted successfully",
       });
-      router.refresh();
+      refetch();
     } catch (error) {
       console.error({ error });
       switch ((error as ErrorType).code) {
