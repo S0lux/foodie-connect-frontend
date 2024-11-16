@@ -15,6 +15,4 @@ export interface Promotion {
   endsAt: string;
 }
 
-export interface Promotions {
-  promotions: Promotion[];
-}
+export type Promotions = Promotion[];

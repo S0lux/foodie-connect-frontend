@@ -46,32 +46,39 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     i.toString().padStart(2, "0"),
   );
 
-  const handleDateChange = (date: Date) => {
-    setSelectedDate(date);
-    updateDateTime();
-  };
-
-  const handleTimeChange = (type: "hour" | "minute", newValue: string) => {
-    if (type === "hour") {
-      setSelectedHour(newValue);
-    } else {
-      setSelectedMinute(newValue);
-    }
-    updateDateTime();
-  };
-
-  const updateDateTime = () => {
-    if (selectedDate) {
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
       const newDateTime = new Date(
-        selectedDate.getFullYear(),
-        selectedDate.getMonth(),
-        selectedDate.getDate(),
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
         parseInt(selectedHour),
         parseInt(selectedMinute),
         0,
       );
       onChange?.(newDateTime);
     }
+  };
+
+  const handleTimeChange = (type: "hour" | "minute", newValue: string) => {
+    if (!selectedDate) return;
+
+    if (type === "hour") {
+      setSelectedHour(newValue);
+    } else {
+      setSelectedMinute(newValue);
+    }
+
+    const newDateTime = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate(),
+      type === "hour" ? parseInt(newValue) : parseInt(selectedHour),
+      type === "minute" ? parseInt(newValue) : parseInt(selectedMinute),
+      0,
+    );
+    onChange?.(newDateTime);
   };
 
   return (
@@ -95,7 +102,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
             <Calendar
               mode="single"
               selected={selectedDate}
-              onSelect={() => handleDateChange}
+              onSelect={handleDateChange}
             />
           </PopoverContent>
         </Popover>

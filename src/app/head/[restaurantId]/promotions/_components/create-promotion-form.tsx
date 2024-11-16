@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -19,15 +19,22 @@ import {
   CreatePromotionBodyType,
 } from "@/schema/promotion.schema";
 import useDishes from "@/hooks/use-dishes";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import Chip from "@/components/ui/chip";
 import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import usePromotion from "@/hooks/use-promotion";
+import { toast } from "@/hooks/use-toast";
+import { ErrorType } from "@/types/error.type";
 
 const CreatePromotionForm: React.FC = () => {
   const { restaurantId } = useParams<{ restaurantId: string }>();
   const { data: dishes } = useDishes.useGetDishes(restaurantId);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const createPromotion = usePromotion.useCreatePromotion();
 
   const form = useForm<CreatePromotionBodyType>({
     resolver: zodResolver(CreatePromotionBody),
@@ -41,17 +48,63 @@ const CreatePromotionForm: React.FC = () => {
     },
   });
 
-  const onSubmit = form.handleSubmit((data) => {
-    console.log("Promotion data:", data);
+  const onSubmit = form.handleSubmit(async (values) => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      await createPromotion.mutateAsync({
+        restaurantId,
+        promotionDetails: values,
+      });
+      toast({
+        title: "Success",
+        description: "Promotion added successfully",
+      });
+      router.push(`/head/${restaurantId}/promotions`);
+    } catch (error) {
+      console.error({ error });
+      switch ((error as ErrorType).code) {
+        case "NOT_AUTHENTICATED":
+          toast({
+            title: "Error",
+            description: "You are not authenticated",
+            variant: "destructive",
+          });
+          break;
+        case "NOT_OWNER":
+          toast({
+            title: "Error",
+            description: "You are not the owner",
+            variant: "destructive",
+          });
+          break;
+        case "PROMOTION_DISH_NOT_FOUND":
+          toast({
+            title: "Error",
+            description: "Promotion dish not found",
+            variant: "destructive",
+          });
+          break;
+        default:
+          toast({
+            title: "Error",
+            description: "An error occurred",
+            variant: "destructive",
+          });
+          break;
+      }
+    } finally {
+      setLoading(false);
+    }
   });
 
   return (
     <div className="container mx-auto px-4">
       <div className="mb-4">
-        <h1 className="text-3xl font-bold">Add New Menu Item</h1>
+        <h1 className="text-center text-3xl font-bold">Add Promotion</h1>
       </div>
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <Card>
+      <div className="flex justify-center">
+        <Card className="w-full lg:w-2/3 xl:w-1/2">
           <CardContent className="pt-6">
             <Form {...form}>
               <form onSubmit={onSubmit} className="space-y-6">
@@ -84,9 +137,9 @@ const CreatePromotionForm: React.FC = () => {
                         Description
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Enter promotion description"
+                        <Textarea
                           {...field}
+                          placeholder="Enter promotion description"
                           value={field.value ?? ""}
                         />
                       </FormControl>
@@ -119,21 +172,46 @@ const CreatePromotionForm: React.FC = () => {
                               />
                             ))}
                           </div>
-                          <Input
-                            placeholder="Enter target name and press Enter"
-                            onKeyDown={(e) => {
-                              if (
-                                e.key === "Enter" &&
-                                e.currentTarget.value.trim() !== ""
-                              ) {
-                                field.onChange([
-                                  ...(field.value ?? []),
-                                  e.currentTarget.value.trim(),
-                                ]);
-                                e.currentTarget.value = "";
-                              }
-                            }}
-                          />
+                          <div className="flex gap-2">
+                            <Input
+                              id="target-input"
+                              placeholder="Enter target name and press Enter"
+                              onKeyDown={(e) => {
+                                if (
+                                  e.key === "Enter" &&
+                                  e.currentTarget.value.trim() !== ""
+                                ) {
+                                  e.preventDefault();
+                                  field.onChange([
+                                    ...(field.value ?? []),
+                                    e.currentTarget.value.trim(),
+                                  ]);
+                                  e.currentTarget.value = "";
+                                }
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              onClick={() => {
+                                const inputElement =
+                                  document.querySelector<HTMLInputElement>(
+                                    "#target-input",
+                                  );
+                                if (
+                                  inputElement &&
+                                  inputElement.value.trim() !== ""
+                                ) {
+                                  field.onChange([
+                                    ...(field.value ?? []),
+                                    inputElement.value.trim(),
+                                  ]);
+                                  inputElement.value = "";
+                                }
+                              }}
+                            >
+                              Add
+                            </Button>
+                          </div>
                         </div>
                       </FormControl>
                       <FormDescription>
@@ -258,8 +336,18 @@ const CreatePromotionForm: React.FC = () => {
                   )}
                 />
 
-                <div className="flex justify-end">
-                  <Button type="submit">Create Promotion</Button>
+                <div className="mt-6 flex justify-center gap-3">
+                  <Button
+                    type="button"
+                    size={"lg"}
+                    variant="outline"
+                    onClick={() => router.back()}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" size={"lg"} disabled={loading}>
+                    {loading ? "Adding..." : "Add Promotion"}
+                  </Button>
                 </div>
               </form>
             </Form>

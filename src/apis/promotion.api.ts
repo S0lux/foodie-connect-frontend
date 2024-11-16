@@ -1,8 +1,7 @@
 import http from "@/lib/http";
 import { CreatePromotionBodyType } from "@/schema/promotion.schema";
-import { Promotion } from "@/types/dishes.type";
 import { ErrorType } from "@/types/error.type";
-import { Promotions } from "@/types/promotion.type";
+import { Promotion, Promotions } from "@/types/promotion.type";
 import axios from "axios";
 import { get } from "http";
 
