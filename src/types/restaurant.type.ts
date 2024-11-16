@@ -1,7 +1,7 @@
 export type SocialLink = {
   id: string;
   restaurantId: string;
-  platformType: string;
+  platformType: "Facebook" | "Twitter" | "Tiktok";
   url: string;
 };
 export type ScoreOverview = {

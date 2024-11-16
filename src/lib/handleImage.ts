@@ -38,6 +38,11 @@ export function getAvatarUrl(image?: string, userName?: string) {
   return `https://api.dicebear.com/9.x/initials/svg?seed=${userName}`;
 }
 
+export function getImageById(image: string) {
+  const [imagePath, imageVersion] = image.split(".");
+  return cld.image(imagePath).setVersion(imageVersion).toURL();
+}
+
 export function getDefaultImageUrl(images: string[], restaurantName: string) {
   return handleImage(images, "", restaurantName);
 }

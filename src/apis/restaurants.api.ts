@@ -151,6 +151,34 @@ const restaurantsActions = {
       }
     }
   },
+
+  uploadImage: async (restaurantId: string, images: File[]) => {
+    try {
+      const formData = new FormData();
+      images.forEach((image, index) => {
+        formData.append(`files[${index}]`, image);
+      });
+      const response = await http.post(
+        `v1/restaurants/${restaurantId}/images`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const uploadImageError = error.response.data as ErrorType;
+        console.error("Error during upload image:", uploadImageError);
+        throw uploadImageError;
+      } else {
+        console.error("Unexpected error during upload image:", error);
+        throw error;
+      }
+    }
+  },
 };
 
 export default restaurantsActions;
