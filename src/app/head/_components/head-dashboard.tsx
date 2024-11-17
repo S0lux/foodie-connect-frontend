@@ -1,71 +1,86 @@
+"use client";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Star, Users, Utensils } from "lucide-react";
 import { HeadStatCard } from "@/app/head/_components/head-stat-card";
 import { RatingChart } from "@/app/head/_components/rating-chart";
-import { Performance, columns } from "@/app/head/_components/column";
-import { DataTable } from "@/app/head/_components/data-table";
+import useRestaurants from "@/hooks/use-restaurants";
+import useAuth from "@/hooks/use-auth";
+import Loader from "@/components/loader";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
-const restaurantPerformance = [
-  { name: "Nhà hàng A", revenue: 150000, growth: 12.5, orders: 1200 },
-  { name: "Nhà hàng B", revenue: 120000, growth: -2.3, orders: 980 },
-  { name: "Nhà hàng C", revenue: 180000, growth: 15.7, orders: 1500 },
-  { name: "Nhà hàng D", revenue: 90000, growth: 5.2, orders: 850 },
-];
+const HeadDashboard = () => {
+  const {
+    data: user,
+    isLoading: loadingUser,
+    isError: authError,
+  } = useAuth.useGetSession();
+  const {
+    data: restaurants,
+    isLoading: loadingRestaurants,
+    isError: restaurantError,
+  } = useRestaurants.useGetRestaurants(user?.id);
 
-async function getData(): Promise<Performance[]> {
-  return [
-    {
-      id: "1",
-      restaurantName: "Restaurant A",
-      status: "active",
-      rating: 4.5,
-      open: "9:00 AM",
-      closed: "10:00 PM",
-    },
-    {
-      id: "2",
-      restaurantName: "Restaurant B",
-      status: "active",
-      rating: 4.2,
-      open: "9:00 AM",
-      closed: "10:00 PM",
-    },
-    {
-      id: "3",
-      restaurantName: "Restaurant C",
-      status: "inactive",
-      rating: 3.9,
-      open: "9:00 AM",
-      closed: "10:00 PM",
-    },
-    {
-      id: "4",
-      restaurantName: "Restaurant D",
-      status: "active",
-      rating: 4.0,
-      open: "9:00 AM",
-      closed: "10:00 PM",
-    },
-  ];
-}
+  const calculateStats = () => {
+    if (!restaurants)
+      return {
+        totalActiveRestaurants: 0,
+        totalRatings: 0,
+        averageRating: 0,
+        monthlyGrowth: 0,
+      };
 
-export default async function HeadDashboard() {
-  const data = await getData();
+    // Get restaurants from last month by createdAt date
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    const lastMonthRestaurants = restaurants.filter(
+      (r) => new Date(r.createdAt) >= lastMonth,
+    ).length;
 
-  const totalRevenue = restaurantPerformance.reduce(
-    (sum, restaurant) => sum + restaurant.revenue,
-    0,
-  );
-  const totalOrders = restaurantPerformance.reduce(
-    (sum, restaurant) => sum + restaurant.orders,
-    0,
-  );
-  const averageGrowth = (
-    restaurantPerformance.reduce(
-      (sum, restaurant) => sum + restaurant.growth,
-      0,
-    ) / restaurantPerformance.length
-  ).toFixed(1);
+    const monthlyGrowth = restaurants.length
+      ? (lastMonthRestaurants / restaurants.length) * 100 - 100
+      : 0;
+
+    // Calculate active restaurants and rating stats
+    const activeRestaurants = restaurants.filter(
+      (r) => r.status === "Open",
+    ).length;
+    const totalRatings = restaurants.reduce((acc, restaurant) => {
+      const { scoreOverview } = restaurant;
+      return (
+        acc +
+        (scoreOverview.fiveStars +
+          scoreOverview.fourStars +
+          scoreOverview.threeStars +
+          scoreOverview.twoStars +
+          scoreOverview.oneStar)
+      );
+    }, 0);
+
+    const previousRatings = totalRatings * 0.8; // Simulated previous month ratings
+    const ratingsGrowth =
+      ((totalRatings - previousRatings) / previousRatings) * 100;
+
+    return {
+      totalActiveRestaurants: activeRestaurants,
+      activeGrowth: (activeRestaurants / restaurants.length) * 100 - 100,
+      totalRatings,
+      ratingsGrowth,
+      monthlyGrowth,
+    };
+  };
+
+  const stats = calculateStats();
+
+  if (loadingUser || loadingRestaurants)
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader />
+      </div>
+    );
+
+  if (authError || restaurantError) return <div>Error...</div>;
 
   return (
     <div className="space-y-6 p-4">
@@ -73,42 +88,75 @@ export default async function HeadDashboard() {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <HeadStatCard
-          title="Total Dish"
-          value={totalRevenue}
-          icon={Utensils}
-          prefix="$"
-          change={{ value: Number(averageGrowth), timespan: "month" }}
+          title="Total Restaurants"
+          value={restaurants?.length || 0}
+          icon={Building2}
         />
         <HeadStatCard
-          title="Total Ratings"
-          value={totalOrders}
+          title="Total Reviews"
+          value={stats.totalRatings}
           icon={Star}
-          change={{ value: 12.3, timespan: "month" }}
         />
         <HeadStatCard
           title="Active Restaurants"
-          value={restaurantPerformance.length}
-          icon={Building2}
-          change={{ value: 1, timespan: "month" }}
+          value={stats.totalActiveRestaurants}
+          icon={Utensils}
         />
         <HeadStatCard
-          title="Total Users"
-          value={124}
+          title="Avg Reviews/Restaurant"
+          value={
+            restaurants?.length
+              ? (stats.totalRatings / restaurants.length).toFixed(1)
+              : 0
+          }
           icon={Users}
-          change={{ value: 6, timespan: "month" }}
         />
       </div>
 
-      <RatingChart />
+      <Card className="h-full">
+        <CardHeader>
+          <CardTitle>Restaurant Ratings Distribution</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="">
+            <RatingChart data={restaurants || []} />
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Restaurant Performance</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Status Overview</CardTitle>
+            <Link href="/head/restaurants">
+              <Button variant={"link"}>View all restaurants</Button>
+            </Link>
+          </div>
         </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={data} />
+        <CardContent className="">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {["Open", "Closed", "PermanentlyClosed"].map((status) => {
+              const count =
+                restaurants?.filter((r) => r.status === status).length || 0;
+              const percentage = restaurants?.length
+                ? ((count / restaurants.length) * 100).toFixed(1)
+                : "0";
+
+              return (
+                <div key={status} className="rounded-md border p-4">
+                  <h3 className="font-medium">{status}</h3>
+                  <p className="text-2xl font-bold">{count}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {percentage}% of total
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
     </div>
   );
-}
+};
+
+export default HeadDashboard;

@@ -17,61 +17,36 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { ScoreOverview } from "@/types/restaurant.type";
 
-interface Restaurant {
-  scoreOverview: {
-    fiveStars: number;
-    fourStars: number;
-    threeStars: number;
-    twoStars: number;
-    oneStar: number;
-  };
-}
-
-interface RatingChartProps {
-  data: Restaurant[];
-}
-
-export function RatingChart({ data }: RatingChartProps) {
-  const chartData = data.reduce(
-    (acc, restaurant) => {
-      const { scoreOverview } = restaurant;
-      return [
-        {
-          name: "5 Stars",
-          value: acc[0].value + scoreOverview.fiveStars,
-          fill: "#47b847",
-        },
-        {
-          name: "4 Stars",
-          value: acc[1].value + scoreOverview.fourStars,
-          fill: "#99cc33",
-        },
-        {
-          name: "3 Stars",
-          value: acc[2].value + scoreOverview.threeStars,
-          fill: "#ffcc00",
-        },
-        {
-          name: "2 Stars",
-          value: acc[3].value + scoreOverview.twoStars,
-          fill: "#ff9933",
-        },
-        {
-          name: "1 Star",
-          value: acc[4].value + scoreOverview.oneStar,
-          fill: "#ff4d4d",
-        },
-      ];
+export default function ReportChart(data: ScoreOverview) {
+  const chartData = [
+    {
+      review: "5 Stars",
+      rating: data.fiveStars,
+      fill: "#47b847",
     },
-    [
-      { name: "5 Stars", value: 0 },
-      { name: "4 Stars", value: 0 },
-      { name: "3 Stars", value: 0 },
-      { name: "2 Stars", value: 0 },
-      { name: "1 Star", value: 0 },
-    ],
-  );
+    {
+      review: "4 Stars",
+      rating: data.fourStars,
+      fill: "#99cc33",
+    },
+    {
+      review: "3 Stars",
+      rating: data.threeStars,
+      fill: "#ffcc00",
+    },
+    {
+      review: "2 Stars",
+      rating: data.twoStars,
+      fill: "#ff9933",
+    },
+    {
+      review: "1 Star",
+      rating: data.oneStar,
+      fill: "#ff4d4d",
+    },
+  ];
 
   const chartConfig = {
     rating: {
@@ -116,7 +91,7 @@ export function RatingChart({ data }: RatingChartProps) {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="name"
+              dataKey="review"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
@@ -131,7 +106,7 @@ export function RatingChart({ data }: RatingChartProps) {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="value" radius={[5, 5, 0, 0]} />
+            <Bar dataKey="rating" radius={[5, 5, 0, 0]} />
           </BarChart>
         </ChartContainer>
       </CardContent>

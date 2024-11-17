@@ -31,7 +31,7 @@ import {
 } from "./ui/dropdown-menu";
 import { DropdownMenuItem } from "./ui/dropdown-menu";
 import { toast } from "@/hooks/use-toast";
-import { description } from "./pie-chart";
+import { description } from "../app/head/[restaurantId]/reports/_components/pie-chart";
 import useDishReview from "@/hooks/use-dish-review";
 import { getAvatarUrl, getInitials } from "@/lib/handleImage";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";

@@ -16,7 +16,6 @@ export function HeadStatCard({
   title,
   value,
   icon: Icon,
-  change,
   prefix = "",
 }: StatCardProps) {
   return (
@@ -30,12 +29,6 @@ export function HeadStatCard({
           {prefix && <span>{prefix}</span>}
           {typeof value === "number" ? value.toLocaleString() : value}
         </div>
-        {change && (
-          <p className="text-xs text-muted-foreground">
-            {change.value >= 0 ? "+" : ""}
-            {change.value}% from last {change.timespan}
-          </p>
-        )}
       </CardContent>
     </Card>
   );

@@ -124,6 +124,50 @@ const useRestaurants = {
       },
     });
   },
+
+  useUploadRestaurantImage() {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: ({
+        restaurantId,
+        images,
+      }: {
+        restaurantId: string;
+        images: File[];
+      }) => restaurantsActions.uploadImage(restaurantId, images),
+      onError: (error: ErrorType) => {
+        console.error("Error during restaurant image upload:", error);
+        throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["restaurants", "restaurant"],
+        });
+      },
+    });
+  },
+
+  useDeleteImage() {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: ({
+        restaurantId,
+        imageId,
+      }: {
+        restaurantId: string;
+        imageId: string;
+      }) => restaurantsActions.deleteImage(restaurantId, imageId),
+      onError: (error: ErrorType) => {
+        console.error("Error during image deletion:", error);
+        throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["restaurants", "restaurant"],
+        });
+      },
+    });
+  },
 };
 
 export default useRestaurants;
