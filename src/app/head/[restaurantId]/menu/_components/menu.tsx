@@ -33,6 +33,18 @@ import AddCategoryForm from "@/app/head/[restaurantId]/menu/_components/add-cate
 import DeleteCategory from "@/app/head/[restaurantId]/menu/_components/delete-category";
 import UpdateCategoryForm from "@/app/head/[restaurantId]/menu/_components/update-category-form";
 
+const Rating = ({ value }: { value: number }) => {
+  const stars = [];
+  for (let i = 0; i < 5; i++) {
+    if (i < value) {
+      stars.push(<span key={i}>&#9733;</span>);
+    } else {
+      stars.push(<span key={i}>&#9734;</span>);
+    }
+  }
+  return <div className="flex">{stars}</div>;
+};
+
 const EditMode = ({
   categoryName,
   onDelete,
@@ -378,13 +390,16 @@ const MenuManagement = () => {
                 ))}
               </div>
             </CardContent>
-            <CardFooter className="flex justify-end gap-2">
-              <Link href={`/head/${restaurantId}/menu/update/${item.dishId}`}>
-                <Button variant="outline" size="icon">
-                  <Edit size={16} />
-                </Button>
-              </Link>
-              <DeleteDish onDelete={() => handleDeleteItem(item.dishId)} />
+            <CardFooter className="flex justify-between gap-2">
+              <Rating value={item.scoreOverview.averageRating} />
+              <div>
+                <Link href={`/head/${restaurantId}/menu/update/${item.dishId}`}>
+                  <Button variant="outline" size="icon">
+                    <Edit size={16} />
+                  </Button>
+                </Link>
+                <DeleteDish onDelete={() => handleDeleteItem(item.dishId)} />
+              </div>
             </CardFooter>
           </Card>
         ))}

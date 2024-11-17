@@ -4,6 +4,7 @@ import {
   Building2,
   ChartLine,
   Home,
+  LayoutDashboard,
   Salad,
   Settings,
   Utensils,
@@ -52,9 +53,9 @@ export function AppSidebar() {
 
   const Head = [
     {
-      title: "Dashboard",
+      title: "Head Dashboard",
       url: "/head/",
-      icon: ChartLine,
+      icon: LayoutDashboard,
     },
     {
       title: "Restaurants",
@@ -83,6 +84,11 @@ export function AppSidebar() {
       title: "Promotions",
       url: `/head/${restaurantId}/promotions`,
       icon: BadgeDollarSign,
+    },
+    {
+      title: "Reports",
+      url: `/head/${restaurantId}/reports`,
+      icon: ChartLine,
     },
     {
       title: "Settings",
