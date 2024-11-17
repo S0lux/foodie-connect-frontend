@@ -1,6 +1,7 @@
 "use client";
 import {
   BadgeDollarSign,
+  Building2,
   ChartLine,
   Home,
   Salad,
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import useRestaurants from "@/hooks/use-restaurants";
 
 function SidebarItem({
   title,
@@ -45,14 +47,23 @@ function SidebarItem({
 }
 
 export function AppSidebar() {
-  const { restaurantId } = useParams();
-  console.log(restaurantId);
-  const items = [
+  const { restaurantId } = useParams<{ restaurantId: string }>();
+  const { data: restaurant } = useRestaurants.useGetRestaurant(restaurantId);
+
+  const Head = [
     {
-      title: "Head Dashboard",
+      title: "Dashboard",
       url: "/head/",
       icon: ChartLine,
     },
+    {
+      title: "Restaurants",
+      url: "/head/restaurants",
+      icon: Building2,
+    },
+  ];
+
+  const items = [
     {
       title: "Overview",
       url: `/head/${restaurantId}/`,
@@ -85,6 +96,18 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel className="mb-2 text-[16px]">
             Restaurant Management
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {Head.map((item, index) => (
+                <SidebarItem key={index} {...item} />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel className="mb-2 text-[16px]">
+            {restaurant?.name}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

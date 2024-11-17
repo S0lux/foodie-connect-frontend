@@ -2,13 +2,17 @@
 
 import RestaurantCarousel from "@/app/head/[restaurantId]/_components/restaurant-carousel";
 import RestaurantHomePage from "@/app/head/[restaurantId]/_components/restaurant-home-page";
+import RestaurantInfo from "@/app/head/[restaurantId]/_components/restaurant-infomation";
 import SocialOverview from "@/app/head/[restaurantId]/_components/social-overview";
 import usePromotion from "@/hooks/use-promotion";
 import useRestaurantReview from "@/hooks/use-restaurant-review";
 import useRestaurants from "@/hooks/use-restaurants";
+import { toast } from "@/hooks/use-toast";
 import { getBannerUrl, getLogoUrl } from "@/lib/handleImage";
+import { ErrorType } from "@/types/error.type";
 import { Loader } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function OverViewRestaurant({
   restaurantId,
@@ -19,13 +23,60 @@ export default function OverViewRestaurant({
     data: restaurant,
     isLoading,
     isError,
+    refetch,
   } = useRestaurants.useGetRestaurant(restaurantId);
+  const deleteImage = useRestaurants.useDeleteImage();
 
-  console.log(
-    restaurant?.images?.filter(
-      (image) => !image.includes("/logo") && !image.includes("/banner"),
-    ),
-  );
+  const [loading, setLoading] = useState(false);
+
+  const onDeleteImage = async (imageId: string) => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      await deleteImage.mutateAsync({
+        restaurantId,
+        imageId,
+      });
+      toast({
+        title: "Success",
+        description: "Image deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      switch ((error as ErrorType).code) {
+        case "IMAGE_NOT_FOUND":
+          toast({
+            title: "Error",
+            description: "Image not found",
+            variant: "destructive",
+          });
+          break;
+        case "NOT_AUTHENTICATED":
+          toast({
+            title: "Error",
+            description: "You are not authenticated",
+            variant: "destructive",
+          });
+          break;
+        case "NOT_OWNER":
+          toast({
+            title: "Error",
+            description: "You are not the owner",
+            variant: "destructive",
+          });
+          break;
+        default:
+          toast({
+            title: "Error",
+            description: "An error occurred",
+            variant: "destructive",
+          });
+          break;
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const { data: reviews } =
     useRestaurantReview.useGetRestaurantReview(restaurantId);
@@ -76,10 +127,18 @@ export default function OverViewRestaurant({
               Welcome to your Restaurant
             </h1>
 
-            <SocialOverview />
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div>
+                {restaurant && <RestaurantInfo restaurant={restaurant} />}
+              </div>
+              <div>
+                <SocialOverview />
+              </div>
+            </div>
 
             <div className="flex justify-center">
               <RestaurantCarousel
+                refetch={refetch}
                 images={restaurant?.images?.filter(
                   (image) =>
                     !image.includes("/logo") && !image.includes("/banner"),

@@ -2,6 +2,7 @@
 import PromotionCard from "@/app/head/[restaurantId]/_components/promotion-card";
 import ReviewCard from "@/app/head/[restaurantId]/_components/reivew-card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Promotion } from "@/types/promotion.type";
 import { RestaurantReviews } from "@/types/restaurant-reviews.type";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -34,8 +35,8 @@ const RestaurantHomePage = ({
     (reviews?.otherReviews?.length || 0) + (reviews?.myReview ? 1 : 0);
 
   return (
-    <div>
-      <div>
+    <div className="space-y-4">
+      <Card className="p-6">
         <div className="flex items-center justify-between">
           <h2 className="mb-4 text-2xl font-bold">Promotions</h2>
           <Link href={`/head/${restaurantId}/promotions`}>
@@ -47,9 +48,14 @@ const RestaurantHomePage = ({
             <PromotionCard key={i} promotion={promotion} />
           ))}
         </div>
-      </div>
+        {promotions.length === 0 && (
+          <p className="w-full text-center text-gray-500">
+            No promotions available
+          </p>
+        )}
+      </Card>
 
-      <div>
+      <Card className="p-6">
         <h2 className="mb-4 text-2xl font-bold">Reviews</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {reviews?.myReview && <ReviewCard review={reviews.myReview} />}
@@ -58,7 +64,11 @@ const RestaurantHomePage = ({
             .slice(0, reviews.myReview ? visibleReviews - 1 : visibleReviews)
             .map((review, i) => <ReviewCard key={i} review={review} />)}
         </div>
-
+        {totalReviews === 0 && (
+          <p className="w-full text-center text-gray-500">
+            No reviews available
+          </p>
+        )}
         {totalReviews > initialReviewCount && (
           <div className="mt-4 text-center">
             <Button
@@ -85,7 +95,7 @@ const RestaurantHomePage = ({
             </Button>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 };

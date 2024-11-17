@@ -146,6 +146,28 @@ const useRestaurants = {
       },
     });
   },
+
+  useDeleteImage() {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: ({
+        restaurantId,
+        imageId,
+      }: {
+        restaurantId: string;
+        imageId: string;
+      }) => restaurantsActions.deleteImage(restaurantId, imageId),
+      onError: (error: ErrorType) => {
+        console.error("Error during image deletion:", error);
+        throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["restaurants", "restaurant"],
+        });
+      },
+    });
+  },
 };
 
 export default useRestaurants;

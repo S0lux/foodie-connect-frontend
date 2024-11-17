@@ -155,9 +155,10 @@ const restaurantsActions = {
   uploadImage: async (restaurantId: string, images: File[]) => {
     try {
       const formData = new FormData();
-      images.forEach((image, index) => {
-        formData.append(`files[${index}]`, image);
+      images.forEach((image) => {
+        formData.append(`files`, image);
       });
+      console.log("formData", formData);
       const response = await http.post(
         `v1/restaurants/${restaurantId}/images`,
         formData,
@@ -175,6 +176,24 @@ const restaurantsActions = {
         throw uploadImageError;
       } else {
         console.error("Unexpected error during upload image:", error);
+        throw error;
+      }
+    }
+  },
+
+  deleteImage: async (restaurantId: string, imageId: string) => {
+    try {
+      const response = await http.delete(
+        `v1/restaurants/${restaurantId}/images/${imageId}`,
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const deleteImageError = error.response.data as ErrorType;
+        console.error("Error during delete image:", deleteImageError);
+        throw deleteImageError;
+      } else {
+        console.error("Unexpected error during delete image:", error);
         throw error;
       }
     }

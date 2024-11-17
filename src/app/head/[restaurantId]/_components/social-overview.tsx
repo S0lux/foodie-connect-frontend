@@ -92,10 +92,12 @@ const SocialOverview = () => {
   };
 
   return (
-    <Card className="w-full">
+    <Card className="h-full w-full">
       <CardHeader>
         <CardTitle className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <span className="text-xl font-semibold">Social Media Overview</span>
+          <h2 className="mb-4 text-left text-2xl font-bold">
+            Social Media Overview
+          </h2>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button

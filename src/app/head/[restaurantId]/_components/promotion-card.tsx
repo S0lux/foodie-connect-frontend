@@ -30,53 +30,49 @@ const PromotionCard = ({ promotion }: { promotion: Promotion }) => {
       minute: "2-digit",
     });
   };
+
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 flex min-h-[450px] flex-col">
       <CardHeader className="pb-2">
-        <CardTitle className="">{promotion.name}</CardTitle>
+        <CardTitle className="text-lg">{promotion.name}</CardTitle>
       </CardHeader>
-      <CardContent className="mt-0 flex flex-col gap-4">
-        <div>
-          <p
-            style={{
-              height: "50px",
-              overflowWrap: "anywhere",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-            className="w-full break-words"
-          >
-            {promotion?.description}
-          </p>
+      <CardContent className="flex flex-1 flex-col gap-4">
+        {/* Description Section */}
+        <div className="h-16">
+          <p className="line-clamp-2 text-gray-600">{promotion?.description}</p>
         </div>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
+
+        {/* Target Categories Section */}
+        <div className="min-h-[60px]">
+          <div className="mb-2 flex items-center gap-2">
             <Tag className="h-5 w-5" />
             <span className="font-medium">Target Categories:</span>
           </div>
           <div className="ml-7 flex flex-wrap gap-2">
             {promotion?.targets.map((target, index) => (
-              <Badge key={index}>{target}</Badge>
+              <Badge key={index} className="px-2 py-0.5">
+                {target}
+              </Badge>
             ))}
           </div>
         </div>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
+
+        {/* Promotional Items Section */}
+        <div className="min-h-[120px] flex-1">
+          <div className="mb-2 flex items-center gap-2">
             <Gift className="h-5 w-5" />
             <span className="font-medium">Promotional Items:</span>
           </div>
-          <div className="rounded-lg ml-7 divide-y">
+          <div className="rounded-lg ml-7 divide-y bg-gray-50">
             {promotion?.promotionDetails.map((detail, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-3"
+                className="flex items-center justify-between px-3 py-2"
               >
-                <span>
-                  Dish:{" "}
+                <span className="text-gray-700">
                   {dishes?.find((dish) => dish.dishId === detail.dishId)
                     ?.name || detail.dishId}
                 </span>
-
                 <span className="font-medium text-green-600">
                   ${detail.promotionalPrice.toFixed(2)}
                 </span>
@@ -84,8 +80,10 @@ const PromotionCard = ({ promotion }: { promotion: Promotion }) => {
             ))}
           </div>
         </div>
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
+
+        {/* Duration Section */}
+        <div className="h-24">
+          <div className="mb-2 flex items-center gap-2">
             <Calendar className="h-5 w-5" />
             <span className="font-bold">Duration:</span>
           </div>
