@@ -46,3 +46,12 @@ export function getImageById(image: string) {
 export function getDefaultImageUrl(images: string[], restaurantName: string) {
   return handleImage(images, "", restaurantName);
 }
+
+export function getInitials(name: string | undefined) {
+  if (!name) return "NO";
+  const initials = name
+    .split(" ")
+    .map((word) => word[0])
+    .join("");
+  return initials.slice(0, 2).toUpperCase();
+}
