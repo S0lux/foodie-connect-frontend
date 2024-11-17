@@ -1,10 +1,15 @@
 "use client";
+import PromotionCard from "@/app/head/[restaurantId]/_components/promotion-card";
 import FoodGrid from "@/components/food-grid";
+import PromotionItem from "@/components/promotion-item";
 import ReviewGrid from "@/components/review-grid";
-import { Card, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import useDishCategories from "@/hooks/use-dish-categories";
+import usePromotion from "@/hooks/use-promotion";
 import useRestaurantDetail from "@/hooks/use-restaurant-detail";
 import { getLogoUrl } from "@/lib/handleImage";
-import { AlarmClock, MapPin, PhoneIcon } from "lucide-react";
+import { AlarmClock, MapPin, PhoneIcon, Star, StarHalf } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 export default function RestauranDetailPage({
@@ -15,9 +20,21 @@ export default function RestauranDetailPage({
   const { data: restaurantDetail } = useRestaurantDetail.useGetRestaurantDetail(
     params.id,
   );
-  console.log(params.id);
+
+  const { data: restaurantCategories } = useDishCategories.useGetDishCategories(
+    params.id,
+  );
+
+  const { data: promotions } = usePromotion.useGetPromotions(params.id);
+
+  const halfStar =
+    restaurantDetail &&
+    restaurantDetail.scoreOverview.averageRating %
+      Math.round(restaurantDetail.scoreOverview.averageRating) >
+      0.5;
   return (
     <div className="flex flex-col space-y-5">
+      {/* {restaurant details} */}
       <Card className="flex flex-col space-x-5 border-none md:flex-row">
         <div className="rounded md:h-52 md:w-96">
           <img
@@ -33,11 +50,20 @@ export default function RestauranDetailPage({
           {/* name */}
           <CardTitle className="text-xl">{restaurantDetail?.name}</CardTitle>
 
-          {/* service */}
-          {/* <CardDescription className="flex flex-row items-center space-x-1 text-primary">
-            <Tag size={15}></Tag>
-            <span>{restaurantDetail?.category}</span>
-          </CardDescription> */}
+          {/* {restaurant's rating} */}
+          <div className="flex flex-row">
+            {restaurantDetail &&
+              Array.from(
+                {
+                  length:
+                    restaurantDetail.scoreOverview.averageRating > 0
+                      ? restaurantDetail.scoreOverview.averageRating
+                      : 1,
+                },
+                (_, i) => <Star fill="#D4AF37" stroke="#D4AF37" size={15} />,
+              )}
+            {halfStar && <StarHalf fill="#D4AF37" stroke="#D4AF37" size={15} />}
+          </div>
 
           <br></br>
 
@@ -75,11 +101,44 @@ export default function RestauranDetailPage({
             <PhoneIcon className="size-4"></PhoneIcon>
             <span>{restaurantDetail?.phone}</span>
           </div>
+
+          <br></br>
+          {/* Categories */}
+          <div className="grid max-w-64 grid-cols-2 gap-2 md:flex md:max-w-none md:flex-row">
+            {restaurantCategories &&
+              restaurantCategories.map((category) => {
+                return (
+                  <Badge
+                    key={category.categoryName}
+                    variant={"outline"}
+                    className=""
+                  >
+                    {category.categoryName}
+                  </Badge>
+                );
+              })}
+          </div>
         </div>
       </Card>
 
+      {/* promotions */}
+      <Card className="border-none px-2 py-2 md:px-7">
+        <CardTitle className="flex flex-row items-center border-b border-muted-foreground/30 py-3 text-xl">
+          <span className="px-4 md:px-0">Promotions</span>
+        </CardTitle>
+        <CardContent className="flex flex-col space-y-3 py-5 md:grid md:grid-flow-row md:grid-cols-3 md:gap-5 lg:grid-cols-4">
+          {promotions &&
+            promotions.map((promotion) => (
+              <PromotionItem promotion={promotion}></PromotionItem>
+            ))}
+        </CardContent>
+      </Card>
+
       {/* menu */}
-      <FoodGrid restaurantId={params.id}></FoodGrid>
+      <FoodGrid
+        restaurantId={params.id}
+        dishCategories={restaurantCategories}
+      ></FoodGrid>
 
       {/* Reviews */}
       <ReviewGrid restaurantId={params.id}></ReviewGrid>

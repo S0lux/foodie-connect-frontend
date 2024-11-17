@@ -24,7 +24,7 @@ const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
           <section className="space-y-1 text-ellipsis">
             <CardTitle>{restaurant.name}</CardTitle>
             <CardDescription className="max-w-min text-nowrap">
-              {truncate(restaurant.formattedAddress)}
+              {truncate(restaurant.formattedAddress, 25)}
             </CardDescription>
           </section>
           <section className="flex flex-row items-center">
@@ -41,8 +41,8 @@ const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
   );
 };
 
-function truncate(text: string) {
-  return text.length > 25 ? text.substring(0, 25) + "..." : text;
+export function truncate(text: string, maxLength: number) {
+  return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 }
 
 export default RestaurantCard;

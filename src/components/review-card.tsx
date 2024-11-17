@@ -3,6 +3,7 @@ import { ReviewEnum } from "./dish-review-form";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -10,6 +11,7 @@ import {
 import { twMerge } from "tailwind-merge";
 import {
   Edit,
+  EditIcon,
   EllipsisVertical,
   Menu,
   Star,
@@ -31,18 +33,22 @@ import { DropdownMenuItem } from "./ui/dropdown-menu";
 import { toast } from "@/hooks/use-toast";
 import { description } from "./pie-chart";
 import useDishReview from "@/hooks/use-dish-review";
+import { getAvatarUrl, getInitials } from "@/lib/handleImage";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export const ReviewCard = ({
   id,
   refetch,
   reviewType,
   review,
+  onEdit,
 }: {
   id: string;
   refetch: Array<() => void>;
   children?: ReactNode;
   review?: DishReview | RestaurantReview;
   reviewType: ReviewEnum;
+  onEdit?: () => void;
 }) => {
   const deleteRestaurantReviewAction =
     useRestaurantDetail.useDeleteRestaurantReview();
@@ -87,14 +93,25 @@ export const ReviewCard = ({
         <CardTitle className="flex flex-row items-center justify-between">
           {/* reviewer info */}
           <div className="flex flex-row md:space-x-2">
-            <img
-              src="https://placehold.co/50x50"
-              className="absolute aspect-square size-0 rounded-full md:relative md:size-10"
-            ></img>
+            <Avatar>
+              {review?.author && (
+                <AvatarImage
+                  src={getAvatarUrl(
+                    review.author.avatar ?? "",
+                    review.author.userName,
+                  )}
+                  alt={review?.author.userName}
+                ></AvatarImage>
+              )}
+              <AvatarFallback>
+                {getInitials(review?.author.userName)}
+              </AvatarFallback>
+            </Avatar>
+
             <div className="flex flex-col">
               <span className="text-sm">{review?.author.displayName}</span>
               <span className="text-xs text-muted-foreground">
-                {review?.author.userName}
+                @{review?.author.userName}
               </span>
             </div>
           </div>
@@ -106,6 +123,10 @@ export const ReviewCard = ({
                 <EllipsisVertical size={20}></EllipsisVertical>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="absoute right-0 py-2">
+                <DropdownMenuItem className="cursor-pointer" onClick={onEdit}>
+                  <EditIcon></EditIcon>
+                  <span>Edit review</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   className="cursor-pointer text-red-500"
                   onClick={handleDelete}
@@ -120,7 +141,13 @@ export const ReviewCard = ({
       </CardHeader>
       <CardContent className="mt-5 text-clip">
         {/* review content */}
-        <p className="break-words">{review?.content}</p>
+        <p className="break-words">
+          {review?.content ? (
+            review.content
+          ) : (
+            <CardDescription className="italic">no comment</CardDescription>
+          )}
+        </p>
       </CardContent>
 
       <CardFooter className="flex flex-col items-start space-y-2 text-sm text-muted-foreground">
@@ -137,7 +164,7 @@ export const ReviewCard = ({
         </span>
       </CardFooter>
 
-      <ReviewTag className="bottom-0 right-6">
+      <ReviewTag className="bottom-0 right-6 rounded-t">
         {reviewType === ReviewEnum.RESTAURANT && <Store size={20}></Store>}
         {reviewType === ReviewEnum.DISH && <Utensils size={20}></Utensils>}
       </ReviewTag>
@@ -155,7 +182,7 @@ export const ReviewTag = ({
   return (
     <div
       className={twMerge(
-        "absolute block rounded-t bg-primary p-1 text-white opacity-90",
+        "absolute block rounded-tl bg-primary p-1 text-white opacity-90",
         className,
       )}
     >
