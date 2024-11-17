@@ -17,7 +17,7 @@ import Loader from "@/components/loader";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ErrorType } from "@/types/error.type";
-import { getAvatarUrl } from "@/lib/handleImage";
+import { getAvatarUrl, getInitials } from "@/lib/handleImage";
 
 const UserDropDown = () => {
   const { data: user, isLoading, isError, error } = useAuth.useGetSession();
@@ -74,15 +74,6 @@ const UserDropDown = () => {
   }
   if (isLoading) return <Loader />;
 
-  function getInitials(name: string | undefined) {
-    if (!name) return "NO";
-    const initials = name
-      .split(" ")
-      .map((word) => word[0])
-      .join("");
-    return initials.slice(0, 2).toUpperCase();
-  }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded px-2 py-1 outline-none xl:hover:bg-foreground/10">
@@ -124,4 +115,5 @@ const UserDropDown = () => {
     </DropdownMenu>
   );
 };
+
 export default UserDropDown;

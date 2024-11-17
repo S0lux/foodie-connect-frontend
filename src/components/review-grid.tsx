@@ -97,7 +97,6 @@ const ReviewStatistics = ({ restaurant }: { restaurant?: Restaurant }) => {
     <div className="mt-5 md:sticky md:top-28 md:w-1/2">
       <div className="mt-5 grid grid-rows-2 md:sticky md:top-28 md:grid-cols-3">
         {/* overal rating */}
-
         <div className="flex flex-col place-self-center">
           <span className="text-center text-5xl font-bold text-primary">
             {restaurant?.scoreOverview.averageRating?.toFixed(1)}

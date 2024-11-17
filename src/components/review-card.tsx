@@ -33,6 +33,8 @@ import { DropdownMenuItem } from "./ui/dropdown-menu";
 import { toast } from "@/hooks/use-toast";
 import { description } from "./pie-chart";
 import useDishReview from "@/hooks/use-dish-review";
+import { getAvatarUrl, getInitials } from "@/lib/handleImage";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export const ReviewCard = ({
   id,
@@ -91,10 +93,21 @@ export const ReviewCard = ({
         <CardTitle className="flex flex-row items-center justify-between">
           {/* reviewer info */}
           <div className="flex flex-row md:space-x-2">
-            <img
-              src="https://placehold.co/50x50"
-              className="absolute aspect-square size-0 rounded-full md:relative md:size-10"
-            ></img>
+            <Avatar>
+              {review?.author && (
+                <AvatarImage
+                  src={getAvatarUrl(
+                    review.author.avatar ?? "",
+                    review.author.userName,
+                  )}
+                  alt={review?.author.userName}
+                ></AvatarImage>
+              )}
+              <AvatarFallback>
+                {getInitials(review?.author.userName)}
+              </AvatarFallback>
+            </Avatar>
+
             <div className="flex flex-col">
               <span className="text-sm">{review?.author.displayName}</span>
               <span className="text-xs text-muted-foreground">
@@ -151,7 +164,7 @@ export const ReviewCard = ({
         </span>
       </CardFooter>
 
-      <ReviewTag className="bottom-0 right-6">
+      <ReviewTag className="bottom-0 right-6 rounded-t">
         {reviewType === ReviewEnum.RESTAURANT && <Store size={20}></Store>}
         {reviewType === ReviewEnum.DISH && <Utensils size={20}></Utensils>}
       </ReviewTag>
@@ -169,7 +182,7 @@ export const ReviewTag = ({
   return (
     <div
       className={twMerge(
-        "absolute block rounded-t bg-primary p-1 text-white opacity-90",
+        "absolute block rounded-tl bg-primary p-1 text-white opacity-90",
         className,
       )}
     >

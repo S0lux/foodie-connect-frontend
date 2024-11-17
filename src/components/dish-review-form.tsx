@@ -174,7 +174,7 @@ const DishReviewForm = ({
           )}
         </CardFooter>
 
-        <ReviewTag className="bottom-0 right-7">
+        <ReviewTag className="bottom-0 right-7 rounded-t">
           <Utensils size={20}></Utensils>
         </ReviewTag>
       </Card>

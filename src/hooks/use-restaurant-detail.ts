@@ -1,10 +1,10 @@
 import { Restaurant } from "@/types/restaurant.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import http from "../lib/http";
-import { Dish } from "@/types/dish.type";
 import { RestaurantReviews } from "@/types/restaurant-reviews.type";
 import { ReviewBody } from "@/schema/review.schema";
 import { Variable } from "lucide-react";
+import { Dish } from "@/types/dishes.type";
 
 const useRestaurantDetail = {
   useGetRestaurantDetail(restaurantId: string) {

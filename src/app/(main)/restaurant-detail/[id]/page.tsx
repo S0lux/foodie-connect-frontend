@@ -1,9 +1,12 @@
 "use client";
+import PromotionCard from "@/app/head/[restaurantId]/_components/promotion-card";
 import FoodGrid from "@/components/food-grid";
+import PromotionItem from "@/components/promotion-item";
 import ReviewGrid from "@/components/review-grid";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useDishCategories from "@/hooks/use-dish-categories";
+import usePromotion from "@/hooks/use-promotion";
 import useRestaurantDetail from "@/hooks/use-restaurant-detail";
 import { getLogoUrl } from "@/lib/handleImage";
 import { AlarmClock, MapPin, PhoneIcon, Star, StarHalf } from "lucide-react";
@@ -21,6 +24,8 @@ export default function RestauranDetailPage({
   const { data: restaurantCategories } = useDishCategories.useGetDishCategories(
     params.id,
   );
+
+  const { data: promotions } = usePromotion.useGetPromotions(params.id);
 
   const halfStar =
     restaurantDetail &&
@@ -114,6 +119,19 @@ export default function RestauranDetailPage({
               })}
           </div>
         </div>
+      </Card>
+
+      {/* promotions */}
+      <Card className="border-none px-2 py-2 md:px-7">
+        <CardTitle className="flex flex-row items-center border-b border-muted-foreground/30 py-3 text-xl">
+          <span className="px-4 md:px-0">Promotions</span>
+        </CardTitle>
+        <CardContent className="flex flex-col space-y-3 py-5 md:grid md:grid-flow-row md:grid-cols-3 md:gap-5 lg:grid-cols-4">
+          {promotions &&
+            promotions.map((promotion) => (
+              <PromotionItem promotion={promotion}></PromotionItem>
+            ))}
+        </CardContent>
       </Card>
 
       {/* menu */}

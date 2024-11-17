@@ -6,8 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Dish } from "@/types/dish.type";
-import { Edit, Star, StarHalf } from "lucide-react";
+import { Edit, Percent, Star, StarHalf } from "lucide-react";
 import Link from "next/link";
 import useRestaurantDetail from "@/hooks/use-restaurant-detail";
 import { getDefaultImageUrl } from "@/lib/handleImage";
@@ -23,8 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Category } from "@/types/dishes.type";
+import { Category, Dish, Promotion } from "@/types/dishes.type";
 import { useState } from "react";
+import { ReviewTag } from "./review-card";
+import { twMerge } from "tailwind-merge";
+import useDishReview from "@/hooks/use-dish-review";
 
 const FoodGrid = ({
   restaurantId,
@@ -89,20 +91,31 @@ const FoodGrid = ({
 };
 
 const FoodCard = ({ dishItem }: { dishItem: Dish }) => {
-  const formatedPrice = new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(dishItem.price);
+  const { data: viewCount } = useDishReview.useGetDishViewCount(
+    dishItem.dishId,
+  );
   const halfStar =
     dishItem.scoreOverview.averageRating %
       Math.round(dishItem.scoreOverview.averageRating) >
     0.5;
+  const promotionalPrices = dishItem.promotions.map(
+    (promo) => promo.promotionalPrice,
+  );
+  const minPrice = Math.min(...promotionalPrices);
 
+  const formatedPrice = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(dishItem.price);
+  const formatedMinPrice = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(minPrice);
   return (
     <Link href={`/dishes/${dishItem.dishId}`}>
       <Card
         key={dishItem.dishId}
-        className="flex w-72 flex-col border-none transition-all ease-in xl:hover:scale-105"
+        className="relative flex w-72 flex-col border-none bg-sidebar transition-all ease-in xl:hover:scale-105"
       >
         <div className="relative h-40">
           <Image
@@ -121,8 +134,21 @@ const FoodCard = ({ dishItem }: { dishItem: Dish }) => {
         <CardContent className="flex flex-col space-y-2 py-4">
           <div className="flex flex-col items-start">
             <CardTitle className="">{dishItem.name}</CardTitle>
-            <CardDescription className="font-semibold text-primary">
-              {formatedPrice}
+            <CardDescription className="relative space-x-3 py-1 font-semibold text-primary">
+              <span
+                className={
+                  dishItem.promotions.length > 0
+                    ? "text-xs text-muted-foreground line-through"
+                    : ""
+                }
+              >
+                {formatedPrice}
+              </span>
+              {dishItem.promotions.length > 0 && (
+                <span className="absolute bottom-0.5 text-base text-accent">
+                  {formatedMinPrice}
+                </span>
+              )}
             </CardDescription>
           </div>
           <CardDescription className="">
@@ -148,7 +174,15 @@ const FoodCard = ({ dishItem }: { dishItem: Dish }) => {
               (_, i) => <Star fill="#D4AF37" stroke="#D4AF37" size={15} />,
             )}
           {halfStar && <StarHalf fill="#D4AF37" stroke="#D4AF37" size={15} />}
+          <CardDescription className="ml-2 text-xs">
+            <span>{viewCount} watching</span>
+          </CardDescription>
         </CardFooter>
+        {dishItem.promotions.length > 0 && (
+          <ReviewTag className="bottom-0 right-0 rounded-br bg-accent">
+            <Percent size={20}></Percent>
+          </ReviewTag>
+        )}
       </Card>
     </Link>
   );
