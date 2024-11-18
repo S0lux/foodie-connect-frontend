@@ -140,6 +140,7 @@ export function MultiForm({ type }: { type: string }) {
               description: "Email is taken",
               variant: "destructive",
             });
+            break;
           default:
             toast({
               title: "Error",
