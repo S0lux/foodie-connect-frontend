@@ -54,9 +54,6 @@ const UserDropDown = () => {
     }
   }
 
-  if (isError) {
-    return <div>Something went wrong</div>;
-  }
   if (isLoading) return <Loader />;
 
   if (!user)
