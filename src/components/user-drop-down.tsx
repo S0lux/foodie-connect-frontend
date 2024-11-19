@@ -54,25 +54,19 @@ const UserDropDown = () => {
     }
   }
 
-  if (isError) {
-    switch ((error as unknown as ErrorType)?.code) {
-      case "NOT_AUTHENTICATED":
-        return (
-          <div className="flex gap-2">
-            <Link href="/login">
-              <Button>Login</Button>
-            </Link>
-            <Link href="/register">
-              <Button>Register</Button>
-            </Link>
-          </div>
-        );
-
-      default:
-        return <div>Something went wrong</div>;
-    }
-  }
   if (isLoading) return <Loader />;
+
+  if (!user)
+    return (
+      <div className="flex gap-2">
+        <Link href="/login">
+          <Button>Login</Button>
+        </Link>
+        <Link href="/register">
+          <Button>Register</Button>
+        </Link>
+      </div>
+    );
 
   return (
     <DropdownMenu>

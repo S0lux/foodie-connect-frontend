@@ -12,18 +12,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { CalendarIcon } from "@radix-ui/react-icons";
-import { format } from "date-fns";
-
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { z } from "zod";
 import { Label } from "@/components/ui/label";
 
@@ -36,39 +26,156 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import ChangePasswordForm from "@/app/(main)/settings/_components/change-password-form";
-import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
+import useAuth from "@/hooks/use-auth";
+import { getAvatarUrl } from "@/lib/handleImage";
+import useSetting from "@/hooks/use-setting";
+import { toast } from "@/hooks/use-toast";
+import { ErrorType } from "@/types/error.type";
+import Loader from "@/components/loader";
+import TermsAndConditions from "@/app/(main)/settings/_components/terms-and-conditions";
 
 const UserSettingBody = z.object({
   name: z.string().min(3),
   email: z.string().email(),
-  address: z.string().min(10),
   phone: z.string().min(10),
-  dateOfBirth: z.string(),
   avatar: z.string(),
+  type: z.enum(["Head", "User"]),
 });
 
 type UserSettingBodyType = z.infer<typeof UserSettingBody>;
 
 export default function SettingForm() {
-  const [date, setDate] = useState<Date>();
-
+  const { data: user, refetch, isLoading, isError } = useAuth.useGetSession();
   const form = useForm<UserSettingBodyType>({
     resolver: zodResolver(UserSettingBody),
     defaultValues: {
-      name: "Khang Bui",
-      email: "buoiduykhang@gmail.com",
-      address: "123 Tran Duy Hung - Cau Giay - Ha Noi",
-      phone: "0123456789",
-      dateOfBirth: "1-1-2000",
-      avatar: "https://placehold.co/400",
+      name: user?.displayName,
+      email: user?.email,
+      phone: user?.phoneNumber,
+      avatar: getAvatarUrl(user?.avatar),
+      type:
+        user?.type === "Head" || user?.type === "User" ? user.type : undefined,
     },
   });
 
+  const headUploadImage = useSetting.useHeadChangeAvatar();
+  const userUploadImage = useSetting.useUserChangeAvatar();
+
+  const [loading, setLoading] = useState(false);
   const inputFile = useRef<HTMLInputElement>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const defaultAvatar = "https://placehold.co/400";
+  const defaultAvatar = getAvatarUrl(user?.avatar, user?.displayName);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isUpgradeDialogOpen, setIsUpgradeDialogOpen] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    form.reset({
+      name: user?.displayName,
+      email: user?.email,
+      phone: user?.phoneNumber,
+      avatar: getAvatarUrl(user?.avatar, user?.displayName),
+      type:
+        user?.type === "Head" || user?.type === "User" ? user.type : undefined,
+    });
+  }, [user]);
+
+  const handleUploadImage = async (uploadedImage: File) => {
+    if (loading) return;
+    setLoading(true);
+    if (user?.type === "Head") {
+      try {
+        await headUploadImage.mutateAsync({
+          headId: user?.id,
+          avatar: uploadedImage,
+        });
+        toast({
+          title: "Success",
+          description: "Avatar changed successfully",
+        });
+        handleResetImage();
+        refetch();
+      } catch (error) {
+        switch ((error as ErrorType).code) {
+          case "NOT_AUTHENTICATED":
+            toast({
+              title: "Error",
+              description: "You are not authenticated",
+              variant: "destructive",
+            });
+            break;
+          case "TYPE_NOT_ALLOWED":
+            toast({
+              title: "Error",
+              description: "Type not allowed",
+              variant: "destructive",
+            });
+            break;
+          case "NOT_AUTHORIZED":
+            toast({
+              title: "Error",
+              description: "You are not authorized",
+              variant: "destructive",
+            });
+            break;
+          default:
+            toast({
+              title: "Error",
+              description: "Something went wrong",
+              variant: "destructive",
+            });
+            break;
+        }
+      }
+    } else {
+      try {
+        await userUploadImage.mutateAsync({
+          userId: user?.id ?? "",
+          avatar: uploadedImage,
+        });
+        toast({
+          title: "Success",
+          description: "Avatar changed successfully",
+        });
+        handleResetImage();
+        refetch();
+      } catch (error) {
+        switch ((error as ErrorType).code) {
+          case "NOT_AUTHENTICATED":
+            toast({
+              title: "Error",
+              description: "You are not authenticated",
+              variant: "destructive",
+            });
+            break;
+          case "TYPE_NOT_ALLOWED":
+            toast({
+              title: "Error",
+              description: "Type not allowed",
+              variant: "destructive",
+            });
+            break;
+          case "NOT_AUTHORIZED":
+            toast({
+              title: "Error",
+              description: "You are not authorized",
+              variant: "destructive",
+            });
+            break;
+          default:
+            toast({
+              title: "Error",
+              description: "Something went wrong",
+              variant: "destructive",
+            });
+            break;
+        }
+      }
+    }
+    setLoading(false);
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -81,6 +188,7 @@ export default function SettingForm() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const imageDataUrl = reader.result as string;
+        setImage(file);
         setImagePreview(imageDataUrl);
         form.setValue("avatar", imageDataUrl, {
           shouldValidate: true,
@@ -93,6 +201,7 @@ export default function SettingForm() {
 
   const handleResetImage = () => {
     setImagePreview(null);
+    setImage(null);
     form.setValue("avatar", defaultAvatar, {
       shouldValidate: true,
       shouldDirty: true,
@@ -102,18 +211,18 @@ export default function SettingForm() {
     }
   };
 
-  const onSubmit = form.handleSubmit((values) => {
-    setIsSubmitting(true);
-    try {
-      console.log(values);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  });
+  const onSubmit = () => {
+    router.push("/");
+  };
 
-  const router = useRouter();
+  if (isError) return <div>Error</div>;
+
+  if (isLoading)
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader />
+      </div>
+    );
 
   return (
     <>
@@ -130,9 +239,9 @@ export default function SettingForm() {
           <Avatar className="size-[150px]">
             <AvatarImage
               src={imagePreview || form.watch("avatar")}
-              alt="KhangBuoi"
+              alt="avatar"
             />
-            <AvatarFallback>KB</AvatarFallback>
+            <AvatarFallback>{user?.displayName}</AvatarFallback>
           </Avatar>
           {imagePreview && (
             <Button
@@ -145,7 +254,7 @@ export default function SettingForm() {
             </Button>
           )}
         </div>
-        <div>
+        <div className="flex gap-2">
           <Button
             variant={"outline"}
             size={"lg"}
@@ -155,6 +264,17 @@ export default function SettingForm() {
           >
             Change Avatar
           </Button>
+          {image && (
+            <Button
+              size={"lg"}
+              onClick={() => {
+                handleUploadImage(image);
+              }}
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "Upload"}
+            </Button>
+          )}
         </div>
       </div>
       <div className="mt-8 px-4 sm:px-8 md:px-16 lg:px-40 xl:px-80">
@@ -178,6 +298,7 @@ export default function SettingForm() {
                         className="h-[48px]"
                         placeholder="Enter your name"
                         {...field}
+                        readOnly
                       />
                     </FormControl>
                     <FormMessage />
@@ -199,6 +320,7 @@ export default function SettingForm() {
                         placeholder="Enter your email"
                         type="email"
                         {...field}
+                        readOnly
                       />
                     </FormControl>
                     <FormMessage />
@@ -206,26 +328,6 @@ export default function SettingForm() {
                 )}
               />
             </div>
-
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[16px] font-bold">
-                    Address
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      className=""
-                      placeholder="Enter your address"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <div className="flex w-full flex-col gap-4 md:flex-row">
               <div className="w-full flex-1">
@@ -242,6 +344,7 @@ export default function SettingForm() {
                           className="h-[48px]"
                           placeholder="Enter your phone"
                           {...field}
+                          readOnly
                         />
                       </FormControl>
                       <FormMessage />
@@ -252,46 +355,19 @@ export default function SettingForm() {
 
               <FormField
                 control={form.control}
-                name="dateOfBirth"
+                name="type"
                 render={({ field }) => (
                   <FormItem className="flex w-full flex-1 flex-col">
                     <FormLabel className="text-[16px] font-bold">
-                      Date Of Birth
+                      Type
                     </FormLabel>
                     <FormControl>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "h-[48px] w-full justify-start text-left font-normal",
-                              !date && "text-muted-foreground",
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {date ? (
-                              format(date, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={date}
-                            onSelect={(date) => {
-                              setDate(date);
-                              if (date) {
-                                form.setValue(
-                                  "dateOfBirth",
-                                  format(date, "d-M-yyyy"),
-                                );
-                              }
-                            }}
-                          />
-                        </PopoverContent>
-                      </Popover>
+                      <Input
+                        className="h-[48px]"
+                        placeholder="Enter your type"
+                        {...field}
+                        readOnly
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -307,40 +383,82 @@ export default function SettingForm() {
                 </p>
               </div>
 
-              <Dialog>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="mt-4" variant={"outline"} size={"lg"}>
+                  <Button
+                    className="mt-4"
+                    variant={"outline"}
+                    size={"lg"}
+                    onClick={() => setIsDialogOpen(true)}
+                  >
                     Change
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="rounded-md">
                   <DialogHeader>
-                    <DialogTitle className="text-center">
+                    <DialogTitle className="text-center text-2xl">
                       Change Password
                     </DialogTitle>
                     <DialogDescription className="text-center">
                       Password must be at least 8 characters long
                     </DialogDescription>
                   </DialogHeader>
-                  <ChangePasswordForm />
+                  {user?.type && user?.id && (
+                    <ChangePasswordForm
+                      type={user.type}
+                      id={user.id}
+                      onSuccess={() => {
+                        setIsDialogOpen(false);
+                      }}
+                    />
+                  )}
                 </DialogContent>
               </Dialog>
             </div>
 
+            {user?.type === "User" && (
+              <div className="flex justify-between">
+                <div className="space-y-2">
+                  <Label className="text-[16px] font-bold">Upgrade Head</Label>
+                  <p className="text-sm md:text-[16px]">Upgrade user to head</p>
+                </div>
+
+                <Dialog
+                  open={isUpgradeDialogOpen}
+                  onOpenChange={setIsUpgradeDialogOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button
+                      className="mt-4"
+                      variant={"outline"}
+                      size={"lg"}
+                      onClick={() => setIsUpgradeDialogOpen(true)}
+                    >
+                      Upgrade
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="h-full rounded-md">
+                    <DialogHeader>
+                      <DialogTitle className="text-center text-2xl">
+                        Upgrade Head
+                      </DialogTitle>
+                      <DialogDescription className="text-center">
+                        Please read these terms and conditions carefully before
+                        upgrading to a Head Account
+                      </DialogDescription>
+                    </DialogHeader>
+                    <TermsAndConditions userId={user.id} />
+                  </DialogContent>
+                </Dialog>
+              </div>
+            )}
+
             <div className="!mt-8 flex justify-end gap-3">
               <Button
                 className=""
-                variant={"outline"}
                 size={"lg"}
+                type="button"
                 onClick={() => router.back()}
-              >
-                Cancel
-              </Button>
-              <Button
-                className=""
-                type="submit"
-                size={"lg"}
-                disabled={isSubmitting}
               >
                 Save
               </Button>
