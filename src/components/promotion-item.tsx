@@ -1,46 +1,49 @@
-import { Promotion } from "@/types/promotion.type";
+import { Promotion as FullPromotion } from "@/types/promotion.type";
+import { Promotion as DishPromotion } from "@/types/dishes.type";
 import { Card, CardContent, CardDescription, CardTitle } from "./ui/card";
 import { Tags } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { truncate } from "./restaurant-card";
 import Image from "next/image";
 import { getDefaultImageUrl } from "@/lib/handleImage";
+import { twMerge } from "tailwind-merge";
 
-const PromotionItem = ({ promotion }: { promotion: Promotion }) => {
+const PromotionItem = ({
+  shortenContent,
+  promotion,
+}: {
+  shortenContent?: boolean;
+  promotion: DishPromotion | FullPromotion;
+}) => {
   const daysLeft =
     new Date(promotion.endsAt).getDate() -
     new Date(promotion.beginsAt).getDate();
+  const today = new Date();
   return (
-    <div className="flex w-full flex-row items-center space-x-2 rounded">
-      {/* <Image
-        src={
-          getDefaultImageUrl(
-            promotion.bannerId ? [promotion.promotionId] : [],
-            promotion.name,
-          ) || "https://placehold.co/50X50"
-        }
-        alt={promotion.name}
-        width={50}
-        height={50}
-        className="rounded"
-      /> */}
-      <div className="flex w-full flex-col items-start justify-center">
-        <CardTitle className="flex flex-row items-center space-x-1 font-semibold">
-          <Tags className="text-accent"></Tags>
-          <span>{truncate(promotion.name, 10)}</span>
-        </CardTitle>
-        <CardDescription className="break-words">
-          {truncate(promotion.description, 20)}
-        </CardDescription>
+    <div className={twMerge("flex w-full flex-row items-start space-x-2")}>
+      <Tags className="size-fit text-accent"></Tags>
+      <CardContent
+        className={twMerge("flex w-full flex-col justify-between p-0")}
+      >
+        <div className="">
+          <CardTitle className="items-center-semibold flex">
+            <span className="line-clamp-1">{promotion.name}</span>
+          </CardTitle>
+          <CardDescription className="line-clamp-1 break-words">
+            {promotion.description}
+          </CardDescription>
+        </div>
 
-        {daysLeft > 0 ? (
+        {daysLeft > 0 && new Date(promotion.endsAt) > today ? (
           <CardDescription className="text-primary">
-            {daysLeft} days left
+            <span>{daysLeft} days left</span>
           </CardDescription>
         ) : (
-          <CardDescription>Expired</CardDescription>
+          <CardDescription className="text-red-500">
+            <span>Expired</span>
+          </CardDescription>
         )}
-      </div>
+      </CardContent>
     </div>
   );
 };

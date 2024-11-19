@@ -88,12 +88,12 @@ export const ReviewCard = ({
   };
 
   return (
-    <Card className="relative border-none dark:bg-muted/20">
-      <CardHeader className="border-b border-muted-foreground/30 py-2">
+    <Card className="relative rounded-none border-x-0 border-t-0 border-muted/70 shadow-none">
+      <CardHeader className="px-1 py-3 md:p-6">
         <CardTitle className="flex flex-row items-center justify-between">
           {/* reviewer info */}
-          <div className="flex flex-row md:space-x-2">
-            <Avatar>
+          <div className="flex flex-row items-center space-x-2">
+            <Avatar className="size-8 shadow xl:size-10">
               {review?.author && (
                 <AvatarImage
                   src={getAvatarUrl(
@@ -139,7 +139,7 @@ export const ReviewCard = ({
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="mt-5 text-clip">
+      <CardContent className="px-1 md:p-6 md:pt-0">
         {/* review content */}
         <p className="break-words">
           {review?.content ? (
@@ -150,7 +150,7 @@ export const ReviewCard = ({
         </p>
       </CardContent>
 
-      <CardFooter className="flex flex-col items-start space-y-2 text-sm text-muted-foreground">
+      <CardFooter className="flex flex-col items-start space-y-2 px-1 text-sm text-muted-foreground md:p-6 md:pt-0">
         {/* review's rating */}
         <div className="flex flex-row items-center">
           {review &&

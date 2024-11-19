@@ -3,14 +3,8 @@ import { ReactNode, useEffect, useState } from "react";
 import RestaurantCard from "./restaurant-card";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { twMerge } from "tailwind-merge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import { Restaurant } from "@/types/retaurant.type";
+
+import useRestaurants from "@/hooks/use-restaurants";
 
 export type RestaurantDto = {
   id: string;
@@ -40,13 +34,14 @@ const CategorySelector = ({
   );
 };
 
-const RestaurantGrid = ({
-  restaurants,
-  className,
-}: {
-  restaurants: Restaurant[];
-  className?: string;
-}) => {
+const RestaurantGrid = ({ className }: { className?: string }) => {
+  //data fetching
+  const { data: restaurants } = useRestaurants.useGetRestaurants(
+    "",
+    5000,
+    "106.61532,10.74964",
+  );
+
   // Handle responsive design
   const [windowWidth, setWidth] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -68,14 +63,15 @@ const RestaurantGrid = ({
       </CardHeader>
       <CardContent className="">
         <div className="grid grid-flow-row grid-cols-1 justify-items-center gap-4 bg-inherit py-5 md:grid-cols-3 xl:grid-cols-4">
-          {restaurants.map((restaurant: Restaurant) => {
-            return (
-              <RestaurantCard
-                key={restaurant.id}
-                restaurant={restaurant}
-              ></RestaurantCard>
-            );
-          })}
+          {restaurants &&
+            restaurants.map((restaurant) => {
+              return (
+                <RestaurantCard
+                  key={restaurant.id}
+                  restaurant={restaurant}
+                ></RestaurantCard>
+              );
+            })}
         </div>
       </CardContent>
     </Card>

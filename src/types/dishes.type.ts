@@ -19,6 +19,8 @@ export interface Promotion {
   bannerId: string;
   targets: string[];
   promotionalPrice: number;
+  beginsAt: string;
+  endsAt: string;
 }
 
 export interface Dish {

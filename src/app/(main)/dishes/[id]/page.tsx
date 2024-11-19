@@ -22,6 +22,7 @@ import { getDefaultImageUrl } from "@/lib/handleImage";
 import { Badge } from "@/components/ui/badge";
 import PromotionItem from "@/components/promotion-item";
 import { truncate } from "@/components/restaurant-card";
+import usePromotion from "@/hooks/use-promotion";
 
 export default function DishDetailPage({ params }: { params: { id: string } }) {
   const [isEditting, setEditting] = useState(false);
@@ -31,9 +32,10 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
     useDishReview.useGetDishReview(params.id);
   const { data: dishInfo, refetch: refetchDishInfo } =
     useDishReview.useGetDishInfo(params.id);
-
   const promotionalPrices = dishInfo?.promotions
-    ? dishInfo.promotions.map((promo) => promo.promotionalPrice)
+    ? dishInfo.promotions
+        .filter((promo) => new Date(promo.endsAt) > new Date())
+        .map((promo) => promo.promotionalPrice)
     : [0];
   const minPrice = Math.min(...promotionalPrices);
 
@@ -143,19 +145,25 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
           <CardContent className="flex flex-col space-y-5 py-5">
             {/* {smaller promotion info} */}
             {dishInfo?.promotions && dishInfo.promotions.length > 0 ? (
-              dishInfo.promotions.map((promotion) => (
-                <div className="flex w-full flex-row items-center space-x-2">
-                  <div className="flex w-full flex-col items-start justify-center">
-                    <CardTitle className="flex flex-row items-center space-x-1 font-semibold">
-                      <Tags className="text-accent"></Tags>
-                      <span>{truncate(promotion.name, 10)}</span>
-                    </CardTitle>
-                    <CardDescription className="break-words">
-                      {truncate(promotion.description, 20)}
-                    </CardDescription>
-                  </div>
-                </div>
-              ))
+              dishInfo.promotions.map((promotion) => {
+                return (
+                  <PromotionItem
+                    promotion={promotion}
+                    shortenContent={false}
+                  ></PromotionItem>
+                  // <div className="flex w-full flex-row items-start space-x-2">
+                  //   <Tags className="size-fit text-accent"></Tags>
+                  //   <CardContent className="flex flex-col space-y-1 p-0">
+                  //     <CardTitle className="items-center-semibold flex">
+                  //       <span>{promotion.name}</span>
+                  //     </CardTitle>
+                  //     <CardDescription className="break-words">
+                  //       {promotion.description}
+                  //     </CardDescription>
+                  //   </CardContent>
+                  // </div>
+                );
+              })
             ) : (
               <CardDescription className="text-center">
                 No promotions available
@@ -166,13 +174,13 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
       </div>
 
       {/* dish reviews */}
-      <Card className="space-y-3 border-none px-2 py-2 md:px-7">
+      <Card className="h-fit space-y-3 border-none px-2 py-2 md:px-7">
         <CardTitle className="flex flex-row items-center justify-between border-b border-muted-foreground/30 py-3 text-xl">
           <span className="px-4 md:px-0">Reviews</span>
         </CardTitle>
         <CardContent className="flex flex-col space-y-5 md:flex-row">
           {/* reviews */}
-          <div className="relative flex w-full flex-col space-y-5">
+          <div className="relative flex w-full flex-col">
             {/* leave a review */}
             {!dishReviewsData?.myReview || isEditting ? (
               <DishReviewForm

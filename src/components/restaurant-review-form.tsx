@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -11,7 +12,7 @@ import { Star, Store } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { ReviewTag } from "./review-card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, Form, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReviewBody, ReviewSchema } from "@/schema/review.schema";
@@ -22,6 +23,12 @@ import useAuth from "@/hooks/use-auth";
 import useRestaurantDetail from "@/hooks/use-restaurant-detail";
 import { Textarea } from "./ui/textarea";
 import { RestaurantReview } from "@/types/restaurant-review.type";
+import { ErrorType } from "@/types/error.type";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { getAvatarUrl, getInitials } from "@/lib/handleImage";
+import { set } from "date-fns";
+import Image from "next/image";
+import Link from "next/link";
 
 export enum ReviewEnum {
   RESTAURANT,
@@ -44,13 +51,13 @@ const RestaurantReviewForm = ({
   onCancelReview: () => void;
 }) => {
   //handle rating animation
-  const [rating, setRating] = useState(1);
+  const { data: user } = useAuth.useGetSession();
   const [loading, setLoading] = useState(false);
+
   const createRestaurantReviewAction =
     useRestaurantDetail.useCreateRestaurantReview();
   const updateRestaurantReviewAction =
     useRestaurantDetail.useUpdateRestauantReview();
-  const { data: user } = useAuth.useGetSession();
 
   const StarRating = ({
     value,
@@ -109,27 +116,69 @@ const RestaurantReviewForm = ({
         title: "Success",
         description: "Review submitted",
       });
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      switch (err.response.data.code) {
+        case "NOT_AUTHENTICATED":
+          toast({
+            title: "Error",
+            description: "You need to login to submit a review",
+            variant: "destructive",
+          });
+          break;
+        default:
+          toast({
+            title: "Error",
+            description: "An error occurred",
+            variant: "destructive",
+          });
+          break;
+      }
+    } finally {
+      refetch.forEach((func) => {
+        func();
+      });
+      onCancelReview();
+      setLoading(false);
     }
-    refetch.forEach((func) => {
-      func();
-    });
-    onCancelReview();
-    setLoading(false);
   };
+
+  if (!user)
+    return (
+      <Link href={"/login"}>
+        <Card className="mb-2 flex items-center border-none py-2 dark:bg-muted/20 md:px-6">
+          <Image
+            src="/images/logo-dark.png"
+            width={50}
+            height={50}
+            alt="logo-light.png"
+            className="absolute size-0 md:relative md:size-auto"
+          ></Image>
+          <CardContent className="flex w-full items-center p-0">
+            <CardTitle className="w-full text-center text-sm text-primary xl:text-lg">
+              Login now to leave a review!
+            </CardTitle>
+          </CardContent>
+        </Card>
+      </Link>
+    );
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <Card className="relative border-none dark:bg-muted/20">
+      <Card className="relative mb-2 border-none dark:bg-muted/20">
         <CardHeader className="border-b border-muted-foreground/30 py-2">
           <CardTitle className="flex flex-row items-center justify-between">
             {/* reviewer info */}
             <div className="flex flex-row md:space-x-2">
-              <img
-                src="https://placehold.co/50x50"
-                className="absolute aspect-square size-0 rounded-full md:relative md:size-10"
-              ></img>
+              <Avatar>
+                <AvatarImage
+                  src={getAvatarUrl(user?.avatar, user?.displayName)}
+                  alt={user?.displayName}
+                />
+                <AvatarFallback>
+                  {getInitials(user?.displayName)}
+                </AvatarFallback>
+              </Avatar>
+
               <div className="flex flex-col">
                 <span className="text-sm">{user?.displayName}</span>
                 <span className="text-xs text-muted-foreground">

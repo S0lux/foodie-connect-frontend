@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import Link from "next/link";
-import { Restaurant } from "@/types/retaurant.type";
+import { Restaurant } from "@/types/restaurant.type";
 import { getLogoUrl } from "@/lib/handleImage";
 
 const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {

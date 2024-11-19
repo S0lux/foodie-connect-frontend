@@ -98,9 +98,9 @@ const FoodCard = ({ dishItem }: { dishItem: Dish }) => {
     dishItem.scoreOverview.averageRating %
       Math.round(dishItem.scoreOverview.averageRating) >
     0.5;
-  const promotionalPrices = dishItem.promotions.map(
-    (promo) => promo.promotionalPrice,
-  );
+  const promotionalPrices = dishItem.promotions
+    .filter((promo) => new Date(promo.endsAt) > new Date())
+    .map((promo) => promo.promotionalPrice);
   const minPrice = Math.min(...promotionalPrices);
 
   const formatedPrice = new Intl.NumberFormat("vi-VN", {
