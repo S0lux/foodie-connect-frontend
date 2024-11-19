@@ -40,5 +40,29 @@ export const RegisterBody = z
   })
   .strict();
 
+export const ChangePasswordBody = z.object({
+  oldPassword: z
+    .string()
+    .min(6, "Password must have at least 6 characters.")
+    .regex(/[A-Z]/, "Password must contain at least 1 capital letter.")
+    .regex(/[a-z]/, "Password must contain at least 1 lower case letter.")
+    .regex(/[0-9]/, "Password must contain at least 1 number.")
+    .regex(
+      /[#?!@$%^&*-]/,
+      "Password must contain at least 1 special character.",
+    ),
+  newPassword: z
+    .string()
+    .min(6, "Password must have at least 6 characters.")
+    .regex(/[A-Z]/, "Password must contain at least 1 capital letter.")
+    .regex(/[a-z]/, "Password must contain at least 1 lower case letter.")
+    .regex(/[0-9]/, "Password must contain at least 1 number.")
+    .regex(
+      /[#?!@$%^&*-]/,
+      "Password must contain at least 1 special character.",
+    ),
+});
+
 export type LoginBodyType = z.TypeOf<typeof LoginBody>;
 export type RegisterBodyType = z.TypeOf<typeof RegisterBody>;
+export type ChangePasswordBodyType = z.TypeOf<typeof ChangePasswordBody>;
