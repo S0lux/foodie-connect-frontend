@@ -26,6 +26,12 @@ const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
     refetchReviews();
   }, [restaurantDetail?.scoreOverview, restaurantReviews]);
 
+  const newReview =
+    restaurantReviews &&
+    (menuOpen
+      ? restaurantReviews.otherReviews
+      : restaurantReviews.otherReviews.slice(0, 3));
+
   return (
     <Card className="space-y-3 border-none px-2 py-2 md:px-7">
       <CardTitle className="flex flex-row items-center justify-between border-b border-muted-foreground/30 py-3 text-xl">
@@ -36,7 +42,7 @@ const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
         <ReviewStatistics restaurant={restaurantDetail}></ReviewStatistics>
 
         {/* reviews */}
-        <div className="relative flex flex-col space-y-5 md:w-1/2">
+        <div className="relative flex flex-col md:w-1/2">
           {/* leave a review */}
           {!restaurantReviews?.myReview || isEditting ? (
             <RestaurantReviewForm
@@ -56,20 +62,18 @@ const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
             />
           )}
 
-          {restaurantReviews &&
-            restaurantReviews?.otherReviews.map(
-              (review: RestaurantReview, index: number) => {
-                return (
-                  <ReviewCard
-                    refetch={[refetchDetail, refetchReviews]}
-                    id={restaurantId}
-                    reviewType={ReviewEnum.RESTAURANT}
-                    key={index}
-                    review={review}
-                  ></ReviewCard>
-                );
-              },
-            )}
+          {newReview &&
+            newReview.map((review: RestaurantReview, index: number) => {
+              return (
+                <ReviewCard
+                  refetch={[refetchDetail, refetchReviews]}
+                  id={restaurantId}
+                  reviewType={ReviewEnum.RESTAURANT}
+                  key={index}
+                  review={review}
+                ></ReviewCard>
+              );
+            })}
         </div>
       </CardContent>
       <CardFooter>

@@ -21,6 +21,10 @@ import useDishReview from "@/hooks/use-dish-review";
 import useAuth from "@/hooks/use-auth";
 import { Textarea } from "./ui/textarea";
 import { DishReview } from "@/types/dish-review.type";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { getAvatarUrl, getInitials } from "@/lib/handleImage";
+import Link from "next/link";
+import Image from "next/image";
 
 export enum ReviewEnum {
   RESTAURANT,
@@ -116,17 +120,42 @@ const DishReviewForm = ({
     setLoading(false);
   };
 
+  if (!user)
+    return (
+      <Link href={"/login"}>
+        <Card className="mb-2 flex items-center border-none py-2 dark:bg-muted/20 md:px-6">
+          <Image
+            src="/images/logo-dark.png"
+            width={50}
+            height={50}
+            alt="logo-light.png"
+            className="absolute size-0 md:relative md:size-auto"
+          ></Image>
+          <CardContent className="flex w-full items-center p-0">
+            <CardTitle className="w-full text-center text-sm text-primary xl:text-lg">
+              Login now to leave a review!
+            </CardTitle>
+          </CardContent>
+        </Card>
+      </Link>
+    );
+
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <Card className="relative border-none dark:bg-muted/20">
+      <Card className="relative mb-2 border-none dark:bg-muted/20">
         <CardHeader className="border-b border-muted-foreground/30 py-2">
           <CardTitle className="flex flex-row items-center justify-between">
             {/* reviewer info */}
             <div className="flex flex-row md:space-x-2">
-              <img
-                src="https://placehold.co/50x50"
-                className="absolute aspect-square size-0 rounded-full md:relative md:size-10"
-              ></img>
+              <Avatar>
+                <AvatarImage
+                  src={getAvatarUrl(user?.avatar, user?.displayName)}
+                  alt={user?.displayName}
+                />
+                <AvatarFallback>
+                  {getInitials(user?.displayName)}
+                </AvatarFallback>
+              </Avatar>
               <div className="flex flex-col">
                 <span className="text-sm">{user?.displayName}</span>
                 <span className="text-xs text-muted-foreground">

@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import Link from "next/link";
-import { Restaurant } from "@/types/retaurant.type";
+import { Restaurant } from "@/types/restaurant.type";
 import { getLogoUrl } from "@/lib/handleImage";
 
 const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
@@ -22,7 +22,7 @@ const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
         </CardContent>
         <CardFooter className="flex flex-col items-start justify-start space-y-1 py-3">
           <section className="space-y-1 text-ellipsis">
-            <CardTitle>{restaurant.name}</CardTitle>
+            <CardTitle className="text-base">{restaurant.name}</CardTitle>
             <CardDescription className="max-w-min text-nowrap">
               {truncate(restaurant.formattedAddress, 25)}
             </CardDescription>

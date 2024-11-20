@@ -122,17 +122,21 @@ export default function RestauranDetailPage({
       </Card>
 
       {/* promotions */}
-      <Card className="border-none px-2 py-2 md:px-7">
-        <CardTitle className="flex flex-row items-center border-b border-muted-foreground/30 py-3 text-xl">
-          <span className="px-4 md:px-0">Promotions</span>
-        </CardTitle>
-        <CardContent className="flex flex-col space-y-3 py-5 md:grid md:grid-flow-row md:grid-cols-3 md:gap-5 lg:grid-cols-4">
-          {promotions &&
-            promotions.map((promotion) => (
-              <PromotionItem promotion={promotion}></PromotionItem>
+      {promotions && promotions?.length > 0 && (
+        <Card className="border-none px-2 py-2 md:px-7">
+          <CardTitle className="flex flex-row items-center border-b border-muted-foreground/30 py-3 text-xl">
+            <span className="px-4 md:px-0">Promotions</span>
+          </CardTitle>
+          <CardContent className="flex flex-col space-y-5 py-5 md:grid md:grid-flow-row md:grid-cols-3 md:gap-5 md:space-y-0 lg:grid-cols-4">
+            {promotions.map((promotion) => (
+              <PromotionItem
+                promotion={promotion}
+                shortenContent={true}
+              ></PromotionItem>
             ))}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* menu */}
       <FoodGrid
