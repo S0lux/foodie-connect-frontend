@@ -17,7 +17,6 @@ import Link from "next/link";
 import { twMerge } from "tailwind-merge";
 
 const Map = ({}: {}) => {
-  const router = useRouter();
   const { data: restaurants } = useRestaurants.useGetRestaurants(
     "",
     5000,
@@ -32,7 +31,7 @@ const Map = ({}: {}) => {
     libraries: ["places"],
   });
 
-  if (!isLoaded) return <Loader className="h-40 justify-center"></Loader>;
+  if (!isLoaded) return <Loader className="h-20 justify-center"></Loader>;
 
   const markerIcon = {
     url: "/images/logo-marker.png",
@@ -101,7 +100,7 @@ const Map = ({}: {}) => {
                 href={`/restaurant-detail/${selectedMaker.id}`}
                 className="flex items-center space-x-1 text-primary"
               >
-                <span>To restaurant</span>
+                <span>View restaurant</span>
                 <ArrowRight size={10}></ArrowRight>
               </Link>
             </CardFooter>

@@ -1,5 +1,12 @@
 "use client";
-import { LogOut, Settings, User } from "lucide-react";
+import {
+  ChartLine,
+  GitGraph,
+  LogOut,
+  Settings,
+  Store,
+  User,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   DropdownMenu,
@@ -88,10 +95,23 @@ const UserDropDown = () => {
       <DropdownMenuContent>
         <DropdownMenuLabel>{user!.displayName}</DropdownMenuLabel>
         <DropdownMenuSeparator className="my-1 bg-foreground/20" />
-        <DropdownMenuItem className="cursor-pointer">
-          <User></User>
-          <span>Profile</span>
-        </DropdownMenuItem>
+        {user.type === "Head" && (
+          <>
+            <Link href={"/head"}>
+              <DropdownMenuItem className="cursor-pointer">
+                <ChartLine></ChartLine>
+                <span>Head dashboard</span>
+              </DropdownMenuItem>
+            </Link>
+            <Link href={"/head/restaurants"}>
+              <DropdownMenuItem className="cursor-pointer">
+                <Store></Store>
+                <span>My restaurants</span>
+              </DropdownMenuItem>
+            </Link>
+          </>
+        )}
+
         <Link href="/settings">
           <DropdownMenuItem className="cursor-pointer">
             <Settings></Settings>
@@ -99,12 +119,13 @@ const UserDropDown = () => {
           </DropdownMenuItem>
         </Link>
         <DropdownMenuSeparator className="my-1 bg-foreground/20" />
-        <Button variant={"ghost"} onClick={() => handleLogout()}>
-          <DropdownMenuItem className="cursor-pointer">
-            <LogOut></LogOut>
-            <span>Log out</span>
-          </DropdownMenuItem>
-        </Button>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => handleLogout()}
+        >
+          <LogOut></LogOut>
+          <span>Log out</span>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

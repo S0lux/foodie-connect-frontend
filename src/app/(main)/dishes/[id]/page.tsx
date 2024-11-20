@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import PromotionItem from "@/components/promotion-item";
 import { truncate } from "@/components/restaurant-card";
 import usePromotion from "@/hooks/use-promotion";
+import Link from "next/link";
 
 export default function DishDetailPage({ params }: { params: { id: string } }) {
   const [isEditting, setEditting] = useState(false);
@@ -114,21 +115,32 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
                 ))}
               </div>
             </CardContent>
-            <CardFooter className="">
-              {dishInfo &&
-                Array.from(
-                  {
-                    length:
-                      dishInfo?.scoreOverview.averageRating > 0
-                        ? dishInfo?.scoreOverview.averageRating
-                        : 1,
-                  },
-                  (_, i) => <Star fill="#D4AF37" stroke="#D4AF37" size={15} />,
+            <CardFooter className="flex flex-col items-start justify-start space-y-2">
+              <div className="flex">
+                {dishInfo &&
+                  Array.from(
+                    {
+                      length:
+                        dishInfo?.scoreOverview.averageRating > 0
+                          ? dishInfo?.scoreOverview.averageRating
+                          : 1,
+                    },
+                    (_, i) => (
+                      <Star fill="#D4AF37" stroke="#D4AF37" size={15} />
+                    ),
+                  )}
+                {halfStar && (
+                  <StarHalf fill="#D4AF37" stroke="#D4AF37" size={15} />
                 )}
-              {halfStar && (
-                <StarHalf fill="#D4AF37" stroke="#D4AF37" size={15} />
-              )}
+              </div>
+              <Link
+                href={`/restaurant-detail/${dishInfo?.restaurantId}`}
+                className="text-primary underline-offset-2 hover:underline"
+              >
+                View restaurant
+              </Link>
             </CardFooter>
+
             {dishInfo?.promotions && dishInfo.promotions.length > 0 && (
               <ReviewTag className="bottom-0 right-0 rounded-br bg-accent">
                 <Percent size={20}></Percent>
@@ -151,17 +163,6 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
                     promotion={promotion}
                     shortenContent={false}
                   ></PromotionItem>
-                  // <div className="flex w-full flex-row items-start space-x-2">
-                  //   <Tags className="size-fit text-accent"></Tags>
-                  //   <CardContent className="flex flex-col space-y-1 p-0">
-                  //     <CardTitle className="items-center-semibold flex">
-                  //       <span>{promotion.name}</span>
-                  //     </CardTitle>
-                  //     <CardDescription className="break-words">
-                  //       {promotion.description}
-                  //     </CardDescription>
-                  //   </CardContent>
-                  // </div>
                 );
               })
             ) : (

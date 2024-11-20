@@ -75,7 +75,7 @@ const FoodGrid = ({
           </SelectContent>
         </Select>
       </CardTitle>
-      <CardContent className="grid grid-flow-row grid-cols-1 justify-items-center gap-4 bg-inherit py-5 md:grid-cols-2 xl:grid-cols-3">
+      <CardContent className="grid grid-flow-row grid-cols-1 justify-items-center gap-4 bg-inherit py-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filteredDish && filteredDish?.length > 0 ? (
           filteredDish?.map((item) => {
             return <FoodCard key={item.dishId} dishItem={item}></FoodCard>;
@@ -90,7 +90,13 @@ const FoodGrid = ({
   );
 };
 
-const FoodCard = ({ dishItem }: { dishItem: Dish }) => {
+export const FoodCard = ({
+  dishItem,
+  className,
+}: {
+  dishItem: Dish;
+  className?: string;
+}) => {
   const { data: viewCount } = useDishReview.useGetDishViewCount(
     dishItem.dishId,
   );
@@ -112,10 +118,13 @@ const FoodCard = ({ dishItem }: { dishItem: Dish }) => {
     currency: "VND",
   }).format(minPrice);
   return (
-    <Link href={`/dishes/${dishItem.dishId}`}>
+    <Link href={`/dishes/${dishItem.dishId}`} className="w-60">
       <Card
         key={dishItem.dishId}
-        className="relative flex w-72 flex-col border-none bg-sidebar transition-all ease-in xl:hover:scale-105"
+        className={twMerge(
+          "relative flex flex-col border-none bg-sidebar transition-all ease-in xl:hover:scale-105",
+          className,
+        )}
       >
         <div className="relative h-40">
           <Image
@@ -151,8 +160,8 @@ const FoodCard = ({ dishItem }: { dishItem: Dish }) => {
               )}
             </CardDescription>
           </div>
-          <CardDescription className="">
-            {truncate(dishItem.description, 35)}
+          <CardDescription className="line-clamp-1">
+            {dishItem.description}
           </CardDescription>
           <div className="flex flex-row space-x-2">
             {dishItem.categories.map((category) => (

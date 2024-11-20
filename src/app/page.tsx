@@ -1,9 +1,7 @@
 import Header from "@/components/header";
 import Map from "@/components/map";
-import RestaurantGrid, { RestaurantDto } from "@/components/restaurant-grid";
-import http from "@/lib/http";
-import { MapMarker } from "@/types/map-maker.type";
-import { Restaurant } from "@/types/retaurant.type";
+import RecommendationCarousel from "@/components/recommend-carousel";
+import RestaurantGrid from "@/components/restaurant-grid";
 import "dotenv/config";
 
 export default async function Home() {
@@ -11,10 +9,9 @@ export default async function Home() {
     <>
       <Header></Header>
       <div className="mt-[--header-height] w-full px-10 xl:px-40">
-        <div className="flex-col justify-center space-y-10 py-10">
-          <div className="bg-background">
-            <Map></Map>
-          </div>
+        <div className="w-full flex-col justify-center space-y-10 py-10">
+          <Map></Map>
+          <RecommendationCarousel></RecommendationCarousel>
           <RestaurantGrid></RestaurantGrid>
         </div>
       </div>

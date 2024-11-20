@@ -59,7 +59,9 @@ const RestaurantGrid = ({ className }: { className?: string }) => {
   return (
     <Card className={twMerge("h-fit border-none", className)}>
       <CardHeader className="flex flex-row space-x-5 space-y-0 border-b border-muted-foreground/30 xl:space-x-10">
-        <CardTitle className="flex items-center">Restaurants</CardTitle>
+        <CardTitle className="flex items-center xl:text-lg">
+          Restaurants near you
+        </CardTitle>
       </CardHeader>
       <CardContent className="">
         <div className="grid grid-flow-row grid-cols-1 justify-items-center gap-4 bg-inherit py-5 md:grid-cols-3 xl:grid-cols-4">
