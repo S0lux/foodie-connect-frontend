@@ -40,54 +40,21 @@ export default function AddCategoryForm({
     if (loading) return;
     setLoading(true);
     try {
-      const data = await createCategory.mutateAsync({
+      await createCategory.mutateAsync({
         restaurantId,
         categoryName: { categoryName: values.categoryName.trim() },
       });
-      console.log(data);
       toast({
         title: "Success",
         description: "Category added successfully",
       });
       onSuccess();
     } catch (error) {
-      console.log(error);
-      switch ((error as ErrorType).code) {
-        case "NOT_AUTHENTICATED":
-          toast({
-            title: "Error",
-            description: "You are not authenticated",
-            variant: "destructive",
-          });
-          break;
-        case "NOT_OWNER":
-          toast({
-            title: "Error",
-            description: "You are not the owner",
-            variant: "destructive",
-          });
-          break;
-        case "RESTAURANT_NOT_EXIST":
-          toast({
-            title: "Error",
-            description: "Restaurant does not exist",
-            variant: "destructive",
-          });
-          break;
-        case "DISH_CATEGORY_ALREADY_EXIST":
-          toast({
-            title: "Error",
-            description: "Category already exists",
-            variant: "destructive",
-          });
-        default:
-          toast({
-            title: "Error",
-            description: "An error occurred",
-            variant: "destructive",
-          });
-          break;
-      }
+      toast({
+        title: "Error",
+        description: (error as ErrorType).message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
