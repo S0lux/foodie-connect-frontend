@@ -28,6 +28,14 @@ import { Textarea } from "@/components/ui/textarea";
 import usePromotion from "@/hooks/use-promotion";
 import { toast } from "@/hooks/use-toast";
 import { ErrorType } from "@/types/error.type";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Dish } from "@/types/dishes.type";
 
 const CreatePromotionForm: React.FC = () => {
   const { restaurantId } = useParams<{ restaurantId: string }>();
@@ -35,6 +43,50 @@ const CreatePromotionForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const createPromotion = usePromotion.useCreatePromotion();
+  const [discountType, setDiscountType] = useState<
+    "percentage" | "amount" | "same-price" | "custom"
+  >("percentage");
+  const [selectedDishes, setSelectedDishes] = useState<string[]>([]);
+  const [discountValue, setDiscountValue] = useState<number>(0);
+
+  function discountDishesPercentage(
+    selectedDishes: string[],
+    dishes: Dish[],
+    percentage: number,
+  ) {
+    return dishes
+      .filter((dish) => selectedDishes.includes(dish.dishId))
+      .map((dish) => ({
+        dishId: dish.dishId,
+        promotionalPrice: dish.price - (dish.price * percentage) / 100,
+      }));
+  }
+
+  function discountDishesAmount(
+    selectedDishes: string[],
+    dishes: Dish[],
+    amount: number,
+  ) {
+    return dishes
+      .filter((dish) => selectedDishes.includes(dish.dishId))
+      .map((dish) => ({
+        dishId: dish.dishId,
+        promotionalPrice: dish.price > amount ? dish.price - amount : 0,
+      }));
+  }
+
+  function discountDishesSamePrice(
+    selectedDishes: string[],
+    dishes: Dish[],
+    amount: number,
+  ) {
+    return dishes
+      .filter((dish) => selectedDishes.includes(dish.dishId))
+      .map((dish) => ({
+        dishId: dish.dishId,
+        promotionalPrice: amount > dish.price ? dish.price : amount,
+      }));
+  }
 
   const form = useForm<CreatePromotionBodyType>({
     resolver: zodResolver(CreatePromotionBody),
@@ -49,6 +101,7 @@ const CreatePromotionForm: React.FC = () => {
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
+    console.log({ values });
     if (loading) return;
     setLoading(true);
     try {
@@ -97,6 +150,47 @@ const CreatePromotionForm: React.FC = () => {
       setLoading(false);
     }
   });
+
+  const handleDishSelection = (dishId: string) => {
+    setSelectedDishes((prev) =>
+      prev.includes(dishId)
+        ? prev.filter((id) => id !== dishId)
+        : [...prev, dishId],
+    );
+  };
+
+  const handleDiscountChange = (value: number) => {
+    setDiscountValue(value);
+
+    let updatedDetails: { dishId: string; promotionalPrice: number }[] = [];
+    switch (discountType) {
+      case "percentage":
+        updatedDetails = discountDishesPercentage(
+          selectedDishes,
+          dishes || [],
+          value,
+        );
+        break;
+      case "amount":
+        updatedDetails = discountDishesAmount(
+          selectedDishes,
+          dishes || [],
+          value,
+        );
+        break;
+      case "same-price":
+        updatedDetails = discountDishesSamePrice(
+          selectedDishes,
+          dishes || [],
+          value,
+        );
+        break;
+      default:
+        updatedDetails = [];
+    }
+
+    form.setValue("promotionDetails", updatedDetails);
+  };
 
   return (
     <div className="container mx-auto px-4">
@@ -226,81 +320,226 @@ const CreatePromotionForm: React.FC = () => {
                   control={form.control}
                   name="promotionDetails"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <FormLabel className="text-[16px] font-bold">
-                        Promotion Details
-                      </FormLabel>
-                      <FormControl>
-                        <div className="flex flex-col gap-4">
-                          {dishes?.map((dish) => (
-                            <div
-                              key={dish.dishId}
-                              className="flex items-center gap-2"
-                            >
-                              <Checkbox
-                                id={dish.dishId}
-                                checked={field.value?.some(
-                                  (detail) => detail.dishId === dish.dishId,
-                                )}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    field.onChange([
-                                      ...(field.value ?? []),
-                                      {
-                                        dishId: dish.dishId,
-                                        promotionalPrice: 0,
-                                      },
-                                    ]);
-                                  } else {
-                                    field.onChange(
-                                      field.value?.filter(
-                                        (detail) =>
-                                          detail.dishId !== dish.dishId,
-                                      ),
-                                    );
-                                  }
-                                }}
-                              />
-                              <Label htmlFor={dish.dishId}>{dish.name}</Label>
-                              {field.value?.some(
-                                (detail) => detail.dishId === dish.dishId,
-                              ) && (
-                                <Input
-                                  className="w-32"
-                                  type="number"
-                                  placeholder="Promotional Price"
-                                  value={
-                                    field.value.find(
-                                      (detail) => detail.dishId === dish.dishId,
-                                    )?.promotionalPrice || 0
-                                  }
-                                  onChange={(e) => {
-                                    const updatedDetails = (
-                                      field.value ?? []
-                                    ).map((detail) =>
-                                      detail.dishId === dish.dishId
-                                        ? {
-                                            dishId: detail.dishId,
-                                            promotionalPrice: parseFloat(
-                                              e.target.value,
-                                            ),
-                                          }
-                                        : detail,
-                                    );
-                                    field.onChange(updatedDetails);
-                                  }}
-                                />
-                              )}
+                    <div>
+                      <FormItem>
+                        <FormLabel className="text-[16px] font-bold">
+                          Discount Type
+                        </FormLabel>
+                        <Select
+                          onValueChange={(value) => {
+                            setDiscountType(
+                              value as
+                                | "percentage"
+                                | "amount"
+                                | "same-price"
+                                | "custom",
+                            );
+                            // Reset selections when changing discount type
+                            setSelectedDishes([]);
+                            setDiscountValue(0);
+                            field.onChange([]);
+                          }}
+                          defaultValue={discountType}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select discount type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="percentage">
+                              Percentage
+                            </SelectItem>
+                            <SelectItem value="amount">Amount</SelectItem>
+                            <SelectItem value="same-price">
+                              Same Price
+                            </SelectItem>
+                            <SelectItem value="custom">Custom</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          Select the type of discount you want to offer.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+
+                      {(discountType === "percentage" ||
+                        discountType === "amount" ||
+                        discountType === "same-price") && (
+                        <div className="mt-4 space-y-4">
+                          <div className="space-y-2">
+                            <FormLabel className="text-[16px] font-bold">
+                              Select Dishes
+                            </FormLabel>
+                            <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+                              {dishes?.map((dish) => (
+                                <div
+                                  key={dish.dishId}
+                                  className="flex items-center space-x-2"
+                                >
+                                  <Checkbox
+                                    id={dish.dishId}
+                                    checked={selectedDishes.includes(
+                                      dish.dishId,
+                                    )}
+                                    onCheckedChange={() =>
+                                      handleDishSelection(dish.dishId)
+                                    }
+                                  />
+                                  <Label htmlFor={dish.dishId}>
+                                    {dish.name}
+                                  </Label>
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                            <div className="mt-2 flex items-center space-x-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  setSelectedDishes(
+                                    dishes?.map((dish) => dish.dishId) || [],
+                                  )
+                                }
+                              >
+                                Select All
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setSelectedDishes([])}
+                              >
+                                Deselect All
+                              </Button>
+                            </div>
+                          </div>
+
+                          <FormItem>
+                            <FormLabel className="text-[16px] font-bold">
+                              {discountType === "percentage"
+                                ? "Percentage Discount"
+                                : discountType === "amount"
+                                  ? "Amount Discount"
+                                  : "Same Price"}
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                max={
+                                  discountType === "percentage"
+                                    ? 100
+                                    : undefined
+                                }
+                                placeholder={
+                                  discountType === "percentage"
+                                    ? "Enter percentage"
+                                    : discountType === "amount"
+                                      ? "Enter amount to reduce"
+                                      : "Enter fixed price"
+                                }
+                                value={discountValue}
+                                onChange={(e) =>
+                                  handleDiscountChange(
+                                    parseFloat(e.target.value),
+                                  )
+                                }
+                                disabled={selectedDishes.length === 0}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              {discountType === "percentage"
+                                ? "Enter the percentage discount for selected dishes"
+                                : discountType === "amount"
+                                  ? "Enter the amount to reduce from selected dishes"
+                                  : "Enter the fixed price for selected dishes"}
+                            </FormDescription>
+                          </FormItem>
                         </div>
-                      </FormControl>
-                      <FormDescription>
-                        Select the dishes you want to include in the promotion
-                        and enter their promotional prices.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
+                      )}
+
+                      {discountType === "custom" && (
+                        <FormItem className="mt-2 space-y-2">
+                          <FormLabel className="text-[16px] font-bold">
+                            Promotion Details
+                          </FormLabel>
+                          <FormControl>
+                            <div className="flex flex-col gap-4">
+                              {dishes?.map((dish) => (
+                                <div
+                                  key={dish.dishId}
+                                  className="flex items-center gap-2"
+                                >
+                                  <Checkbox
+                                    id={dish.dishId}
+                                    checked={field.value?.some(
+                                      (detail) => detail.dishId === dish.dishId,
+                                    )}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        field.onChange([
+                                          ...(field.value ?? []),
+                                          {
+                                            dishId: dish.dishId,
+                                            promotionalPrice: 0,
+                                          },
+                                        ]);
+                                      } else {
+                                        field.onChange(
+                                          field.value?.filter(
+                                            (detail) =>
+                                              detail.dishId !== dish.dishId,
+                                          ),
+                                        );
+                                      }
+                                    }}
+                                  />
+                                  <Label htmlFor={dish.dishId}>
+                                    {dish.name}
+                                  </Label>
+                                  {field.value?.some(
+                                    (detail) => detail.dishId === dish.dishId,
+                                  ) && (
+                                    <Input
+                                      className="w-32"
+                                      type="number"
+                                      placeholder="Promotional Price"
+                                      value={
+                                        field.value.find(
+                                          (detail) =>
+                                            detail.dishId === dish.dishId,
+                                        )?.promotionalPrice || 0
+                                      }
+                                      onChange={(e) => {
+                                        const updatedDetails = (
+                                          field.value ?? []
+                                        ).map((detail) =>
+                                          detail.dishId === dish.dishId
+                                            ? {
+                                                dishId: detail.dishId,
+                                                promotionalPrice: parseFloat(
+                                                  e.target.value,
+                                                ),
+                                              }
+                                            : detail,
+                                        );
+                                        field.onChange(updatedDetails);
+                                      }}
+                                    />
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </FormControl>
+                          <FormDescription>
+                            Select the dishes you want to include in the
+                            promotion and enter their promotional prices.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    </div>
                   )}
                 />
 

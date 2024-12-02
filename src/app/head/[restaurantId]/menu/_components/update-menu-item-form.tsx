@@ -26,17 +26,15 @@ import {
   FormField,
 } from "@/components/ui/form";
 import useDishes from "@/hooks/use-dishes";
-import {
-  DishBody,
-  DishBodyType,
-  UpdateDishBody,
-  UpdateDishBodyType,
-} from "@/schema/dish.schema";
+import { UpdateDishBody, UpdateDishBodyType } from "@/schema/dish.schema";
 import useDishCategories from "@/hooks/use-dish-categories";
 import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 import { ErrorType } from "@/types/error.type";
 import { toast } from "@/hooks/use-toast";
+import { get } from "http";
+import { getImageById } from "@/lib/handleImage";
+import Loader from "@/components/loader";
 
 const UpdateMenuItemPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -44,7 +42,6 @@ const UpdateMenuItemPage = () => {
   const { data: categories } =
     useDishCategories.useGetDishCategories(restaurantId);
   const { data: dish, isLoading } = useDishes.useGetDish(id);
-  console.log("Dish:", dish);
   const router = useRouter();
   const uploadImageAction = useDishes.useUploadDishImage();
   const updateDishAction = useDishes.useUpdateDish();
@@ -69,6 +66,8 @@ const UpdateMenuItemPage = () => {
       description: dish?.description,
       categories: dish?.categories,
     });
+
+    setImagePreview(dish?.imageId ? getImageById(dish.imageId) : null);
   }, [dish]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,11 +187,12 @@ const UpdateMenuItemPage = () => {
     }
   });
 
-  if (isLoading) {
+  if (isLoading)
     return (
-      <div className="flex items-center justify-center p-8">Loading...</div>
+      <div className="flex h-screen items-center justify-center">
+        <Loader />
+      </div>
     );
-  }
 
   return (
     <div className="container mx-auto px-4">
@@ -321,7 +321,7 @@ const UpdateMenuItemPage = () => {
                     </FormItem>
                   )}
                 />
-                <div className="mt-6 flex justify-center gap-3">
+                <div className="mb-6 mt-6 flex justify-center">
                   <Button
                     type="button"
                     size="lg"
@@ -341,11 +341,9 @@ const UpdateMenuItemPage = () => {
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   <Label>Item Image</Label>
-                  <div className="rounded-lg aspect-video overflow-hidden border">
+                  <div className="rounded-lg flex aspect-video items-center justify-center overflow-hidden border">
                     <Image
-                      src={
-                        imagePreview || "https://api.dicebear.com/9.x/glass/svg"
-                      }
+                      src={imagePreview || "/images/no_image_dish.png"}
                       alt="Preview"
                       width={230}
                       height={150}

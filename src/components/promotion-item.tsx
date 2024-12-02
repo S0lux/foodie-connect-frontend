@@ -1,11 +1,7 @@
 import { Promotion as FullPromotion } from "@/types/promotion.type";
 import { Promotion as DishPromotion } from "@/types/dishes.type";
-import { Card, CardContent, CardDescription, CardTitle } from "./ui/card";
+import { CardContent, CardDescription, CardTitle } from "./ui/card";
 import { Tags } from "lucide-react";
-import { Badge } from "./ui/badge";
-import { truncate } from "./restaurant-card";
-import Image from "next/image";
-import { getDefaultImageUrl } from "@/lib/handleImage";
 import { twMerge } from "tailwind-merge";
 
 const PromotionItem = ({
@@ -15,10 +11,11 @@ const PromotionItem = ({
   shortenContent?: boolean;
   promotion: DishPromotion | FullPromotion;
 }) => {
-  const daysLeft =
-    new Date(promotion.endsAt).getDate() -
-    new Date(promotion.beginsAt).getDate();
   const today = new Date();
+  const daysLeft = Math.ceil(
+    (new Date(promotion.endsAt).getTime() - today.getTime()) /
+      (1000 * 60 * 60 * 24),
+  );
   return (
     <div className={twMerge("flex w-full flex-row items-start space-x-2")}>
       <Tags className="size-fit text-accent"></Tags>

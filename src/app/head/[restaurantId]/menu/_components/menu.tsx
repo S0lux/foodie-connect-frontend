@@ -99,7 +99,6 @@ const MenuManagement = () => {
   const [edit, setEdit] = useState(false);
   const [editCategoryName, setEditCategoryName] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const router = useRouter();
   const { restaurantId } = useParams<{ restaurantId: string }>();
   const {
     data: categories,
@@ -358,13 +357,13 @@ const MenuManagement = () => {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filteredItems?.map((item) => (
           <Card key={item.dishId} className="overflow-hidden">
-            <div className="relative h-48">
+            <div className="relative flex h-48 items-center">
               <Image
                 src={
                   getDefaultImageUrl(
                     item?.imageId ? [item.imageId] : [],
                     item.name,
-                  ) || "https://placehold.co/230x150"
+                  ) || "/images/no_image_dish.png"
                 }
                 alt={item.name}
                 layout="fill"

@@ -26,13 +26,14 @@ import Image from "next/image";
 import useDishes from "@/hooks/use-dishes";
 import { toast } from "@/hooks/use-toast";
 import { ErrorType } from "@/types/error.type";
+import Loader from "@/components/loader";
 
 const AddMenuItemPage = () => {
   const createDishAction = useDishes.useCreateDish();
   const uploadImageAction = useDishes.useUploadDishImage();
   const [loading, setLoading] = useState(false);
   const { restaurantId } = useParams<{ restaurantId: string }>();
-  const { data: categories } =
+  const { data: categories, isLoading } =
     useDishCategories.useGetDishCategories(restaurantId);
 
   const form = useForm<DishBodyType>({
@@ -164,6 +165,13 @@ const AddMenuItemPage = () => {
     }
   });
 
+  if (isLoading)
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader />
+      </div>
+    );
+
   return (
     <div className="container mx-auto px-4">
       <div className="mb-4">
@@ -278,7 +286,7 @@ const AddMenuItemPage = () => {
                   )}
                 />
               </CardContent>
-              <div className="mt-6 flex justify-center gap-3">
+              <div className="mb-6 mt-6 flex justify-center gap-3">
                 <Button
                   type="button"
                   size={"lg"}
@@ -297,14 +305,13 @@ const AddMenuItemPage = () => {
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   <Label>Item Image</Label>
-                  <div className="rounded-lg overflow-hidden border">
+                  <div className="rounded-lg flex aspect-video items-center justify-center overflow-hidden border">
                     <Image
                       src={imagePreview || "/images/no_image_dish.png"}
                       alt="Preview"
                       width={230}
                       height={150}
                       layout="responsive"
-                      objectFit="cover"
                     />
                   </div>
                   <Label

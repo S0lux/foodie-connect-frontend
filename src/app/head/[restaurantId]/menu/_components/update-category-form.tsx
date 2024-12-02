@@ -46,7 +46,6 @@ export default function UpdateCategoryForm({
   }, [categoryName]);
 
   async function onSubmit(values: UpdateDishCategoryBodyType) {
-    console.log(values);
     if (loading) return;
     setLoading(true);
     try {
@@ -55,7 +54,6 @@ export default function UpdateCategoryForm({
         categoryName,
         newName: values,
       });
-      console.log(data);
       toast({
         title: "Success",
         description: "Category added successfully",
