@@ -31,8 +31,13 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
   // helper functions
   const { data: dishReviewsData, refetch: refetchDishReview } =
     useDishReview.useGetDishReview(params.id);
-  const { data: dishInfo, refetch: refetchDishInfo } =
-    useDishReview.useGetDishInfo(params.id);
+  const {
+    data: dishInfo,
+    refetch: refetchDishInfo,
+    isError: dishInfoHasErr,
+    error: dishInfoErr,
+    isLoading: dishInfoLoading,
+  } = useDishReview.useGetDishInfo(params.id);
   const promotionalPrices = dishInfo?.promotions
     ? dishInfo.promotions
         .filter((promo) => new Date(promo.endsAt) > new Date())
@@ -81,23 +86,31 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
             <CardContent className="flex flex-col space-y-2 py-4">
               <div className="flex flex-row justify-between">
                 <div className="flex flex-col items-start">
-                  <CardTitle className="">{dishInfo?.name}</CardTitle>
-                  <CardDescription className="text-primarys flex flex-col font-semibold">
-                    <span
-                      className={
-                        dishInfo?.promotions && dishInfo.promotions.length > 0
-                          ? "text-xs text-muted-foreground line-through"
-                          : ""
-                      }
-                    >
-                      {formatedPrice}
-                    </span>
-                    {dishInfo && dishInfo.promotions.length > 0 && (
-                      <span className="text-base text-accent">
-                        {formatedMinPrice}
+                  <CardTitle className="">
+                    {dishInfoLoading
+                      ? "Loading..."
+                      : dishInfoErr
+                        ? dishInfoErr.message
+                        : dishInfo?.name}
+                  </CardTitle>
+                  {!dishInfoHasErr && !dishInfoLoading && (
+                    <CardDescription className="text-primarys flex flex-col font-semibold">
+                      <span
+                        className={
+                          dishInfo?.promotions && dishInfo.promotions.length > 0
+                            ? "text-xs text-muted-foreground line-through"
+                            : ""
+                        }
+                      >
+                        {formatedPrice}
                       </span>
-                    )}
-                  </CardDescription>
+                      {dishInfo && dishInfo.promotions.length > 0 && (
+                        <span className="text-base text-accent">
+                          {formatedMinPrice}
+                        </span>
+                      )}
+                    </CardDescription>
+                  )}
                 </div>
                 <CardDescription className="text-sm">
                   <span>5k watching</span>
@@ -156,6 +169,7 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
           </CardTitle>
           <CardContent className="flex flex-col space-y-5 py-5">
             {/* {smaller promotion info} */}
+
             {dishInfo?.promotions && dishInfo.promotions.length > 0 ? (
               dishInfo.promotions.map((promotion) => {
                 return (
@@ -167,7 +181,11 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
               })
             ) : (
               <CardDescription className="text-center">
-                No promotions available
+                {dishInfoLoading
+                  ? "Loading..."
+                  : dishInfoErr
+                    ? dishInfoErr.message
+                    : "No dish available"}
               </CardDescription>
             )}
           </CardContent>

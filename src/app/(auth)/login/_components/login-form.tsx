@@ -54,23 +54,11 @@ const LoginForm = () => {
       });
       router.push("/");
     } catch (error) {
-      console.error({ error });
-      switch ((error as ErrorType).code) {
-        case "INVALID_CREDENTIALS":
-          toast({
-            title: "Error",
-            description: "Invalid credentials",
-            variant: "destructive",
-          });
-          break;
-        default:
-          toast({
-            title: "Error",
-            description: "An error occurred",
-            variant: "destructive",
-          });
-          break;
-      }
+      toast({
+        title: "Error",
+        description: (error as ErrorType).message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }

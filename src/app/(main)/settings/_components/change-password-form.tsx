@@ -87,42 +87,11 @@ export default function ChangePasswordForm({
         });
         onSuccess();
       } catch (error) {
-        switch ((error as ErrorType).code) {
-          case "PASSWORD_NOT_VALID":
-            toast({
-              title: "Error",
-              description: "Password not valid",
-              variant: "destructive",
-            });
-            break;
-          case "NOT_AUTHENTICATED":
-            toast({
-              title: "Error",
-              description: "You are not authenticated",
-              variant: "destructive",
-            });
-            break;
-          case "NOT_AUTHORIZED":
-            toast({
-              title: "Error",
-              description: "You are not authorized",
-              variant: "destructive",
-            });
-            break;
-          case "PASSWORD_MISMATCH":
-            toast({
-              title: "Error",
-              description: "Old password is incorrect",
-              variant: "destructive",
-            });
-          default:
-            toast({
-              title: "Error",
-              description: "Something went wrong",
-              variant: "destructive",
-            });
-            break;
-        }
+        toast({
+          title: "Error",
+          description: (error as ErrorType).message,
+          variant: "destructive",
+        });
       }
     } else {
       try {
@@ -133,42 +102,11 @@ export default function ChangePasswordForm({
         });
         onSuccess();
       } catch (error) {
-        switch ((error as ErrorType).code) {
-          case "PASSWORD_NOT_VALID":
-            toast({
-              title: "Error",
-              description: "Password not valid",
-              variant: "destructive",
-            });
-            break;
-          case "NOT_AUTHENTICATED":
-            toast({
-              title: "Error",
-              description: "You are not authenticated",
-              variant: "destructive",
-            });
-            break;
-          case "NOT_AUTHORIZED":
-            toast({
-              title: "Error",
-              description: "You are not authorized",
-              variant: "destructive",
-            });
-            break;
-          case "PASSWORD_MISMATCH":
-            toast({
-              title: "Error",
-              description: "Old password is incorrect",
-              variant: "destructive",
-            });
-          default:
-            toast({
-              title: "Error",
-              description: "Something went wrong",
-              variant: "destructive",
-            });
-            break;
-        }
+        toast({
+          title: "Error",
+          description: (error as ErrorType).message,
+          variant: "destructive",
+        });
       }
     }
     setLoading(false);

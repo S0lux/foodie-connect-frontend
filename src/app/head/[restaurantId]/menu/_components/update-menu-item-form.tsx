@@ -97,37 +97,11 @@ const UpdateMenuItemPage = () => {
           image,
         });
       } catch (error) {
-        console.error({ error });
-        switch ((error as ErrorType).code) {
-          case "NOT_AUTHENTICATED":
-            toast({
-              title: "Error",
-              description: "You are not authenticated",
-              variant: "destructive",
-            });
-            break;
-          case "NOT_OWNER":
-            toast({
-              title: "Error",
-              description: "You are not the owner of this restaurant",
-              variant: "destructive",
-            });
-            break;
-          case "DISH_NOT_FOUND":
-            toast({
-              title: "Error",
-              description: "Menu item not found",
-              variant: "destructive",
-            });
-            break;
-          default:
-            toast({
-              title: "Error",
-              description: "An error occurred",
-              variant: "destructive",
-            });
-            break;
-        }
+        toast({
+          title: "Error",
+          description: (error as ErrorType).message,
+          variant: "destructive",
+        });
       }
     }
   };

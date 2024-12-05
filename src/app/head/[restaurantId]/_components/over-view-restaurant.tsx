@@ -42,37 +42,11 @@ export default function OverViewRestaurant({
         description: "Image deleted successfully",
       });
     } catch (error) {
-      console.error("Error deleting image:", error);
-      switch ((error as ErrorType).code) {
-        case "IMAGE_NOT_FOUND":
-          toast({
-            title: "Error",
-            description: "Image not found",
-            variant: "destructive",
-          });
-          break;
-        case "NOT_AUTHENTICATED":
-          toast({
-            title: "Error",
-            description: "You are not authenticated",
-            variant: "destructive",
-          });
-          break;
-        case "NOT_OWNER":
-          toast({
-            title: "Error",
-            description: "You are not the owner",
-            variant: "destructive",
-          });
-          break;
-        default:
-          toast({
-            title: "Error",
-            description: "An error occurred",
-            variant: "destructive",
-          });
-          break;
-      }
+      toast({
+        title: "Error",
+        description: (error as ErrorType).message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }

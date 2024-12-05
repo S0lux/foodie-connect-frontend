@@ -81,22 +81,11 @@ const AddRestaurantForm = () => {
       });
       router.push("/head/restaurants");
     } catch (error) {
-      switch ((error as ErrorType).code) {
-        case "RESTAURANT_ALREADY_EXISTS":
-          toast({
-            title: "Restaurant already exists",
-            description: "Restaurant with the same name already exists",
-            variant: "destructive",
-          });
-          break;
-        default:
-          toast({
-            title: "Failed to add restaurant",
-            description: "An error occurred while adding the restaurant",
-            variant: "destructive",
-          });
-          break;
-      }
+      toast({
+        title: "Error",
+        description: (error as ErrorType).message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }

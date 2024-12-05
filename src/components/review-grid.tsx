@@ -1,5 +1,11 @@
 "use client";
-import { Card, CardContent, CardFooter, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardTitle,
+} from "./ui/card";
 import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUp, Star, StarHalf, StarIcon } from "lucide-react";
 import { ReviewEnum } from "./dish-review-form";
@@ -15,11 +21,21 @@ const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEditting, setEditting] = useState(false);
 
-  const { data: restaurantReviews, refetch: refetchReviews } =
-    useRestaurantDetail.useGetRestaurantReview(restaurantId);
+  const {
+    data: restaurantReviews,
+    refetch: refetchReviews,
+    isLoading: restaurantReviewLoading,
+    error: restaurantReviewErr,
+    isError: restaurantReviewHasErr,
+  } = useRestaurantDetail.useGetRestaurantReview(restaurantId);
 
-  const { data: restaurantDetail, refetch: refetchDetail } =
-    useRestaurantDetail.useGetRestaurantDetail(restaurantId);
+  const {
+    data: restaurantDetail,
+    refetch: refetchDetail,
+    isLoading: restaurantDetailLoading,
+    error: restaurantDetailErr,
+    isError: restaurantDetailHasErr,
+  } = useRestaurantDetail.useGetRestaurantDetail(restaurantId);
 
   useEffect(() => {
     refetchDetail();
@@ -32,6 +48,31 @@ const ReviewGrid = ({ restaurantId }: { restaurantId: string }) => {
       ? restaurantReviews.otherReviews
       : restaurantReviews.otherReviews.slice(0, 3));
 
+  if (restaurantReviewHasErr) {
+    return (
+      <Card className="space-y-3 border-none px-2 py-2 md:px-7">
+        <CardTitle className="flex flex-row items-center justify-between border-b border-muted-foreground/30 py-3 text-xl">
+          <span className="px-4 md:px-0">Reviews</span>
+        </CardTitle>
+        <CardContent className="flex size-full items-center justify-center py-3">
+          <CardDescription>{restaurantReviewErr.message}</CardDescription>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (restaurantReviewLoading) {
+    return (
+      <Card className="space-y-3 border-none px-2 py-2 md:px-7">
+        <CardTitle className="flex flex-row items-center justify-between border-b border-muted-foreground/30 py-3 text-xl">
+          <span className="px-4 md:px-0">Reviews</span>
+        </CardTitle>
+        <CardContent className="flex size-full items-center justify-center py-3">
+          <CardDescription>Loading...</CardDescription>
+        </CardContent>
+      </Card>
+    );
+  }
   return (
     <Card className="space-y-3 border-none px-2 py-2 md:px-7">
       <CardTitle className="flex flex-row items-center justify-between border-b border-muted-foreground/30 py-3 text-xl">

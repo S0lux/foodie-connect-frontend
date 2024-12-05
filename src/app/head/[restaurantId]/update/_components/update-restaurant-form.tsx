@@ -166,43 +166,11 @@ const UpdateRestaurantForm = () => {
         });
         setIsLogoUpdated(true);
       } catch (error) {
-        switch ((error as ErrorType).code) {
-          case "NOT_AUTHENTICATED":
-            toast({
-              title: "Error",
-              description: "You are not authenticated",
-              variant: "destructive",
-            });
-            break;
-          case "NOT_OWNER":
-            toast({
-              title: "Error",
-              description: "You are not the owner of this restaurant",
-              variant: "destructive",
-            });
-            break;
-          case "RESTAURANT_NOT_EXIST":
-            toast({
-              title: "Error",
-              description: "Restaurant does not exist",
-              variant: "destructive",
-            });
-            break;
-          case "TYPE_NOT_ALLOWED":
-            toast({
-              title: "Error",
-              description: "File type not allowed",
-              variant: "destructive",
-            });
-            break;
-          default:
-            toast({
-              title: "Error",
-              description: "An error occurred while updating the logo",
-              variant: "destructive",
-            });
-            break;
-        }
+        toast({
+          title: "Error",
+          description: (error as ErrorType).message,
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
@@ -224,43 +192,11 @@ const UpdateRestaurantForm = () => {
         });
         setIsBannerUpdated(true);
       } catch (error) {
-        switch ((error as ErrorType).code) {
-          case "NOT_AUTHENTICATED":
-            toast({
-              title: "Error",
-              description: "You are not authenticated",
-              variant: "destructive",
-            });
-            break;
-          case "NOT_OWNER":
-            toast({
-              title: "Error",
-              description: "You are not the owner of this restaurant",
-              variant: "destructive",
-            });
-            break;
-          case "RESTAURANT_NOT_EXIST":
-            toast({
-              title: "Error",
-              description: "Restaurant does not exist",
-              variant: "destructive",
-            });
-            break;
-          case "TYPE_NOT_ALLOWED":
-            toast({
-              title: "Error",
-              description: "File type not allowed",
-              variant: "destructive",
-            });
-            break;
-          default:
-            toast({
-              title: "Error",
-              description: "An error occurred while updating the banner",
-              variant: "destructive",
-            });
-            break;
-        }
+        toast({
+          title: "Error",
+          description: (error as ErrorType).message,
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
@@ -279,49 +215,11 @@ const UpdateRestaurantForm = () => {
         description: "Restaurant has been updated successfully",
       });
     } catch (error) {
-      switch ((error as ErrorType).code) {
-        case "RESTAURANT_ALREADY_EXISTS":
-          toast({
-            title: "Restaurant already exists",
-            description: "Restaurant with the same name already exists",
-            variant: "destructive",
-          });
-          break;
-        case "RESTAURANT_NOT_EXIST":
-          toast({
-            title: "Restaurant does not exist",
-            description: "Restaurant with the same name does not exist",
-            variant: "destructive",
-          });
-          break;
-        case "NOT_AUTHENTICATED":
-          toast({
-            title: "Not authenticated",
-            description: "You are not authenticated to perform this action",
-            variant: "destructive",
-          });
-        case "DUPLICATE_NAME":
-          toast({
-            title: "Duplicate name",
-            description: "Restaurant with the same name already exists",
-            variant: "destructive",
-          });
-          break;
-        case "INCORRECT_COORDINATES":
-          toast({
-            title: "Incorrect coordinates",
-            description: "Please select the correct coordinates",
-            variant: "destructive",
-          });
-          break;
-        default:
-          toast({
-            title: "Failed to add restaurant",
-            description: "An error occurred while adding the restaurant",
-            variant: "destructive",
-          });
-          break;
-      }
+      toast({
+        title: "Error",
+        description: (error as ErrorType).message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }

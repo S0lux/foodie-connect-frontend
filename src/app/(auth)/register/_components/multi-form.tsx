@@ -95,29 +95,11 @@ export function MultiForm({ type }: { type: string }) {
         });
         nextStep();
       } catch (error) {
-        switch ((error as ErrorType).code) {
-          case "USERNAME_ALREADY_EXISTS":
-            toast({
-              title: "Error",
-              description: "Username is taken",
-              variant: "destructive",
-            });
-            break;
-          case "EMAIL_ALREADY_EXISTS":
-            toast({
-              title: "Error",
-              description: "Email is taken",
-              variant: "destructive",
-            });
-            break;
-          default:
-            toast({
-              title: "Error",
-              description: "An error occurred",
-              variant: "destructive",
-            });
-            break;
-        }
+        toast({
+          title: "Error",
+          description: (error as ErrorType).message,
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
@@ -126,29 +108,11 @@ export function MultiForm({ type }: { type: string }) {
         await registerUserAction.mutateAsync(data);
         nextStep();
       } catch (error) {
-        switch ((error as ErrorType).code) {
-          case "USERNAME_ALREADY_EXISTS":
-            toast({
-              title: "Error",
-              description: "Username is taken",
-              variant: "destructive",
-            });
-            break;
-          case "EMAIL_ALREADY_EXISTS":
-            toast({
-              title: "Error",
-              description: "Email is taken",
-              variant: "destructive",
-            });
-            break;
-          default:
-            toast({
-              title: "Error",
-              description: "An error occurred",
-              variant: "destructive",
-            });
-            break;
-        }
+        toast({
+          title: "Error",
+          description: (error as ErrorType).message,
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }

@@ -1,7 +1,13 @@
 "use client";
 import { ReactNode, useEffect, useState } from "react";
 import RestaurantCard from "./restaurant-card";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { twMerge } from "tailwind-merge";
 
 import useRestaurants from "@/hooks/use-restaurants";
@@ -36,11 +42,12 @@ const CategorySelector = ({
 
 const RestaurantGrid = ({ className }: { className?: string }) => {
   //data fetching
-  const { data: restaurants } = useRestaurants.useGetRestaurants(
-    "",
-    5000,
-    "106.61532,10.74964",
-  );
+  const {
+    data: restaurants,
+    isLoading,
+    isError,
+    error,
+  } = useRestaurants.useGetRestaurants("", 5000, "106.61532,10.74964");
 
   // Handle responsive design
   const [windowWidth, setWidth] = useState(0);
@@ -55,6 +62,38 @@ const RestaurantGrid = ({ className }: { className?: string }) => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  console.log(restaurants);
+
+  if (isError) {
+    return (
+      <Card className={twMerge("h-fit border-none", className)}>
+        <CardHeader className="flex flex-row space-x-5 space-y-0 border-b border-muted-foreground/30 xl:space-x-10">
+          <CardTitle className="flex items-center xl:text-lg">
+            Restaurants near you
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center py-3">
+          <CardDescription className="italic">{error.message}</CardDescription>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <Card className={twMerge("h-fit border-none", className)}>
+        <CardHeader className="flex flex-row space-x-5 space-y-0 border-b border-muted-foreground/30 xl:space-x-10">
+          <CardTitle className="flex items-center xl:text-lg">
+            Restaurants near you
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center py-3">
+          <CardDescription className="italic">Loading...</CardDescription>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className={twMerge("h-fit border-none", className)}>

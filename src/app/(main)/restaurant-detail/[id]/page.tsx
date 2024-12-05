@@ -17,9 +17,12 @@ export default function RestauranDetailPage({
 }: {
   params: { id: string };
 }) {
-  const { data: restaurantDetail } = useRestaurantDetail.useGetRestaurantDetail(
-    params.id,
-  );
+  const {
+    data: restaurantDetail,
+    error: restaurantDetailErr,
+    isError: restaurantDetailHasErr,
+    isLoading: restaurantDetailLoading,
+  } = useRestaurantDetail.useGetRestaurantDetail(params.id);
 
   const { data: restaurantCategories } = useDishCategories.useGetDishCategories(
     params.id,
@@ -48,7 +51,12 @@ export default function RestauranDetailPage({
 
         <div className="w-full space-y-1 py-5">
           {/* name */}
-          <CardTitle className="text-xl">{restaurantDetail?.name}</CardTitle>
+          <CardTitle className="text-xl">
+            {restaurantDetailLoading && "Loading..."}
+            {!restaurantDetailHasErr
+              ? restaurantDetail?.name
+              : restaurantDetailErr.message}
+          </CardTitle>
 
           {/* {restaurant's rating} */}
           <div className="flex flex-row">
@@ -71,35 +79,43 @@ export default function RestauranDetailPage({
           <div className="flex flex-row items-center space-x-2">
             <MapPin className="size-4"></MapPin>
             <span className="max-w-60 md:max-w-none">
-              {restaurantDetail?.formattedAddress}
+              {!restaurantDetailHasErr
+                ? restaurantDetail?.formattedAddress
+                : "N/A"}
             </span>
           </div>
 
           {/* time */}
           <div className="flex flex-row items-center space-x-2">
             <AlarmClock className="size-4"></AlarmClock>
-            <span>
-              <span
-                className={twMerge(
-                  "font-semibold",
-                  restaurantDetail?.status === "Open" && "text-green-500",
-                  restaurantDetail?.status === "Closed" && "text-orange-500",
-                  restaurantDetail?.status === "PermanentlyClosed" &&
-                    "text-red-500",
-                )}
-              >
-                {restaurantDetail?.status === "PermanentlyClosed"
-                  ? "Permanently Closed"
-                  : restaurantDetail?.status}
-              </span>{" "}
-              {restaurantDetail?.openTime} - {restaurantDetail?.closeTime}
-            </span>
+            {!restaurantDetailHasErr ? (
+              <span>
+                <span
+                  className={twMerge(
+                    "font-semibold",
+                    restaurantDetail?.status === "Open" && "text-green-500",
+                    restaurantDetail?.status === "Closed" && "text-orange-500",
+                    restaurantDetail?.status === "PermanentlyClosed" &&
+                      "text-red-500",
+                  )}
+                >
+                  {restaurantDetail?.status === "PermanentlyClosed"
+                    ? "Permanently Closed"
+                    : restaurantDetail?.status}
+                </span>{" "}
+                {restaurantDetail?.openTime} - {restaurantDetail?.closeTime}
+              </span>
+            ) : (
+              <span>N/A</span>
+            )}
           </div>
 
           {/* phone */}
           <div className="flex flex-row items-center space-x-2">
             <PhoneIcon className="size-4"></PhoneIcon>
-            <span>{restaurantDetail?.phone}</span>
+            <span>
+              {!restaurantDetailHasErr ? restaurantDetail?.phone : "N/A"}
+            </span>
           </div>
 
           <br></br>

@@ -93,37 +93,11 @@ const ImageUploadForm = ({ onSuccess }: ImageUploadFormProps) => {
       });
       onSuccess?.();
     } catch (error) {
-      console.error("Error during image upload:", error);
-      switch ((error as ErrorType).code) {
-        case "NOT_AUTHENTICATED":
-          toast({
-            title: "Error",
-            description: "You are not authenticated",
-            variant: "destructive",
-          });
-          break;
-        case "NOT_OWNER":
-          toast({
-            title: "Error",
-            description: "You are not the owner",
-            variant: "destructive",
-          });
-          break;
-        case "RESTAURANT_NOT_EXIST":
-          toast({
-            title: "Error",
-            description: "Restaurant does not exist",
-            variant: "destructive",
-          });
-          break;
-        default:
-          toast({
-            title: "Error",
-            description: "An error occurred",
-            variant: "destructive",
-          });
-          break;
-      }
+      toast({
+        title: "Error",
+        description: (error as ErrorType).message,
+        variant: "destructive",
+      });
     } finally {
       setLoadingImage(false);
       setLoading(false);

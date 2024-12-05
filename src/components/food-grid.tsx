@@ -36,13 +36,44 @@ const FoodGrid = ({
   dishCategories?: Category[];
 }) => {
   const [selectedCat, setSelectedCat] = useState<string>("All");
-  const { data: dishes } =
-    useRestaurantDetail.useGetRestaurantDetailMenu(restaurantId);
+  const {
+    data: dishes,
+    isLoading,
+    error,
+    isError,
+  } = useRestaurantDetail.useGetRestaurantDetailMenu(restaurantId);
 
   const filteredDish = dishes?.filter((dish) => {
     if (selectedCat === "All") return true;
     else return dish.categories.includes(selectedCat);
   });
+
+  if (isError) {
+    return (
+      <Card className="border-none px-2 py-2 md:px-7">
+        <CardTitle className="flex flex-row items-center space-x-5 border-b border-muted-foreground/30 py-3 text-xl">
+          <span className="px-4 md:px-0">Menu</span>
+        </CardTitle>
+        <CardContent className="flex size-full items-center justify-center py-3">
+          <CardDescription>{error.message}</CardDescription>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <Card className="border-none px-2 py-2 md:px-7">
+        <CardTitle className="flex flex-row items-center space-x-5 border-b border-muted-foreground/30 py-3 text-xl">
+          <span className="px-4 md:px-0">Menu</span>
+        </CardTitle>
+        <CardContent className="flex size-full items-center justify-center py-3">
+          <CardDescription>Loading...</CardDescription>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="border-none px-2 py-2 md:px-7">
       <CardTitle className="flex flex-row items-center space-x-5 border-b border-muted-foreground/30 py-3 text-xl">
@@ -75,17 +106,17 @@ const FoodGrid = ({
           </SelectContent>
         </Select>
       </CardTitle>
-      <CardContent className="grid grid-flow-row grid-cols-1 justify-items-center gap-4 bg-inherit py-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {filteredDish && filteredDish?.length > 0 ? (
-          filteredDish?.map((item) => {
+      {filteredDish && filteredDish?.length > 0 ? (
+        <CardContent className="grid grid-flow-row grid-cols-1 justify-items-center gap-4 bg-inherit py-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filteredDish?.map((item) => {
             return <FoodCard key={item.dishId} dishItem={item}></FoodCard>;
-          })
-        ) : (
-          <CardDescription className="col-span-3 flex w-full justify-center">
-            No dishes available
-          </CardDescription>
-        )}
-      </CardContent>
+          })}
+        </CardContent>
+      ) : (
+        <CardContent className="flex items-center justify-center py-3">
+          <CardDescription className="">No dishes available</CardDescription>
+        </CardContent>
+      )}
     </Card>
   );
 };

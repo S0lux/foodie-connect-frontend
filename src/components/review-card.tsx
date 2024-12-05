@@ -35,6 +35,7 @@ import { description } from "../app/head/[restaurantId]/reports/_components/pie-
 import useDishReview from "@/hooks/use-dish-review";
 import { getAvatarUrl, getInitials } from "@/lib/handleImage";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { ErrorType } from "@/types/error.type";
 
 export const ReviewCard = ({
   id,
@@ -78,12 +79,12 @@ export const ReviewCard = ({
         title: "Success",
         description: "Review removed",
       });
-    } catch (err) {
+    } catch (error) {
       toast({
         title: "Error",
+        description: (error as ErrorType).message,
         variant: "destructive",
       });
-      console.log(err);
     }
   };
 

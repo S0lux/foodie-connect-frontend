@@ -98,36 +98,11 @@ export default function SettingForm() {
         handleResetImage();
         refetch();
       } catch (error) {
-        switch ((error as ErrorType).code) {
-          case "NOT_AUTHENTICATED":
-            toast({
-              title: "Error",
-              description: "You are not authenticated",
-              variant: "destructive",
-            });
-            break;
-          case "TYPE_NOT_ALLOWED":
-            toast({
-              title: "Error",
-              description: "Type not allowed",
-              variant: "destructive",
-            });
-            break;
-          case "NOT_AUTHORIZED":
-            toast({
-              title: "Error",
-              description: "You are not authorized",
-              variant: "destructive",
-            });
-            break;
-          default:
-            toast({
-              title: "Error",
-              description: "Something went wrong",
-              variant: "destructive",
-            });
-            break;
-        }
+        toast({
+          title: "Error",
+          description: (error as ErrorType).message,
+          variant: "destructive",
+        });
       }
     } else {
       try {
@@ -142,36 +117,11 @@ export default function SettingForm() {
         handleResetImage();
         refetch();
       } catch (error) {
-        switch ((error as ErrorType).code) {
-          case "NOT_AUTHENTICATED":
-            toast({
-              title: "Error",
-              description: "You are not authenticated",
-              variant: "destructive",
-            });
-            break;
-          case "TYPE_NOT_ALLOWED":
-            toast({
-              title: "Error",
-              description: "Type not allowed",
-              variant: "destructive",
-            });
-            break;
-          case "NOT_AUTHORIZED":
-            toast({
-              title: "Error",
-              description: "You are not authorized",
-              variant: "destructive",
-            });
-            break;
-          default:
-            toast({
-              title: "Error",
-              description: "Something went wrong",
-              variant: "destructive",
-            });
-            break;
-        }
+        toast({
+          title: "Error",
+          description: (error as ErrorType).message,
+          variant: "destructive",
+        });
       }
     }
     setLoading(false);
@@ -295,7 +245,7 @@ export default function SettingForm() {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className="h-[48px]"
+                        className="h-[48px] bg-background"
                         placeholder="Enter your name"
                         {...field}
                         readOnly
@@ -316,7 +266,7 @@ export default function SettingForm() {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className="h-[48px]"
+                        className="h-[48px] bg-background"
                         placeholder="Enter your email"
                         type="email"
                         {...field}
@@ -341,7 +291,7 @@ export default function SettingForm() {
                       </FormLabel>
                       <FormControl>
                         <Input
-                          className="h-[48px]"
+                          className="h-[48px] bg-background"
                           placeholder="Enter your phone"
                           {...field}
                           readOnly
@@ -363,7 +313,7 @@ export default function SettingForm() {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className="h-[48px]"
+                        className="h-[48px] bg-background"
                         placeholder="Enter your type"
                         {...field}
                         readOnly

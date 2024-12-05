@@ -1,4 +1,5 @@
 import dishesActions from "@/apis/dishes.api";
+import http from "@/lib/http";
 import { DishBodyType, UpdateDishBodyType } from "@/schema/dish.schema";
 import { ErrorType } from "@/types/error.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

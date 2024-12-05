@@ -72,30 +72,11 @@ export default function EditSocialForm({
       });
       onSuccess();
     } catch (error) {
-      console.log(error);
-      switch ((error as ErrorType).code) {
-        case "SOCIAL_ALREADY_EXISTS":
-          toast({
-            title: "Error",
-            description: "Social already exists",
-            variant: "destructive",
-          });
-          break;
-        case "NOT_AUTHENTICATED":
-          toast({
-            title: "Error",
-            description: "You are not authenticated",
-            variant: "destructive",
-          });
-          break;
-        default:
-          toast({
-            title: "Error",
-            description: "An error occurred",
-            variant: "destructive",
-          });
-          break;
-      }
+      toast({
+        title: "Error",
+        description: (error as ErrorType).message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }

@@ -25,6 +25,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { getAvatarUrl, getInitials } from "@/lib/handleImage";
 import Link from "next/link";
 import Image from "next/image";
+import { ErrorType } from "@/types/error.type";
 
 export enum ReviewEnum {
   RESTAURANT,
@@ -112,8 +113,12 @@ const DishReviewForm = ({
         title: "Success",
         description: "Review submitted",
       });
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: (error as ErrorType).message,
+        variant: "destructive",
+      });
     }
     refetch && refetch.forEach((func) => func());
     onCancelReview();

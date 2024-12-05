@@ -116,23 +116,12 @@ const RestaurantReviewForm = ({
         title: "Success",
         description: "Review submitted",
       });
-    } catch (err: any) {
-      switch (err.response.data.code) {
-        case "NOT_AUTHENTICATED":
-          toast({
-            title: "Error",
-            description: "You need to login to submit a review",
-            variant: "destructive",
-          });
-          break;
-        default:
-          toast({
-            title: "Error",
-            description: "An error occurred",
-            variant: "destructive",
-          });
-          break;
-      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: (error as ErrorType).message,
+        variant: "destructive",
+      });
     } finally {
       refetch.forEach((func) => {
         func();
