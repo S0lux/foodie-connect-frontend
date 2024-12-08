@@ -67,7 +67,6 @@ export default function SettingForm() {
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const defaultAvatar = getAvatarUrl(user?.avatar, user?.displayName);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpgradeDialogOpen, setIsUpgradeDialogOpen] = useState(false);
   const router = useRouter();
 
@@ -227,72 +226,32 @@ export default function SettingForm() {
           )}
         </div>
       </div>
-      <div className="mt-8 px-4 sm:px-8 md:px-16 lg:px-40 xl:px-80">
+      <div className="mt-8 px-4 sm:px-8 md:px-16 lg:px-20 xl:px-20">
         <Form {...form}>
           <form
             onSubmit={onSubmit}
             className="w-full flex-shrink-0 space-y-4"
             noValidate
           >
-            <div className="flex w-full flex-col gap-4 md:flex-row">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel className="text-[16px] font-bold">
-                      Name
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        className="h-[48px] bg-background"
-                        placeholder="Enter your name"
-                        {...field}
-                        readOnly
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+              <div className="w-full space-y-4 md:w-1/2 md:pr-9">
+                <h1 className="text-center text-2xl font-bold">Information</h1>
+                <p className="h-12 text-center text-lg font-medium">
+                  Please ensure your information is accurate.
+                </p>
 
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel className="text-[16px] font-bold">
-                      Email
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        className="h-[48px] bg-background"
-                        placeholder="Enter your email"
-                        type="email"
-                        {...field}
-                        readOnly
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="flex w-full flex-col gap-4 md:flex-row">
-              <div className="w-full flex-1">
                 <FormField
                   control={form.control}
-                  name="phone"
+                  name="name"
                   render={({ field }) => (
-                    <FormItem className="">
+                    <FormItem>
                       <FormLabel className="text-[16px] font-bold">
-                        Phone
+                        Name
                       </FormLabel>
                       <FormControl>
                         <Input
                           className="h-[48px] bg-background"
-                          placeholder="Enter your phone"
+                          placeholder="Enter your name"
                           {...field}
                           readOnly
                         />
@@ -301,76 +260,92 @@ export default function SettingForm() {
                     </FormItem>
                   )}
                 />
-              </div>
 
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem className="flex w-full flex-1 flex-col">
-                    <FormLabel className="text-[16px] font-bold">
-                      Type
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        className="h-[48px] bg-background"
-                        placeholder="Enter your type"
-                        {...field}
-                        readOnly
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="flex justify-between">
-              <div className="space-y-2">
-                <Label className="text-[16px] font-bold">Password</Label>
-                <p className="text-sm md:text-[16px]">
-                  Password must be at least 8 characters long
-                </p>
-              </div>
-
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    className="mt-4"
-                    variant={"outline"}
-                    size={"lg"}
-                    onClick={() => setIsDialogOpen(true)}
-                  >
-                    Change
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="rounded-md">
-                  <DialogHeader>
-                    <DialogTitle className="text-center text-2xl">
-                      Change Password
-                    </DialogTitle>
-                    <DialogDescription className="text-center">
-                      Password must be at least 8 characters long
-                    </DialogDescription>
-                  </DialogHeader>
-                  {user?.type && user?.id && (
-                    <ChangePasswordForm
-                      type={user.type}
-                      id={user.id}
-                      onSuccess={() => {
-                        setIsDialogOpen(false);
-                      }}
-                    />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[16px] font-bold">
+                        Email
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          className="h-[48px] bg-background"
+                          placeholder="Enter your email"
+                          type="email"
+                          {...field}
+                          readOnly
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </DialogContent>
-              </Dialog>
+                />
+
+                <div className="flex flex-col gap-4 md:flex-row">
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="text-[16px] font-bold">
+                          Phone
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            className="h-[48px] bg-background"
+                            placeholder="Enter your phone"
+                            {...field}
+                            readOnly
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="text-[16px] font-bold">
+                          Type
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            className="h-[48px] bg-background"
+                            placeholder="Enter your type"
+                            {...field}
+                            readOnly
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Divider - only visible on larger screens */}
+              <div className="my-4 hidden w-px bg-gray-300 md:block"></div>
+
+              <div className="w-full md:w-1/2 md:pl-8">
+                {user?.type && user?.id && (
+                  <ChangePasswordForm type={user.type} id={user.id} />
+                )}
+              </div>
             </div>
 
             {user?.type === "User" && (
               <div className="flex justify-between">
                 <div className="space-y-2">
                   <Label className="text-[16px] font-bold">Upgrade Head</Label>
-                  <p className="text-sm md:text-[16px]">Upgrade user to head</p>
+                  <p className="text-sm md:text-[16px]">
+                    Upgrade to a Head account to access additional features and
+                    manage other users.
+                  </p>
                 </div>
 
                 <Dialog
@@ -405,7 +380,7 @@ export default function SettingForm() {
 
             <div className="!mt-8 flex justify-end gap-3">
               <Button
-                className=""
+                className="h-[48px] w-full text-xl"
                 size={"lg"}
                 type="button"
                 onClick={() => router.back()}

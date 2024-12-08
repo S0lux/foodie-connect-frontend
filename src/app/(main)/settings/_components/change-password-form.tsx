@@ -17,7 +17,6 @@ import { ChangePasswordBodyType } from "@/schema/auth.schema";
 import useSetting from "@/hooks/use-setting";
 import { toast } from "@/hooks/use-toast";
 import { ErrorType } from "@/types/error.type";
-import { on } from "events";
 
 const formSchema = z
   .object({
@@ -55,11 +54,9 @@ const formSchema = z
 type formSchemaType = z.infer<typeof formSchema>;
 
 export default function ChangePasswordForm({
-  onSuccess,
   type,
   id,
 }: {
-  onSuccess: () => void;
   type: string;
   id: string;
 }) {
@@ -85,7 +82,7 @@ export default function ChangePasswordForm({
           title: "Success",
           description: "Password changed successfully",
         });
-        onSuccess();
+        form.reset();
       } catch (error) {
         toast({
           title: "Error",
@@ -100,7 +97,7 @@ export default function ChangePasswordForm({
           title: "Success",
           description: "Password changed successfully",
         });
-        onSuccess();
+        form.reset();
       } catch (error) {
         toast({
           title: "Error",
@@ -124,82 +121,90 @@ export default function ChangePasswordForm({
     submitForm(values);
   });
   return (
-    <Form {...form}>
-      <form
-        onSubmit={onSubmit}
-        className="w-full flex-shrink-0 space-y-4"
-        noValidate
-      >
-        <FormField
-          control={form.control}
-          name="oldPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[16px] font-bold">
-                Old Password
-              </FormLabel>
-              <FormControl>
-                <Input
-                  className="h-[60px]"
-                  placeholder="Enter your password"
-                  type="password"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="newPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[16px] font-bold">
-                New Password
-              </FormLabel>
-              <FormControl>
-                <Input
-                  className="h-[60px]"
-                  placeholder="Enter your new password"
-                  type="password"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[16px] font-bold">
-                Confirm Password
-              </FormLabel>
-              <FormControl>
-                <Input
-                  className="h-[60px]"
-                  placeholder="Confirm your new password"
-                  type="password"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button
-          type="submit"
-          className="!mt-8 h-[60px] w-full text-xl"
-          disabled={loading}
+    <div>
+      <Form {...form}>
+        <form
+          onSubmit={onSubmit}
+          className="w-full flex-shrink-0 space-y-4"
+          noValidate
         >
-          {loading ? "Loading..." : "Change Password"}
-        </Button>
-      </form>
-    </Form>
+          <h1 className="text-center text-2xl font-bold">Change password</h1>
+          <p className="text-gray-600">
+            Please enter your current password and a new password that meets the
+            criteria.
+          </p>
+          <FormField
+            control={form.control}
+            name="oldPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[16px] font-bold">
+                  Old Password
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    className="h-[48px]"
+                    placeholder="Enter your password"
+                    type="password"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="newPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[16px] font-bold">
+                  New Password
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    className="h-[48px]"
+                    placeholder="Enter your new password"
+                    type="password"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[16px] font-bold">
+                  Confirm Password
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    className="h-[48px]"
+                    placeholder="Confirm your new password"
+                    type="password"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="button"
+            className="!mt-8 h-[48px] w-full text-xl"
+            disabled={loading}
+            onClick={onSubmit}
+          >
+            {loading ? "Loading..." : "Change Password"}
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }
