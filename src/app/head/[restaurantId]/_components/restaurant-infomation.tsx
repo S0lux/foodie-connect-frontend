@@ -90,7 +90,7 @@ const RestaurantInfo = ({ restaurant }: { restaurant: Restaurant }) => {
               <p className="font-semibold">Rating</p>
               <div className="flex items-center gap-2">
                 <p className="text-gray-700">
-                  {restaurant.scoreOverview.averageRating}/5
+                  {restaurant.scoreOverview.averageRating.toFixed(1)}/5
                 </p>
                 <Rating value={restaurant.scoreOverview.averageRating} />
               </div>

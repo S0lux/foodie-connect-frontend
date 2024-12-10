@@ -78,7 +78,7 @@ export default function OverViewRestaurant({
             </div>
             <div className="relative top-3/4 pl-4 md:absolute">
               <div className="flex items-center">
-                <div className="mt-4 flex h-24 w-24 rounded-full bg-white p-2 md:mt-0 md:h-32 md:w-32">
+                <div className="mt-4 flex h-24 w-24 items-center rounded-full bg-white p-2 md:mt-0 md:h-32 md:w-32">
                   <Image
                     src={logoUrl}
                     alt="Banner"
