@@ -71,9 +71,6 @@ export default function RestaurantCard({
                 Edit Restaurant
               </DropdownMenuItem>
             </Link>
-            <DropdownMenuItem className="text-red-600 hover:cursor-pointer">
-              Deactivate
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </CardHeader>

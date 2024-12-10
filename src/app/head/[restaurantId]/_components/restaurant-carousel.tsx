@@ -84,7 +84,7 @@ const RestaurantCarousel: React.FC<RestaurantCarouselProps> = ({
                 Add New Image
               </Button>
             </DialogTrigger>
-            <DialogContent className="rounded-lg max-h-[90vh] max-w-[95vw] overflow-y-auto sm:max-w-lg">
+            <DialogContent className="max-h-[90vh] max-w-[95vw] overflow-y-auto rounded-md sm:max-w-lg">
               <DialogHeader>
                 <DialogTitle className="text-center">Add New Image</DialogTitle>
                 <DialogDescription className="text-center">

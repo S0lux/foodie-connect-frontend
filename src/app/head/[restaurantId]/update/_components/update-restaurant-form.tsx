@@ -235,14 +235,6 @@ const UpdateRestaurantForm = () => {
   return (
     <div className="container mx-auto px-4">
       <div className="mb-4 flex gap-2">
-        <Button
-          size="lg"
-          variant="outline"
-          onClick={() => router.back()}
-          className="mb-4"
-        >
-          <ArrowBigLeftDashIcon size={20} /> Back
-        </Button>
         <h1 className="text-3xl font-bold">Update Restaurant</h1>
       </div>
       <Form {...form}>

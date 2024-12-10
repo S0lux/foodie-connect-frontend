@@ -105,7 +105,7 @@ const ImageUploadForm = ({ onSuccess }: ImageUploadFormProps) => {
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl p-4">
+    <div className="mx-auto w-full max-w-2xl rounded-md p-4">
       <Card className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">

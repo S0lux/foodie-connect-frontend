@@ -255,7 +255,7 @@ const AddRestaurantForm = () => {
                       Cancel
                     </Button>
                     <Button type="submit" size={"lg"} disabled={loading}>
-                      {loading ? "Adding..." : "Add Item"}
+                      {loading ? "Adding..." : "Add Restaurant"}
                     </Button>
                   </div>
                 </CardContent>
