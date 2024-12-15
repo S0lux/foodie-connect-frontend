@@ -382,7 +382,7 @@ const UpdateRestaurantForm = () => {
                   )}
                 />
 
-                <div className="flex justify-between">
+                <div className="xl:flex xl:justify-between">
                   {" "}
                   <FormField
                     control={form.control}

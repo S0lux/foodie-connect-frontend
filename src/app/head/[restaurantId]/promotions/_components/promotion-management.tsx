@@ -158,15 +158,17 @@ const PromotionManagement = () => {
     <div className="p-8">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl">Promotions Management</CardTitle>
-              <CardDescription>
+          <div className="flex flex-col items-start justify-between space-y-4 sm:flex-row sm:items-center sm:space-y-0">
+            <div className="space-y-2">
+              <CardTitle className="text-xl sm:text-2xl">
+                Promotions Management
+              </CardTitle>
+              <CardDescription className="text-sm sm:text-base">
                 Manage your restaurant's promotional campaigns
               </CardDescription>
             </div>
             <Link href={`/head/${restaurantId}/promotions/add`}>
-              <Button className="flex items-center gap-2">
+              <Button className="flex w-full items-center gap-2 sm:w-auto">
                 <Plus size={16} />
                 Add Promotion
               </Button>
