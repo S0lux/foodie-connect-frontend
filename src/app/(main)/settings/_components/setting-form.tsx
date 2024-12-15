@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
+import { CircleCheck, CircleX, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -38,6 +38,7 @@ import TermsAndConditions from "@/app/(main)/settings/_components/terms-and-cond
 const UserSettingBody = z.object({
   name: z.string().min(3),
   email: z.string().email(),
+  isConfirmed: z.boolean(),
   phone: z.string().min(10),
   avatar: z.string(),
   type: z.enum(["Head", "User"]),
@@ -52,6 +53,7 @@ export default function SettingForm() {
     defaultValues: {
       name: user?.displayName,
       email: user?.email,
+      isConfirmed: user?.emailConfirmed,
       phone: user?.phoneNumber,
       avatar: getAvatarUrl(user?.avatar),
       type:
@@ -69,11 +71,13 @@ export default function SettingForm() {
   const defaultAvatar = getAvatarUrl(user?.avatar, user?.displayName);
   const [isUpgradeDialogOpen, setIsUpgradeDialogOpen] = useState(false);
   const router = useRouter();
+  const [loadingSendEmail, setLoadingSendEmail] = useState(false);
 
   useEffect(() => {
     form.reset({
       name: user?.displayName,
       email: user?.email,
+      isConfirmed: user?.emailConfirmed,
       phone: user?.phoneNumber,
       avatar: getAvatarUrl(user?.avatar, user?.displayName),
       type:
@@ -157,6 +161,28 @@ export default function SettingForm() {
     });
     if (inputFile.current) {
       inputFile.current.value = "";
+    }
+  };
+
+  const resendVerification = useAuth.useSendEmailVerification();
+
+  const resendEmail = async () => {
+    if (loadingSendEmail) return;
+    setLoadingSendEmail(true);
+    try {
+      const result = await resendVerification.mutateAsync();
+      toast({
+        title: "Success",
+        description: result.message ?? "Verification email sent successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: (error as ErrorType).message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingSendEmail(false);
     }
   };
 
@@ -279,6 +305,49 @@ export default function SettingForm() {
                         />
                       </FormControl>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="isConfirmed"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="mb-2 text-[18px] font-semibold text-gray-800">
+                        Email Confirmation Status
+                      </FormLabel>
+                      <FormControl>
+                        {field.value ? (
+                          <div className="flex items-center gap-2">
+                            <CircleCheck className="h-4 w-4 rounded-full bg-green-500 text-white" />
+                            <p className="font-medium text-green-600">
+                              Confirmed
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <CircleX className="h-4 w-4 rounded-full bg-red-500 text-white" />
+                              <p className="font-medium text-red-600">
+                                Not Confirmed
+                              </p>
+                            </div>
+
+                            <Button
+                              type="button"
+                              className="bg-primary text-sm text-white"
+                              disabled={loadingSendEmail}
+                              onClick={() => {
+                                resendEmail();
+                              }}
+                            >
+                              {loadingSendEmail ? "Sending..." : "Resend"}
+                            </Button>
+                          </div>
+                        )}
+                      </FormControl>
+                      <FormMessage className="mt-2 text-sm text-gray-500" />
                     </FormItem>
                   )}
                 />

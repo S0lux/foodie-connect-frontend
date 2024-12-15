@@ -1,4 +1,8 @@
-import { LoginBodyType, RegisterBodyType } from "@/schema/auth.schema";
+import {
+  LoginBodyType,
+  RegisterBodyType,
+  VerifyEmailBodyType,
+} from "@/schema/auth.schema";
 import { User } from "@/types/user.type";
 import http from "@/lib/http";
 import axios from "axios";
@@ -76,6 +80,41 @@ const authAction = {
         throw authError;
       } else {
         console.error("Unexpected error during get session:", error);
+        throw error;
+      }
+    }
+  },
+
+  sendEmailVerification: async () => {
+    try {
+      const response = await http.get("v1/verification/email");
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const authError = error.response.data as ErrorType;
+        console.error("Error during send email verification:", authError);
+        throw authError;
+      } else {
+        console.error(
+          "Unexpected error during send email verification:",
+          error,
+        );
+        throw error;
+      }
+    }
+  },
+
+  verifyEmail: async (emailToken: VerifyEmailBodyType) => {
+    try {
+      const response = await http.post("v1/verification/email", emailToken);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const authError = error.response.data as ErrorType;
+        console.error("Error during verify email:", authError);
+        throw authError;
+      } else {
+        console.error("Unexpected error during verify email:", error);
         throw error;
       }
     }

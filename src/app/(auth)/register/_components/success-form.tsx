@@ -10,10 +10,13 @@ export default function SuccessForm() {
         <Check className="h-[150px] w-[150px] text-primary" />
       </div>
       <h1 className="p-4 text-4xl font-bold text-primary">Successfully</h1>
-      <p>Your account has been created Successfully.</p>
+      <p>Please login and check your email to confirm.</p>
       <Button type="submit" className="!mt-6 w-full" size={"lg"}>
-        <Link className="flex size-full items-center justify-center" href="/">
-          Back to Home Page
+        <Link
+          className="flex size-full items-center justify-center"
+          href="/login"
+        >
+          Login to continue
         </Link>
       </Button>
     </div>

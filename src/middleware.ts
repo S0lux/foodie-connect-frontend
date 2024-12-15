@@ -5,6 +5,7 @@ import http from "@/lib/http";
 const privatePaths = ["/settings"];
 const authPaths = ["/login", "/register"];
 const headPaths = ["/head"];
+const emailPaths = ["/email"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -31,7 +32,8 @@ export async function middleware(request: NextRequest) {
     if (
       privatePaths.some((path) => pathname.startsWith(path)) ||
       authPaths.some((path) => pathname.startsWith(path)) ||
-      headPaths.some((path) => pathname.startsWith(path))
+      headPaths.some((path) => pathname.startsWith(path)) ||
+      emailPaths.some((path) => pathname.startsWith(path))
     ) {
       const response = await http.get("v1/session", {
         headers: {
@@ -47,6 +49,12 @@ export async function middleware(request: NextRequest) {
       if (
         user.type === "User" &&
         headPaths.some((path) => pathname.startsWith(path))
+      ) {
+        return redirect("/");
+      }
+      if (
+        user.emailConfirmed === true &&
+        emailPaths.some((path) => pathname.startsWith(path))
       ) {
         return redirect("/");
       }
@@ -75,5 +83,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/settings", "/login", "/register", "/head/:path*"],
+  matcher: [
+    "/settings",
+    "/login",
+    "/register",
+    "/head/:path*",
+    "/email/:path*",
+  ],
 };

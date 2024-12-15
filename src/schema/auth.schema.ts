@@ -63,6 +63,11 @@ export const ChangePasswordBody = z.object({
     ),
 });
 
+export const VerifyEmailBody = z.object({
+  emailToken: z.string(),
+});
+
 export type LoginBodyType = z.TypeOf<typeof LoginBody>;
 export type RegisterBodyType = z.TypeOf<typeof RegisterBody>;
 export type ChangePasswordBodyType = z.TypeOf<typeof ChangePasswordBody>;
+export type VerifyEmailBodyType = z.TypeOf<typeof VerifyEmailBody>;

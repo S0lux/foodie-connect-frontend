@@ -1,5 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { LoginBodyType, RegisterBodyType } from "@/schema/auth.schema";
+import {
+  LoginBodyType,
+  RegisterBodyType,
+  VerifyEmailBodyType,
+} from "@/schema/auth.schema";
 import authAction from "@/apis/auth.api";
 import { ErrorType } from "@/types/error.type";
 import userAction from "@/apis/user.api";
@@ -81,6 +85,7 @@ const useAuth = {
         }
       },
       retry: 0,
+      refetchOnWindowFocus: true,
     });
   },
 
@@ -103,6 +108,42 @@ const useAuth = {
       },
       onError: (error: ErrorType) => {
         console.error("Error during head upgrade:", error);
+        throw error;
+      },
+    });
+  },
+
+  useVerifyEmail() {
+    return useMutation({
+      mutationFn: async (emailToken: VerifyEmailBodyType) => {
+        try {
+          const result = await authAction.verifyEmail(emailToken);
+          return result;
+        } catch (error) {
+          console.error("Error during email verification:", error);
+          throw error;
+        }
+      },
+      onError: (error: ErrorType) => {
+        console.error("Error during email verification:", error);
+        throw error;
+      },
+    });
+  },
+
+  useSendEmailVerification() {
+    return useMutation({
+      mutationFn: async () => {
+        try {
+          const result = await authAction.sendEmailVerification();
+          return result;
+        } catch (error) {
+          console.error("Error during email verification:", error);
+          throw error;
+        }
+      },
+      onError: (error: ErrorType) => {
+        console.error("Error during email verification:", error);
         throw error;
       },
     });
