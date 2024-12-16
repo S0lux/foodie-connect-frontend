@@ -11,14 +11,21 @@ import {
 } from "./ui/card";
 import Autoplay from "embla-carousel-autoplay";
 import { useState } from "react";
+import useRecommendation from "@/hooks/use-recommend";
+import useAuth from "@/hooks/use-auth";
 
 const DishRecommendationCarousel = () => {
+  const { data: user } = useAuth.useGetSession();
+
   const {
     data: dishes,
     isLoading,
     isError,
     error,
-  } = useDishes.useGetDishes("61c02e3c-5332-4cda-b2c4-6e21bfa3cb53");
+  } = useRecommendation.useGetDishRecommendation(
+    user?.id ? user.id : "8afcafa3-d3c6-4738-820a-fb8941c66430",
+    10,
+  );
 
   if (isError) {
     return (
@@ -81,7 +88,7 @@ const DishRecommendationCarousel = () => {
                   >
                     <FoodCard
                       dishItem={dish}
-                      className="transition-none xl:hover:scale-100"
+                      className="h-full transition-none xl:hover:scale-100"
                     ></FoodCard>
                   </CarouselItem>
                 );

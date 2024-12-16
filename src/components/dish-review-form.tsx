@@ -145,6 +145,26 @@ const DishReviewForm = ({
       </Link>
     );
 
+  if (!user.emailConfirmed)
+    return (
+      <Link href={"/settings"}>
+        <Card className="mb-2 flex items-center border-none py-2 dark:bg-muted/20 md:px-6">
+          <Image
+            src="/images/logo-dark.png"
+            width={50}
+            height={50}
+            alt="logo-light.png"
+            className="absolute size-0 md:relative md:size-auto"
+          ></Image>
+          <CardContent className="flex w-full items-center p-0">
+            <CardTitle className="w-full text-center text-sm text-primary xl:text-lg">
+              Verify your email to leave a review!
+            </CardTitle>
+          </CardContent>
+        </Card>
+      </Link>
+    );
+
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <Card className="relative mb-2 border-none dark:bg-muted/20">

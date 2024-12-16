@@ -12,14 +12,20 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import useRestaurants from "@/hooks/use-restaurants";
 import RestaurantCard from "./restaurant-card";
+import useAuth from "@/hooks/use-auth";
+import useRecommendation from "@/hooks/use-recommend";
 
 const RestaurantRecommendationCarousel = () => {
+  const { data: user } = useAuth.useGetSession();
   const {
     data: restaurants,
     isLoading,
     isError,
     error,
-  } = useRestaurants.useGetRestaurants("ee653b51-74f9-4f69-88f8-1fc6f75ba5a1");
+  } = useRecommendation.useGetRestaurantRecommendation(
+    user?.id ? user.id : "8afcafa3-d3c6-4738-820a-fb8941c66430",
+    10,
+  );
 
   if (isError) {
     return (

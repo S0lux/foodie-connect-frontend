@@ -42,8 +42,9 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
     ? dishInfo.promotions
         .filter((promo) => new Date(promo.endsAt) > new Date())
         .map((promo) => promo.promotionalPrice)
-    : [0];
+    : [];
   const minPrice = Math.min(...promotionalPrices);
+  console.log(promotionalPrices);
 
   const formatedPrice = new Intl.NumberFormat("vi-VN", {
     style: "currency",
@@ -94,17 +95,17 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
                         : dishInfo?.name}
                   </CardTitle>
                   {!dishInfoHasErr && !dishInfoLoading && (
-                    <CardDescription className="text-primarys flex flex-col font-semibold">
+                    <CardDescription className="flex flex-col font-semibold text-primary">
                       <span
                         className={
-                          dishInfo?.promotions && dishInfo.promotions.length > 0
+                          promotionalPrices.length > 0
                             ? "text-xs text-muted-foreground line-through"
                             : ""
                         }
                       >
                         {formatedPrice}
                       </span>
-                      {dishInfo && dishInfo.promotions.length > 0 && (
+                      {promotionalPrices.length > 0 && (
                         <span className="text-base text-accent">
                           {formatedMinPrice}
                         </span>
@@ -112,9 +113,9 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
                     </CardDescription>
                   )}
                 </div>
-                <CardDescription className="text-sm">
+                {/* <CardDescription className="text-sm">
                   <span>5k watching</span>
-                </CardDescription>
+                </CardDescription> */}
               </div>
 
               <CardDescription className="">
@@ -154,7 +155,7 @@ export default function DishDetailPage({ params }: { params: { id: string } }) {
               </Link>
             </CardFooter>
 
-            {dishInfo?.promotions && dishInfo.promotions.length > 0 && (
+            {promotionalPrices.length > 0 && (
               <ReviewTag className="bottom-0 right-0 rounded-br bg-accent">
                 <Percent size={20}></Percent>
               </ReviewTag>

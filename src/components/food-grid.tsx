@@ -177,14 +177,14 @@ export const FoodCard = ({
             <CardDescription className="relative space-x-3 py-1 font-semibold text-primary">
               <span
                 className={
-                  dishItem.promotions.length > 0
+                  promotionalPrices.length > 0
                     ? "text-xs text-muted-foreground line-through"
                     : ""
                 }
               >
                 {formatedPrice}
               </span>
-              {dishItem.promotions.length > 0 && (
+              {promotionalPrices.length > 0 && (
                 <span className="absolute bottom-0.5 text-base text-accent">
                   {formatedMinPrice}
                 </span>
@@ -214,11 +214,11 @@ export const FoodCard = ({
               (_, i) => <Star fill="#D4AF37" stroke="#D4AF37" size={15} />,
             )}
           {halfStar && <StarHalf fill="#D4AF37" stroke="#D4AF37" size={15} />}
-          <CardDescription className="ml-2 text-xs">
+          {/* <CardDescription className="ml-2 text-xs">
             <span>{viewCount} watching</span>
-          </CardDescription>
+          </CardDescription> */}
         </CardFooter>
-        {dishItem.promotions.length > 0 && (
+        {promotionalPrices.length > 0 && (
           <ReviewTag className="bottom-0 right-0 rounded-br bg-accent">
             <Percent size={20}></Percent>
           </ReviewTag>
