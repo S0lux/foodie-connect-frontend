@@ -1,5 +1,4 @@
-export type MapMarker = {
+export type Position = {
   lat: number;
   lng: number;
-  restaurantId: string;
 };

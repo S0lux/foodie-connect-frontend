@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import Places from "@/components/geocoding/places";
+import { useUserLocation } from "@/hooks/use-location";
 
 type LatLngLiteral = google.maps.LatLngLiteral;
 type MapOptions = google.maps.MapOptions;
@@ -45,10 +46,13 @@ export default function Map({
     }
   }, [office]);
 
-  const center = useMemo<LatLngLiteral>(
-    () => ({ lat: 10.762622, lng: 106.660172 }),
-    [],
-  );
+  // const center = useMemo<LatLngLiteral>(
+  //   () => ({ lat: 10.762622, lng: 106.660172 }),
+  //   [],
+  // );
+
+  const { latitude, longitude } = useUserLocation();
+
   if (!isLoaded) return <div>Loading...</div>;
   return (
     <>
@@ -66,7 +70,7 @@ export default function Map({
         <div className="size-full">
           <GoogleMap
             zoom={currentZoom}
-            center={center}
+            center={{ lat: latitude, lng: longitude }}
             mapContainerClassName="map-container"
             options={options}
             onLoad={onLoad}

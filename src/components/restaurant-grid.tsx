@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import RestaurantCard from "./restaurant-card";
 import {
   Card,
@@ -11,6 +11,8 @@ import {
 import { twMerge } from "tailwind-merge";
 
 import useRestaurants from "@/hooks/use-restaurants";
+import { useUserLocation } from "@/hooks/use-location";
+import { Car } from "lucide-react";
 
 export type RestaurantDto = {
   id: string;
@@ -18,36 +20,16 @@ export type RestaurantDto = {
   category: string;
 };
 
-const CategorySelector = ({
-  onClick,
-  isSelected,
-  children,
-}: {
-  onClick?: () => void;
-  isSelected?: boolean;
-  children?: ReactNode;
-}) => {
-  return (
-    <CardTitle
-      className={twMerge(
-        "relative flex cursor-pointer select-none justify-center px-1 after:absolute after:inset-y-5 after:block after:h-0.5 after:w-0 after:rounded after:bg-primary after:duration-100 after:ease-in",
-        isSelected ? "text-primary after:w-full" : "",
-      )}
-      onClick={onClick}
-    >
-      {children}
-    </CardTitle>
-  );
-};
-
 const RestaurantGrid = ({ className }: { className?: string }) => {
+  const { locationString } = useUserLocation();
+
   //data fetching
   const {
     data: restaurants,
     isLoading,
     isError,
     error,
-  } = useRestaurants.useGetRestaurants("", 5000, "106.61532,10.74964");
+  } = useRestaurants.useGetRestaurants("", 10000, locationString);
 
   // Handle responsive design
   const [windowWidth, setWidth] = useState(0);
@@ -62,8 +44,6 @@ const RestaurantGrid = ({ className }: { className?: string }) => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  console.log(restaurants);
 
   if (isError) {
     return (
@@ -103,17 +83,23 @@ const RestaurantGrid = ({ className }: { className?: string }) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="">
-        <div className="grid grid-flow-row grid-cols-1 justify-items-center gap-4 bg-inherit py-5 md:grid-cols-3 xl:grid-cols-4">
-          {restaurants &&
-            restaurants.map((restaurant) => {
-              return (
-                <RestaurantCard
-                  key={restaurant.id}
-                  restaurant={restaurant}
-                ></RestaurantCard>
-              );
-            })}
-        </div>
+        {restaurants && restaurants.length > 0 ? (
+          <div className="grid grid-flow-row grid-cols-1 justify-items-center gap-4 bg-inherit py-5 md:grid-cols-3 xl:grid-cols-4">
+            {restaurants &&
+              restaurants.map((restaurant) => {
+                return (
+                  <RestaurantCard
+                    key={restaurant.id}
+                    restaurant={restaurant}
+                  ></RestaurantCard>
+                );
+              })}
+          </div>
+        ) : (
+          <CardDescription className="size-full py-3 text-center italic">
+            No restaurants around
+          </CardDescription>
+        )}
       </CardContent>
     </Card>
   );

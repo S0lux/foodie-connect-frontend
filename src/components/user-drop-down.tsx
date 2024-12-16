@@ -69,9 +69,6 @@ const UserDropDown = () => {
         <Link href="/login">
           <Button>Login</Button>
         </Link>
-        <Link href="/register">
-          <Button>Register</Button>
-        </Link>
       </div>
     );
 

@@ -3,33 +3,65 @@ import {
   GoogleMap,
   InfoWindow,
   Marker,
-  OverlayView,
   useJsApiLoader,
 } from "@react-google-maps/api";
 import Loader from "./loader";
-import { useRouter } from "next/navigation";
 import useRestaurants from "@/hooks/use-restaurants";
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Restaurant } from "@/types/restaurant.type";
-import { ArrowRight, Info } from "lucide-react";
-import { Card, CardDescription, CardFooter, CardTitle } from "./ui/card";
+import { ArrowRight } from "lucide-react";
+import { Card, CardDescription, CardFooter } from "./ui/card";
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
+import { toast } from "@/hooks/use-toast";
+import { error } from "console";
+import { Position } from "@/types/map-maker.type";
+import { useUserLocation } from "@/hooks/use-location";
+
+function getLocationString(pos: Position): string {
+  return `${pos.lng},${pos.lat}`;
+}
 
 const Map = ({}: {}) => {
-  const { data: restaurants } = useRestaurants.useGetRestaurants(
-    "",
-    5000,
-    "106.61532,10.74964",
-  );
-  const center = { lat: 10.74964, lng: 106.61532 };
-  const [selectedMaker, setSelectedMaker] = useState<Restaurant | null>(null);
-
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: `${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`,
     libraries: ["places"],
   });
+
+  const [selectedMaker, setSelectedMaker] = useState<Restaurant | null>(null);
+  // const [currentPosition, setPosition] = useState<Position>({
+  //   lat: 10.74964,
+  //   lng: 106.61532,
+  // });
+
+  // useEffect(() => {
+  //   if (typeof window !== "undefined" && navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       (position) => {
+  //         setPosition({
+  //           lat: position.coords.latitude,
+  //           lng: position.coords.longitude,
+  //         });
+  //       },
+  //       (error) => {
+  //         toast({
+  //           title: "Permission denied",
+  //           description:
+  //             "Allow location permission to help us better find your needs!",
+  //         });
+  //       },
+  //     );
+  //   }
+  // }, []);
+
+  const { latitude, longitude, locationString } = useUserLocation();
+
+  const { data: restaurants } = useRestaurants.useGetRestaurants(
+    "",
+    50000,
+    locationString,
+  );
 
   if (!isLoaded) return <Loader className="h-20 justify-center"></Loader>;
 
@@ -43,9 +75,17 @@ const Map = ({}: {}) => {
 
   return (
     <GoogleMap
-      center={center ?? { lat: 10.831510970909536, lng: 106.62511084046088 }}
+      center={{ lat: latitude, lng: longitude }}
       zoom={16}
       mapContainerClassName="map"
+      options={{
+        styles: [
+          {
+            featureType: "poi",
+            stylers: [{ visibility: "off" }],
+          },
+        ],
+      }}
     >
       {restaurants &&
         restaurants.map((restaurant, index) => {

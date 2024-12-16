@@ -1,5 +1,4 @@
 import { ChangTheme } from "@/components/change-theme";
-import { Search } from "lucide-react";
 import UserDropDown from "./user-drop-down";
 import Link from "next/link";
 
@@ -9,21 +8,11 @@ export default function Header({ children }: { children?: React.ReactNode }) {
       <div className="flex items-center gap-4">
         {children}
         <Link href={"/"}>
-          <div className="invisible size-0 text-[24px] font-bold text-primary md:visible md:size-auto">
-            Foodie
-          </div>
+          <div className="text-[24px] font-bold text-primary">Foodie</div>
         </Link>
       </div>
 
-      <div className="relative flex flex-row items-center space-x-1 rounded-full bg-input py-2 pl-3 pr-5 focus:outline">
-        <Search className="opacity-40" size={20} />
-        <input
-          className="w-full bg-transparent outline-none"
-          placeholder="Search something"
-        ></input>
-      </div>
-
-      <div className="flex items-center justify-end md:gap-4">
+      <div className="flex items-center justify-end gap-2 md:gap-4">
         <ChangTheme />
         <UserDropDown />
       </div>
