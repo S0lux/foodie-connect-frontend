@@ -70,7 +70,12 @@ export default function VerificationEmail() {
   };
 
   useEffect(() => {
-    const token = searchParams.get("token")?.replace(/ /g, "+");
+    const token = decodeURIComponent(
+      searchParams.get("token")?.replace(/ /g, "+") ?? "",
+    );
+    // const token = searchParams.get("token")?.replace(/ /g, "+");
+
+    console.log(token);
 
     // Single verification attempt with proper token
     if (token && verificationState.status === "idle") {
