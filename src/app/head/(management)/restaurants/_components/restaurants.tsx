@@ -15,6 +15,7 @@ import RestaurantCard from "@/app/head/(management)/restaurants/_components/rest
 import useAuth from "@/hooks/use-auth";
 import useRestaurants from "@/hooks/use-restaurants";
 import Loader from "@/components/loader";
+import Link from "next/link";
 
 export default function Restaurants() {
   const { data: user, isLoading, isError } = useAuth.useGetSession();
@@ -57,9 +58,11 @@ export default function Restaurants() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Restaurants</h1>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" /> Add Restaurant
-        </Button>
+        <Link href={`/head/restaurants/add`}>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" /> Add Restaurant
+          </Button>
+        </Link>
       </div>
 
       {/* Filters */}
