@@ -7,7 +7,7 @@
 [![TanStack Query](https://img.shields.io/badge/TanStack_Query-v5-red?style=flat&logo=react-query)](https://tanstack.com/query/latest)
 [![Google Maps](https://img.shields.io/badge/Google_Maps_API-Latest-green?style=flat&logo=google-maps)](https://developers.google.com/maps)
 
-Frontend reposiroty for FoodSpot Management, a comprehensive platform for restaurant discovery and management in Vietnam, helping users explore and connect with local dining establishments.
+Frontend repository for FoodSpot Management, a comprehensive platform for restaurant discovery and management in Vietnam, helping users explore and connect with local dining establishments.
 
 ![image](https://github.com/user-attachments/assets/09af7be6-1737-4ee3-ba50-de2d7e239e2a)
 ![image](https://github.com/user-attachments/assets/8d55d2d3-86c2-479b-bc41-d31f146e3d43)
