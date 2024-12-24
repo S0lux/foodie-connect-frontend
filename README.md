@@ -1,4 +1,4 @@
-# FoodSpot Management System
+# FoodSpot Management System - Frontend application
 
 [![Next.js](https://img.shields.io/badge/Next.js-13.0-black?style=flat&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
@@ -6,10 +6,8 @@
 [![Shadcn/UI](https://img.shields.io/badge/Shadcn/UI-Latest-black?style=flat)](https://ui.shadcn.com/)
 [![TanStack Query](https://img.shields.io/badge/TanStack_Query-v5-red?style=flat&logo=react-query)](https://tanstack.com/query/latest)
 [![Google Maps](https://img.shields.io/badge/Google_Maps_API-Latest-green?style=flat&logo=google-maps)](https://developers.google.com/maps)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com)
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Ffoodie.town)](https://foodie.town)
 
-A comprehensive platform for restaurant discovery and management in Vietnam, helping users explore and connect with local dining establishments.
+Frontend reposiroty for FoodSpot Management, a comprehensive platform for restaurant discovery and management in Vietnam, helping users explore and connect with local dining establishments.
 
 ![image](https://github.com/user-attachments/assets/09af7be6-1737-4ee3-ba50-de2d7e239e2a)
 ![image](https://github.com/user-attachments/assets/8d55d2d3-86c2-479b-bc41-d31f146e3d43)
