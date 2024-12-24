@@ -11,6 +11,9 @@
 
 A comprehensive platform for restaurant discovery and management in Vietnam, helping users explore and connect with local dining establishments.
 
+![Alt text](images/image.png)
+![Alt text](images/image-1.png)
+
 ## 🌐 Live Demo
 
 Visit [Foodie.town](https://foodie.town) to see the platform in action.
