@@ -11,8 +11,8 @@
 
 A comprehensive platform for restaurant discovery and management in Vietnam, helping users explore and connect with local dining establishments.
 
-![Alt text](images/image.png)
-![Alt text](images/image-1.png)
+![image](https://github.com/user-attachments/assets/09af7be6-1737-4ee3-ba50-de2d7e239e2a)
+![image](https://github.com/user-attachments/assets/8d55d2d3-86c2-479b-bc41-d31f146e3d43)
 
 ## 🌐 Live Demo
 
