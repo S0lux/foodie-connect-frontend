@@ -28,11 +28,14 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { ErrorType } from "@/types/error.type";
+import { Info, Store, Utensils } from "lucide-react";
+import { Card, CardContent, CardDescription } from "@/components/ui/card";
 
 const LoginForm = () => {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [infoHover, setInfoHover] = useState(false);
   const loginAction = useAuth.useLogin();
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -83,9 +86,51 @@ const LoginForm = () => {
                 <FormLabel className="text-[16px] font-bold">Type</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="flex h-[48px] items-center">
-                      {" "}
-                      <SelectValue placeholder="Select type" />
+                    <SelectTrigger className="relative flex h-[48px] items-center">
+                      <div className="flex items-center gap-2">
+                        {field.value === "Head" && (
+                          <Store
+                            size={20}
+                            className="opacity-70"
+                            onMouseEnter={() => setInfoHover(true)}
+                            onMouseLeave={() => setInfoHover(false)}
+                          ></Store>
+                        )}
+                        {field.value === "User" && (
+                          <Utensils
+                            size={20}
+                            className="opacity-70"
+                            onMouseEnter={() => setInfoHover(true)}
+                            onMouseLeave={() => setInfoHover(false)}
+                          ></Utensils>
+                        )}
+                        {infoHover && (
+                          <Card className="absolute -bottom-[6.5rem] -left-2 h-auto min-h-[5rem] w-60 border-none p-3">
+                            <CardDescription className="whitespace-normal break-words text-start text-sm">
+                              {field.value === "Head" && (
+                                <div className="flex flex-col space-y-2">
+                                  <Store size={20}></Store>
+                                  <span>
+                                    HEAD can manage the restaurant and its menu.
+                                    Recommended for restaurant owners.
+                                  </span>
+                                </div>
+                              )}
+                              {field.value === "User" && (
+                                <div className="flex flex-col space-y-2">
+                                  <Utensils size={20}></Utensils>
+                                  <span>
+                                    USER can browse menus and leave reviews in
+                                    restaurants. Recommended for regular users.
+                                  </span>
+                                </div>
+                              )}
+                            </CardDescription>
+                          </Card>
+                        )}
+
+                        <SelectValue placeholder="Select type" />
+                      </div>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem className="hover:cursor-pointer" value="Head">
