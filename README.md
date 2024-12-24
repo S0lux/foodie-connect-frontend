@@ -56,7 +56,7 @@ Since this project uses Google Maps API for geolocation and clouidnary for image
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/foodspot-management-frontend.git
+git clone https://github.com/NTDKhoa04/foodie-connect-frontend.git
 cd foodspot-management-frontend
 ```
 
