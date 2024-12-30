@@ -7,20 +7,13 @@ import {
 } from "@react-google-maps/api";
 import Loader from "./loader";
 import useRestaurants from "@/hooks/use-restaurants";
-import { use, useEffect, useState } from "react";
+import { useState } from "react";
 import { Restaurant } from "@/types/restaurant.type";
 import { ArrowRight } from "lucide-react";
 import { Card, CardDescription, CardFooter } from "./ui/card";
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
-import { toast } from "@/hooks/use-toast";
-import { error } from "console";
-import { Position } from "@/types/map-maker.type";
 import { useUserLocation } from "@/hooks/use-location";
-
-function getLocationString(pos: Position): string {
-  return `${pos.lng},${pos.lat}`;
-}
 
 const Map = ({}: {}) => {
   const { isLoaded } = useJsApiLoader({
@@ -30,32 +23,8 @@ const Map = ({}: {}) => {
   });
 
   const [selectedMaker, setSelectedMaker] = useState<Restaurant | null>(null);
-  // const [currentPosition, setPosition] = useState<Position>({
-  //   lat: 10.74964,
-  //   lng: 106.61532,
-  // });
 
-  // useEffect(() => {
-  //   if (typeof window !== "undefined" && navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       (position) => {
-  //         setPosition({
-  //           lat: position.coords.latitude,
-  //           lng: position.coords.longitude,
-  //         });
-  //       },
-  //       (error) => {
-  //         toast({
-  //           title: "Permission denied",
-  //           description:
-  //             "Allow location permission to help us better find your needs!",
-  //         });
-  //       },
-  //     );
-  //   }
-  // }, []);
-
-  const { latitude, longitude, locationString } = useUserLocation();
+  const { latitude, longitude, locationString, error } = useUserLocation();
 
   const { data: restaurants } = useRestaurants.useGetRestaurants(
     "",
@@ -87,6 +56,9 @@ const Map = ({}: {}) => {
         ],
       }}
     >
+      {latitude && longitude && !error && (
+        <Marker position={{ lat: latitude, lng: longitude }} />
+      )}
       {restaurants &&
         restaurants.map((restaurant, index) => {
           return (

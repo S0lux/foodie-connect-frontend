@@ -11,10 +11,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Info, Store, Utensils } from "lucide-react";
+import { Card, CardDescription } from "@/components/ui/card";
 
 const RegisterForm = () => {
   const [type, setType] = useState("Head");
   const [hideForm, setHideForm] = useState(false);
+  const [infoHover, setInfoHover] = useState(false);
+
   const changeForm = () => {
     setHideForm(!hideForm);
   };
@@ -33,15 +37,59 @@ const RegisterForm = () => {
               onValueChange={() => {
                 setType(type === "Head" ? "User" : "Head");
               }}
+              value={type}
             >
               <SelectTrigger className="flex h-[48px] w-full items-center">
-                <SelectValue placeholder="Head" />
+                <div className="relative flex items-center gap-2">
+                  {type === "Head" && (
+                    <Store
+                      size={20}
+                      className="opacity-70"
+                      onMouseEnter={() => setInfoHover(true)}
+                      onMouseLeave={() => setInfoHover(false)}
+                    ></Store>
+                  )}
+                  {type === "User" && (
+                    <Utensils
+                      size={20}
+                      className="opacity-70"
+                      onMouseEnter={() => setInfoHover(true)}
+                      onMouseLeave={() => setInfoHover(false)}
+                    ></Utensils>
+                  )}
+                  {infoHover && (
+                    <Card className="absolute -bottom-28 -left-2 h-auto min-h-[5rem] w-60 border-none p-3">
+                      <CardDescription className="whitespace-normal break-words text-start text-sm">
+                        {type === "Head" && (
+                          <div className="flex flex-col space-y-2">
+                            <Store size={20}></Store>
+                            <span>
+                              HEAD can manage the restaurant and its menu.
+                              Recommended for restaurant owners.
+                            </span>
+                          </div>
+                        )}
+                        {type === "User" && (
+                          <div className="flex flex-col space-y-2">
+                            <Utensils size={20}></Utensils>
+                            <span>
+                              USER can browse menus and leave reviews in
+                              restaurants. Recommended for regular users.
+                            </span>
+                          </div>
+                        )}
+                      </CardDescription>
+                    </Card>
+                  )}
+
+                  <SelectValue placeholder="Select type" />
+                </div>
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel></SelectLabel>
                   <SelectItem className="hover:cursor-pointer" value="Head">
-                    Head
+                    <span>Head</span>
                   </SelectItem>
                   <SelectItem className="hover:cursor-pointer" value="User">
                     User

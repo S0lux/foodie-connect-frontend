@@ -1,14 +1,9 @@
 "use client";
-
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Upload } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -39,6 +34,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Map from "@/components/geocoding/map";
+import { useUserLocation } from "@/hooks/use-location";
 
 const AddRestaurantForm = () => {
   const [office, setOffice] = useState<google.maps.LatLngLiteral | null>(null);
@@ -66,9 +62,6 @@ const AddRestaurantForm = () => {
   }, [office]);
 
   const router = useRouter();
-  console.log("office", office);
-
-  console.log(form.getValues());
 
   const onSubmit = form.handleSubmit(async (values) => {
     setLoading(true);

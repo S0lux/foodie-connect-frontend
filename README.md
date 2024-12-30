@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FoodSpot Management System - Frontend application
 
-## Getting Started
+[![Next.js](https://img.shields.io/badge/Next.js-13.0-black?style=flat&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.0-blue?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
+[![Shadcn/UI](https://img.shields.io/badge/Shadcn/UI-Latest-black?style=flat)](https://ui.shadcn.com/)
+[![TanStack Query](https://img.shields.io/badge/TanStack_Query-v5-red?style=flat&logo=react-query)](https://tanstack.com/query/latest)
+[![Google Maps](https://img.shields.io/badge/Google_Maps_API-Latest-green?style=flat&logo=google-maps)](https://developers.google.com/maps)
 
-First, run the development server:
+Frontend repository for FoodSpot Management, a comprehensive platform for restaurant discovery and management in Vietnam, helping users explore and connect with local dining establishments.
+
+![image](https://github.com/user-attachments/assets/09af7be6-1737-4ee3-ba50-de2d7e239e2a)
+![image](https://github.com/user-attachments/assets/8d55d2d3-86c2-479b-bc41-d31f146e3d43)
+
+## 🌐 Live Demo
+
+Visit [Foodie.town](https://foodie.town) to see the platform in action.
+
+## 🚀 Features
+
+- Interactive map interface for restaurant discovery
+- Restaurant search and filtering capabilities
+- Detailed restaurant profiles and menus
+- User authentication and profile management
+- Responsive design for mobile and desktop experiences
+
+## 🛠️ Technology Stack
+
+- **Framework:** [Next.js](https://nextjs.org/)
+- **Styling:**
+  - [TailwindCSS](https://tailwindcss.com/)
+  - [Shadcn/UI](https://ui.shadcn.com/)
+- **Data Management:**
+  - [TanStack Query](https://tanstack.com/query/latest)
+  - [Axios](https://axios-http.com/)
+- **Maps Integration:**
+  - [Google Maps API](https://developers.google.com/maps)
+
+## 🔧 Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- IDE or text editor (Webstorm, VSCode, ...)
+- Node.js (v18 or higher)
+- npm
+- Git
+
+Since this project uses Google Maps API for geolocation and clouidnary for image storage, api keys are required. Please refer to the links below on how to retrieve the keys:
+
+[Google Maps API](https://developers.google.com/maps/documentation/geolocation/get-api-key)
+
+[Cloudinary](https://cloudinary.com/)
+
+## ⚙️ Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/NTDKhoa04/foodie-connect-frontend.git
+cd foodspot-management-frontend
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Create a `.env` file in the root directory and add your environment variables:
+
+```env
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+NEXT_PUBLIC_CLOUD_NAME=your_cloudinary_api_key
+```
+
+4. Start the development server:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔗 Related Repositories
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Backend Repository: [foodie-connect-backend](https://github.com/VaderNgo/foodie-connect-backend)
+- Api documentation: [Swagger](https://api.foodie.town/swagger/index.html)
 
-## Learn More
+## 📝 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/                 # Next.js app router pages
+├── components/         # Reusable UI components
+├── hooks/             # Custom React hooks
+├── lib/               # Utility functions and configurations
+├── services/          # API service layer
+└── types/             # TypeScript type definitions
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🤝 Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
