@@ -1,4 +1,5 @@
 "use client";
+import RestaurantImageCarousel from "@/app/(main)/restaurant-detail/_components/restaurant-image-carousel";
 import PromotionCard from "@/app/head/[restaurantId]/_components/promotion-card";
 import FoodGrid from "@/components/food-grid";
 import PromotionItem from "@/components/promotion-item";
@@ -8,8 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useDishCategories from "@/hooks/use-dish-categories";
 import usePromotion from "@/hooks/use-promotion";
 import useRestaurantDetail from "@/hooks/use-restaurant-detail";
+import useServices from "@/hooks/use-services";
 import { getLogoUrl } from "@/lib/handleImage";
-import { AlarmClock, MapPin, PhoneIcon, Star, StarHalf } from "lucide-react";
+import { AlarmClock, MapPin, Package2, PhoneIcon, Star, StarHalf } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 export default function RestauranDetailPage({
@@ -24,6 +26,8 @@ export default function RestauranDetailPage({
     isLoading: restaurantDetailLoading,
   } = useRestaurantDetail.useGetRestaurantDetail(params.id);
 
+  const { data: services } = useServices.useGetServices(params.id);
+
   const { data: restaurantCategories } = useDishCategories.useGetDishCategories(
     params.id,
   );
@@ -33,8 +37,8 @@ export default function RestauranDetailPage({
   const halfStar =
     restaurantDetail &&
     restaurantDetail.scoreOverview.averageRating %
-      Math.round(restaurantDetail.scoreOverview.averageRating) >
-      0.5;
+    Math.round(restaurantDetail.scoreOverview.averageRating) >
+    0.5;
   return (
     <div className="flex flex-col space-y-5">
       {/* {restaurant details} */}
@@ -96,7 +100,7 @@ export default function RestauranDetailPage({
                     restaurantDetail?.status === "Open" && "text-green-500",
                     restaurantDetail?.status === "Closed" && "text-orange-500",
                     restaurantDetail?.status === "PermanentlyClosed" &&
-                      "text-red-500",
+                    "text-red-500",
                   )}
                 >
                   {restaurantDetail?.status === "PermanentlyClosed"
@@ -137,6 +141,35 @@ export default function RestauranDetailPage({
         </div>
       </Card>
 
+      {/* images */}
+      <RestaurantImageCarousel images={restaurantDetail?.images?.filter(
+        (image) =>
+          !image.includes("/logo") && !image.includes("/banner"),
+      )} />
+
+      {/* services*/}
+      {services && services?.length > 0 && (
+        <Card className="border-none px-2 py-2 md:px-7">
+          <CardTitle className="flex flex-row items-center border-b border-muted-foreground/30 py-3 text-xl">
+            <span className="px-4 md:px-0">Services</span>
+          </CardTitle>
+          <CardContent className="flex flex-col space-y-5 py-5 md:grid md:grid-flow-row md:grid-cols-3 md:gap-5 md:space-y-0 lg:grid-cols-4">
+            {services.map((service) => (
+              <Card
+                key={service.name}
+                className="group relative overflow-hidden transition-all hover:shadow-lg"
+              >
+                <CardContent className="flex flex-col items-center p-6 text-center">
+                  <Package2 className="mb-4 h-8 w-8 text-primary" />
+                  <h3 className="text-lg font-semibold">{service.name}</h3>
+                  <div className="absolute inset-0 bg-primary/5 opacity-0 transition-opacity group-hover:opacity-100" />
+                </CardContent>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
       {/* promotions */}
       {promotions && promotions?.length > 0 && (
         <Card className="border-none px-2 py-2 md:px-7">
@@ -153,6 +186,8 @@ export default function RestauranDetailPage({
           </CardContent>
         </Card>
       )}
+
+
 
       {/* menu */}
       <FoodGrid

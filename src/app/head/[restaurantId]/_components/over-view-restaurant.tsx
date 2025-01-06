@@ -3,6 +3,7 @@
 import RestaurantCarousel from "@/app/head/[restaurantId]/_components/restaurant-carousel";
 import RestaurantHomePage from "@/app/head/[restaurantId]/_components/restaurant-home-page";
 import RestaurantInfo from "@/app/head/[restaurantId]/_components/restaurant-infomation";
+import ServiceManagement from "@/app/head/[restaurantId]/_components/service-management";
 import SocialOverview from "@/app/head/[restaurantId]/_components/social-overview";
 import usePromotion from "@/hooks/use-promotion";
 import useRestaurantReview from "@/hooks/use-restaurant-review";
@@ -109,6 +110,8 @@ export default function OverViewRestaurant({
                 <SocialOverview />
               </div>
             </div>
+
+            <ServiceManagement restaurantId={restaurantId} />
 
             <div className="flex justify-center">
               <RestaurantCarousel
