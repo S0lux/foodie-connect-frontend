@@ -6,10 +6,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const useDishes = {
   useGetDishes(
-    restaurantId: string,
+    restaurantId?: string,
     categories?: string,
     minPrice?: number,
     maxPrice?: number,
+    name?: string,
   ) {
     return useQuery({
       queryKey: ["dishes"],
@@ -20,6 +21,7 @@ const useDishes = {
             categories,
             minPrice,
             maxPrice,
+            name,
           );
           return result;
         } catch (error) {

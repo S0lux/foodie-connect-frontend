@@ -7,7 +7,12 @@ import { ErrorType } from "@/types/error.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const useRestaurants = {
-  useGetRestaurants(ownerId?: string, radius?: number, origin?: string) {
+  useGetRestaurants(
+    ownerId?: string,
+    radius?: number,
+    origin?: string,
+    name?: string,
+  ) {
     return useQuery({
       queryKey: ["restaurants", ownerId, radius, origin],
       queryFn: async () => {
@@ -16,6 +21,7 @@ const useRestaurants = {
             ownerId,
             radius,
             origin,
+            name,
           );
           return result;
         } catch (error) {

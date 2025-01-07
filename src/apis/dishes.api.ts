@@ -6,10 +6,11 @@ import { DishBodyType, UpdateDishBodyType } from "@/schema/dish.schema";
 
 const dishesActions = {
   getDishes: async (
-    restaurantId: string,
+    restaurantId?: string,
     categories?: string,
     minPrice?: number,
     maxPrice?: number,
+    name?: string,
   ) => {
     try {
       const params = {
@@ -17,6 +18,7 @@ const dishesActions = {
         categories,
         minPrice,
         maxPrice,
+        name,
       };
       const response = await http.get<Dish[]>("v1/dishes", {
         params,

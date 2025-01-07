@@ -4,6 +4,7 @@ import DishRecommendationCarousel from "@/components/dish-recommend-carousel";
 import RestaurantGrid from "@/components/restaurant-grid";
 import "dotenv/config";
 import RestaurantRecommendationCarousel from "@/components/restaurant-recomend-carousel";
+import SearchBar from "@/components/search-bar";
 
 export default async function Home() {
   return (
@@ -11,6 +12,7 @@ export default async function Home() {
       <Header />
       <div className="mt-[--header-height] w-full px-10 xl:px-40">
         <div className="w-full flex-col justify-center space-y-10 py-10">
+          <SearchBar />
           <Map />
           <DishRecommendationCarousel />
           <RestaurantRecommendationCarousel />
