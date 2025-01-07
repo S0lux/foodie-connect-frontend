@@ -12,12 +12,14 @@ const restaurantsActions = {
     ownerId?: string,
     radius?: number,
     origin?: string,
+    name?: string,
   ) => {
     try {
       const params = {
         ownerId,
         radius,
         origin,
+        name,
       };
       const response = await http.get<Restaurant[]>("v1/restaurants", {
         params,
